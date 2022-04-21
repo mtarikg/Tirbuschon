@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/MyWidgets/navigatorButtonCard.dart';
 
 class UpdateProfilePage extends StatefulWidget {
   const UpdateProfilePage({Key? key}) : super(key: key);
@@ -21,56 +22,14 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
             },
           ),
         ),
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Card(
-                color: Colors.blue,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text("Change Username",
-                          style: TextStyle(color: Colors.white, fontSize: 20))),
-                ),
-              ),
-              Card(
-                color: Colors.blue,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text("Change Full Name",
-                          style: TextStyle(color: Colors.white, fontSize: 20))),
-                ),
-              ),
-              Card(
-                color: Colors.blue,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text("Change Social Media Info",
-                          style: TextStyle(color: Colors.white, fontSize: 20))),
-                ),
-              ),
-              Card(
-                color: Colors.blue,
-                child: SizedBox(
-                  width: double.infinity,
-                  height: 60,
-                  child: ElevatedButton(
-                      onPressed: () {},
-                      child: const Text("Change Profile Image",
-                          style: TextStyle(color: Colors.white, fontSize: 20))),
-                ),
-              ),
-            ],
-          ),
+        body: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: const [
+            NavigatorButtonCard(text: "Change Username"),
+            NavigatorButtonCard(text: "Change Full Name"),
+            NavigatorButtonCard(text: "Change Social Media Info"),
+            NavigatorButtonCard(text: "Change Profile Image"),
+          ],
         ));
   }
 }

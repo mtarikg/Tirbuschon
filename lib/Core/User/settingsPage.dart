@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Auth/signUpPage.dart';
-import 'package:tirbuschon_feng497/Core/User/profileSettingsPage.dart';
-import 'package:tirbuschon_feng497/welcomePage.dart';
+import '../../MyWidgets/navigatorButtonCard.dart';
+import 'profileSettingsPage.dart';
+import '../../welcomePage.dart';
 import '../../services/authService.dart';
 import 'policyPage.dart';
 
@@ -26,67 +26,20 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
       ),
-      body: Center(
-          child: Column(
+      body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          RichText(
-            text: TextSpan(
-              style: Theme.of(context).textTheme.bodyText1,
-              children: const [
-                TextSpan(
-                    text: "Tirbuschon",
-                    style: TextStyle(fontSize: 50, color: Colors.blue)),
-              ],
-            ),
-          ),
+          _tirbuschonText(context),
           const SizedBox(
             width: double.infinity,
             height: 200,
           ),
-          Card(
-            color: Colors.blue,
-            child: SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const ProfileSettingsPage()));
-                  },
-                  child: const Text("Profile Settings",
-                      style: TextStyle(color: Colors.white, fontSize: 20))),
-            ),
-          ),
-          Card(
-            color: Colors.blue,
-            child: SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => const PolicyPage()));
-                  },
-                  child: const Text("Policy Page",
-                      style: TextStyle(color: Colors.white, fontSize: 20))),
-            ),
-          ),
-          Card(
-            color: Colors.blue,
-            child: SizedBox(
-              width: double.infinity,
-              height: 60,
-              child: ElevatedButton(
-                  onPressed: () {},
-                  child: const Text("Report a problem",
-                      style: TextStyle(color: Colors.white, fontSize: 20))),
-            ),
-          ),
+          const NavigatorButtonCard(
+              pageToNavigate: ProfileSettingsPage(), text: "Profile Settings"),
+          const NavigatorButtonCard(
+              pageToNavigate: PolicyPage(), text: "Policy Page"),
+          const NavigatorButtonCard(
+              text: "Report a problem"),
           Card(
             color: Colors.blue,
             child: SizedBox(
@@ -101,7 +54,20 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
         ],
-      )),
+      ),
+    );
+  }
+
+  RichText _tirbuschonText(BuildContext context) {
+    return RichText(
+      text: TextSpan(
+        style: Theme.of(context).textTheme.bodyText1,
+        children: const [
+          TextSpan(
+              text: "Tirbuschon",
+              style: TextStyle(fontSize: 50, color: Colors.blue)),
+        ],
+      ),
     );
   }
 

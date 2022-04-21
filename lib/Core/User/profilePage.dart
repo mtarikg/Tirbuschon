@@ -14,79 +14,53 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       body: ListView(
         children: [
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.all(20),
-              child: SizedBox(
-                height: 100,
-                width: 100,
-                child: Image.network(
-                  "https://cdn.pixabay.com/photo/2021/05/19/14/31/dandelion-6266230_960_720.jpg",
-                  fit: BoxFit.cover,
-                ),
-              ),
-            ),
-          ),
-          Center(
-            child: Padding(
-              padding: const EdgeInsets.only(top: 20),
-              child: Container(
-                decoration: const BoxDecoration(
-                    border: Border(
-                        top: BorderSide(width: 1, color: Colors.grey),
-                        bottom: BorderSide(width: 1, color: Colors.grey))),
-                width: MediaQuery.of(context).size.width,
-                height: 50,
-                child: const Center(
-                    child: Text(
-                  "Username",
-                  style: TextStyle(fontSize: 20, color: Colors.black87),
-                )),
-              ),
-            ),
-          ),
-          Center(
-            child: Container(
-              decoration: const BoxDecoration(
-                  border:
-                      Border(bottom: BorderSide(width: 1, color: Colors.grey))),
-              width: MediaQuery.of(context).size.width,
-              height: 50,
-              child: const Center(
-                  child: Text(
-                "Full name",
-                style: TextStyle(fontSize: 20, color: Colors.black87),
-              )),
-            ),
-          ),
-          Center(
-            child: Container(
-              decoration: const BoxDecoration(
-                  border:
-                      Border(bottom: BorderSide(width: 1, color: Colors.grey))),
-              width: MediaQuery.of(context).size.width,
-              height: 50,
-              child: const Center(
-                  child: Text(
-                "Social Media Accounts",
-                style: TextStyle(fontSize: 20, color: Colors.black87),
-              )),
-            ),
-          ),
-          const Padding(
-            padding: EdgeInsets.only(top: 40, bottom: 10),
-            child: Center(
-                child: Text(
-              "My Previous Reservations",
-              style: TextStyle(
-                  fontSize: 20,
-                  color: Colors.black87,
-                  fontWeight: FontWeight.bold),
-            )),
-          ),
+          _profileImage(),
+          _profileInfo(context),
+          _previousReservationsText(),
           _showReservations()
         ],
       ),
+    );
+  }
+
+  Padding _profileInfo(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.only(top: 20),
+      child: Column(
+        children: const [
+          _UserInfoContainer(text: "Username"),
+          _UserInfoContainer(text: "Full Name"),
+          _UserInfoContainer(text: "Social Media Accounts"),
+        ],
+      ),
+    );
+  }
+
+  Center _profileImage() {
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(20),
+        child: SizedBox(
+          height: 100,
+          width: 100,
+          child: Image.network(
+            "https://cdn.pixabay.com/photo/2021/05/19/14/31/dandelion-6266230_960_720.jpg",
+            fit: BoxFit.cover,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _previousReservationsText() {
+    return const Padding(
+      padding: EdgeInsets.only(top: 40, bottom: 10),
+      child: Center(
+          child: Text(
+        "My Previous Reservations",
+        style: TextStyle(
+            fontSize: 20, color: Colors.black87, fontWeight: FontWeight.bold),
+      )),
     );
   }
 
@@ -137,97 +111,98 @@ class _ProfilePageState extends State<ProfilePage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                  width: MediaQuery.of(context).size.width - 30,
-                  height: 250,
-                  decoration: BoxDecoration(
-                      border: Border.all(width: 1, color: Colors.grey)),
-                  child: Image.network(
-                    photo,
-                    fit: BoxFit.fill,
-                  )),
+              _imageContainer(context, photo),
               const SizedBox(height: 40),
               Flexible(
-                child: Container(
-                  decoration: const BoxDecoration(
-                      border: Border(
-                          bottom: BorderSide(width: 1, color: Colors.grey))),
-                  width: MediaQuery.of(context).size.width,
-                  child: Row(
-                    children: const [
-                      Icon(Icons.person),
-                      SizedBox(width: 5),
-                      Flexible(
-                          child: Text(
-                              "Venue NameNameNameNameNameNameNameNameNameNameNameNameNameNameNameName")),
-                    ],
-                  ),
+                child: Column(
+                  children: const [
+                    _ReservationDetailContainer(
+                        iconData: Icons.person, text: "Venue Name"),
+                    SizedBox(height: 40),
+                    _ReservationDetailContainer(
+                        iconData: Icons.info, text: "Reservation Description"),
+                    SizedBox(height: 40),
+                    _ReservationDetailContainer(
+                        iconData: Icons.star_rate_sharp, text: "Your Rating"),
+                    SizedBox(height: 40),
+                    _ReservationDetailContainer(
+                        iconData: Icons.rate_review_rounded,
+                        text: "Your Comment"),
+                  ],
                 ),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Flexible(
-                child: Container(
-                    decoration: const BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(width: 1, color: Colors.grey))),
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
-                      children: const [
-                        Icon(Icons.info),
-                        SizedBox(width: 5),
-                        Flexible(
-                            child: Text(
-                                "Reservation DescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescriptionDescription"))
-                      ],
-                    )),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Flexible(
-                child: Container(
-                    decoration: const BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(width: 1, color: Colors.grey))),
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
-                      children: const [
-                        Icon(Icons.star_rate_sharp),
-                        SizedBox(width: 5),
-                        Flexible(child: Text("Your Rating"))
-                      ],
-                    )),
-              ),
-              const SizedBox(
-                height: 40,
-              ),
-              Flexible(
-                child: Container(
-                    decoration: const BoxDecoration(
-                        border: Border(
-                            bottom: BorderSide(width: 1, color: Colors.grey))),
-                    width: MediaQuery.of(context).size.width,
-                    child: Row(
-                      children: const [
-                        Icon(Icons.rate_review_rounded),
-                        SizedBox(width: 5),
-                        Flexible(
-                            child: Text(
-                                "Your CommentttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttCommentttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttCommenttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttttt"))
-                      ],
-                    )),
               )
             ],
           ),
-          actions: [
-            TextButton(
-                onPressed: () => Navigator.pop(context),
-                child: const Text("Back"))
-          ],
+          actions: [_backToProfilePageButton(context)],
         ),
       ),
+    );
+  }
+
+  Container _imageContainer(BuildContext context, photo) {
+    return Container(
+        width: MediaQuery.of(context).size.width - 30,
+        height: 250,
+        decoration:
+            BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
+        child: Image.network(
+          photo,
+          fit: BoxFit.fill,
+        ));
+  }
+
+  TextButton _backToProfilePageButton(BuildContext context) {
+    return TextButton(
+        onPressed: () => Navigator.pop(context), child: const Text("Back"));
+  }
+}
+
+class _ReservationDetailContainer extends StatelessWidget {
+  final IconData iconData;
+  final String text;
+
+  const _ReservationDetailContainer({
+    required this.iconData,
+    required this.text,
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+          border: Border(bottom: BorderSide(width: 1, color: Colors.grey))),
+      width: MediaQuery.of(context).size.width,
+      child: Row(
+        children: [
+          Icon(iconData),
+          const SizedBox(width: 5),
+          Flexible(child: Text(text)),
+        ],
+      ),
+    );
+  }
+}
+
+class _UserInfoContainer extends StatelessWidget {
+  final String text;
+
+  const _UserInfoContainer({required this.text, Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+          border: Border(
+              top: BorderSide(width: 1, color: Colors.grey),
+              bottom: BorderSide(width: 1, color: Colors.grey))),
+      width: MediaQuery.of(context).size.width,
+      height: 50,
+      child: Center(
+          child: Text(
+        text,
+        style: const TextStyle(fontSize: 20, color: Colors.black87),
+      )),
     );
   }
 }

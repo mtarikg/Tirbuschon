@@ -39,44 +39,54 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Tirbuschon"),
-        actions: [
-          IconButton(
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => SettingsPage()));
-              },
-              icon: Icon(Icons.settings))
-        ],
+        actions: [_settingsButton(context)],
       ),
-      body: PageView(
-        physics: const NeverScrollableScrollPhysics(),
-        onPageChanged: (index) {
-          setState(() {
-            _barIndex = index;
-          });
-        },
-        controller: _pageController,
-        children: const [
-          HomePage(),
-          SearchPage(),
-          ProfilePage(),
-        ],
-      ),
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _barIndex,
-        onTap: _onTapped,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: 'Search',
-          ),
-          BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
-        ],
-      ),
+      body: _body(),
+      bottomNavigationBar: _bottomNavigationBar(),
     );
+  }
+
+  BottomNavigationBar _bottomNavigationBar() {
+    return BottomNavigationBar(
+      currentIndex: _barIndex,
+      onTap: _onTapped,
+      items: const [
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: 'Home',
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: 'Search',
+        ),
+        BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
+      ],
+    );
+  }
+
+  PageView _body() {
+    return PageView(
+      physics: const NeverScrollableScrollPhysics(),
+      onPageChanged: (index) {
+        setState(() {
+          _barIndex = index;
+        });
+      },
+      controller: _pageController,
+      children: const [
+        HomePage(),
+        SearchPage(),
+        ProfilePage(),
+      ],
+    );
+  }
+
+  IconButton _settingsButton(BuildContext context) {
+    return IconButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (context) => const SettingsPage()));
+        },
+        icon: const Icon(Icons.settings));
   }
 }

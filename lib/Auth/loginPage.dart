@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Core/mainPage.dart';
 import '../services/authService.dart';
-import 'forgetPassword.dart';
+import 'forgotPassword.dart';
 import 'signUpPage.dart';
 
 class LoginPage extends StatefulWidget {
@@ -30,103 +30,121 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(
               height: 5,
             ),
-            Center(
-              child: Text(
-                "Tirbuschon",
-                style: TextStyle(
-                  fontSize: 42,
-                  color: Colors.blue[400],
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
-                ),
+            Text(
+              "Tirbuschon",
+              style: TextStyle(
+                fontSize: 42,
+                color: Colors.blue[400],
+                fontStyle: FontStyle.italic,
+                fontWeight: FontWeight.bold,
               ),
             ),
             Column(
               children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.mail),
-                      labelText: "Email",
-                      hintText: "Please enter your email",
-                    ),
-                    onSaved: (value) {
-                      email = value.toString();
-                    },
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: TextFormField(
-                    obscureText: true,
-                    decoration: const InputDecoration(
-                      prefixIcon: Icon(Icons.lock),
-                      labelText: "Password",
-                      hintText: "Please enter your password",
-                    ),
-                    onSaved: (value) {
-                      password = value.toString();
-                    },
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const ForgetPassword(),
-                      ),
-                    );
-                  },
-                  child: const Text(
-                    "Forget Password?",
-                    style: TextStyle(
-                      color: Colors.black54,
-                      fontSize: 15,
-                    ),
-                  ),
-                ),
+                _emailTextField(),
+                _passwordTextField(),
+                _forgotPasswordButton(context),
                 const SizedBox(
                   height: 10,
                 ),
-                Container(
-                  height: 50,
-                  width: MediaQuery.of(context).size.width - 10,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(30),
-                    border: Border.all(width: 1),
-                    color: Colors.blue,
-                  ),
-                  child: TextButton(
-                    onPressed: () {
-                      _loginWithEmailPassword();
-                    },
-                    child: const Text(
-                      "Login",
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 20,
-                      ),
-                    ),
-                  ),
-                ),
+                _loginButton(context),
               ],
             ),
-            TextButton(
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const SignUpPage()),
-                );
-              },
-              child: const Text(
-                "New User? Create Account?",
-                style: TextStyle(color: Colors.black87),
-              ),
-            ),
+            _newUserReminderButton(context),
           ],
         ),
+      ),
+    );
+  }
+
+  Container _loginButton(BuildContext context) {
+    return Container(
+      height: 50,
+      width: MediaQuery.of(context).size.width - 10,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(width: 1),
+        color: Colors.blue,
+      ),
+      child: TextButton(
+        onPressed: () {
+          _loginWithEmailPassword();
+        },
+        child: const Text(
+          "Login",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
+
+  Padding _passwordTextField() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        obscureText: true,
+        decoration: const InputDecoration(
+          prefixIcon: Icon(Icons.lock),
+          labelText: "Password",
+          hintText: "Please enter your password",
+        ),
+        onSaved: (value) {
+          password = value.toString();
+        },
+      ),
+    );
+  }
+
+  Padding _emailTextField() {
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        decoration: const InputDecoration(
+          prefixIcon: Icon(Icons.mail),
+          labelText: "Email",
+          hintText: "Please enter your email",
+        ),
+        onSaved: (value) {
+          email = value.toString();
+        },
+      ),
+    );
+  }
+
+  TextButton _forgotPasswordButton(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ForgotPassword(),
+          ),
+        );
+      },
+      child: const Text(
+        "Forgot Password?",
+        style: TextStyle(
+          color: Colors.black54,
+          fontSize: 15,
+        ),
+      ),
+    );
+  }
+
+  TextButton _newUserReminderButton(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignUpPage()),
+        );
+      },
+      child: const Text(
+        "New User? Create Account.",
+        style: TextStyle(color: Colors.black87),
       ),
     );
   }
@@ -152,7 +170,7 @@ class _LoginPageState extends State<LoginPage> {
         } else if (error.toString().contains('wrong-password')) {
           errorDetail = "The password is wrong.";
         } else {
-          errorDetail = "There is an error that we can not define.";
+          errorDetail = "Fields can not be empty.";
         }
 
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(
