@@ -17,31 +17,50 @@ class AuthService {
     return await _auth.signOut();
   }
 
-  Future<User?> createUser(String username, String fullName, String email,
-      String password, String phoneNumber, String role) async {
+  Future<String> createUser(String email, String password) async {
     final time = DateTime.now();
 
     var user = await _auth.createUserWithEmailAndPassword(
         email: email, password: password);
 
-    await _firestore
-        .collection(_usersCollection)
-        .doc(user.user?.uid ?? "")
-        .set({
-      'username': username,
-      'fullName': fullName,
+    var result = user.user;
+    var userId = result!.uid;
+
+    await _firestore.collection(_usersCollection).doc(userId).set({
       'email': email,
-      'password': password,
-      'phoneNumber': phoneNumber,
-      'role': role,
       'createdTime': time,
       'status': true,
     });
 
-    return user.user;
+    return userId;
   }
 
-  Future<UserCredential> signInWithGoogle() async {
+  Future<String> createGoogleUser(String email, String id) async {
+    final time = DateTime.now();
+
+    await _firestore.collection(_usersCollection).doc(id ?? "").set({
+      'email': email,
+      'createdTime': time,
+      'status': true,
+    });
+
+    return id;
+  }
+
+  Future<void> updateUser(String? id,
+      [String? username,
+      String? fullName,
+      String? phoneNumber,
+      String? role]) async {
+    await _firestore.collection(_usersCollection).doc(id).update({
+      'username': username,
+      'fullName': fullName,
+      'phoneNumber': phoneNumber,
+      'role': role,
+    });
+  }
+
+  Future<User?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication googleAuth =
         await googleUser!.authentication;
@@ -49,7 +68,8 @@ class AuthService {
     final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
 
-    return _auth.signInWithCredential(credential);
+    final result = await _auth.signInWithCredential(credential);
+    return result.user;
   }
 }
 

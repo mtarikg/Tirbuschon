@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'Auth/furtherInfoToSignUpPage.dart';
 import 'services/authService.dart';
 import 'Auth/loginPage.dart';
 import 'Auth/signUpPage.dart';
@@ -206,13 +207,32 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
-  void _loginWithGoogle() {
+  void _loginWithGoogle() async {
     final AuthService _authService = AuthService();
-    _authService.signInWithGoogle().then((value) {
-      return Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const MainPage()),
-          (route) => false);
+    final googleUser = await _authService.signInWithGoogle();
+
+    final String userId, email;
+    userId = googleUser!.uid;
+    email = googleUser.email!;
+
+    _authService.createGoogleUser(email, userId);
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => FurtherInfoToSignUpPage(id: userId)),
+    ).catchError((error) {
+      String errorDetail;
+      if (error.toString().contains('user-disabled')) {
+        errorDetail = "Email is invalid";
+      } else if (error.toString().contains('user-not-found')) {
+        errorDetail = "The user is not found.";
+      } else {
+        errorDetail = "There is an error that we can not define.$error";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(errorDetail.toString()),
+      ));
     });
   }
 }
