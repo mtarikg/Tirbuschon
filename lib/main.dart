@@ -1,9 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'direct.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/helper/navigator.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/menu_screen.dart';
 import 'package:tirbuschon_feng497/welcomePage.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,7 +20,9 @@ class MyApp extends StatefulWidget {
   _MyAppState createState() => _MyAppState();
 }
 
+
 class _MyAppState extends State<MyApp> {
+
   @override
   void initState() {
     super.initState();
@@ -34,7 +38,9 @@ class _MyAppState extends State<MyApp> {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home:  BottomNavigationBar1(),
+
+      home: const Direct(),
+      // WelcomePage(),
     );
   }
 }

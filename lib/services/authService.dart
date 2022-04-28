@@ -1,0 +1,83 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+
+class AuthService {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  Future<User?> signInWithEmail(String email, String password) async {
+    var user = await _auth.signInWithEmailAndPassword(
+        email: email, password: password);
+
+    return user.user;
+  }
+
+  Future signOut() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    if (await googleSignIn.isSignedIn()) {
+      googleSignIn.signOut();
+    }
+    return await _auth.signOut();
+  }
+
+  Future<String> createUser(String email, String password) async {
+    final time = DateTime.now();
+
+    var user = await _auth.createUserWithEmailAndPassword(
+        email: email, password: password);
+
+    var result = user.user;
+    var userId = result!.uid;
+
+    await _firestore.collection(_usersCollection).doc(userId).set({
+      'email': email,
+      'avatarURL': null,
+      'createdTime': time,
+      'status': true,
+    });
+
+    return userId;
+  }
+
+  Future<String> createGoogleUser(
+      String email, String id, String avatarURL) async {
+    final time = DateTime.now();
+
+    await _firestore.collection(_usersCollection).doc(id).set({
+      'email': email,
+      'avatarURL': avatarURL,
+      'createdTime': time,
+      'status': true,
+    });
+
+    return id;
+  }
+
+  Future<void> updateUser(String? id,
+      [String? username,
+      String? fullName,
+      String? phoneNumber,
+      String? role]) async {
+    await _firestore.collection(_usersCollection).doc(id).update({
+      'username': username,
+      'fullName': fullName,
+      'phoneNumber': phoneNumber,
+      'role': role,
+    });
+  }
+
+  Future<User?> signInWithGoogle() async {
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+    final GoogleSignInAuthentication googleAuth =
+        await googleUser!.authentication;
+
+    final credential = GoogleAuthProvider.credential(
+        accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
+
+    final result = await _auth.signInWithCredential(credential);
+    return result.user;
+  }
+}
+
+const String _usersCollection = "users";
