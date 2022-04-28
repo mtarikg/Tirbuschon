@@ -1,4 +1,6 @@
 import 'dart:ui';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -28,9 +30,8 @@ class _ProfilePageState extends State<ProfilePage> {
       padding: const EdgeInsets.only(top: 20),
       child: Column(
         children: const [
-          _UserInfoContainer(text: "Username"),
-          _UserInfoContainer(text: "Full Name"),
-          _UserInfoContainer(text: "Social Media Accounts"),
+          _UserInfoContainer(text: "fullName", boldOption: true),
+          _UserInfoContainer(text: "username", boldOption: false)
         ],
       ),
     );
@@ -43,10 +44,7 @@ class _ProfilePageState extends State<ProfilePage> {
         child: SizedBox(
           height: 100,
           width: 100,
-          child: Image.network(
-            "https://cdn.pixabay.com/photo/2021/05/19/14/31/dandelion-6266230_960_720.jpg",
-            fit: BoxFit.cover,
-          ),
+          child: _showProfileImage(),
         ),
       ),
     );
@@ -155,6 +153,17 @@ class _ProfilePageState extends State<ProfilePage> {
     return TextButton(
         onPressed: () => Navigator.pop(context), child: const Text("Back"));
   }
+
+  Widget _showProfileImage() {
+    var user = FirebaseAuth.instance.currentUser;
+    var photoURL = user?.photoURL;
+
+    if (photoURL == null) {
+      return Image.asset('assets/placeholder.jpg');
+    }
+
+    return Image.network(photoURL);
+  }
 }
 
 class _ReservationDetailContainer extends StatelessWidget {
@@ -186,8 +195,11 @@ class _ReservationDetailContainer extends StatelessWidget {
 
 class _UserInfoContainer extends StatelessWidget {
   final String text;
+  final bool boldOption;
 
-  const _UserInfoContainer({required this.text, Key? key}) : super(key: key);
+  const _UserInfoContainer(
+      {required this.text, required this.boldOption, Key? key})
+      : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -199,10 +211,51 @@ class _UserInfoContainer extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: 50,
       child: Center(
-          child: Text(
-        text,
-        style: const TextStyle(fontSize: 20, color: Colors.black87),
-      )),
+          child: _ProfileInfoFutureBuilder(text: text, boldOption: boldOption)),
     );
   }
+}
+
+class _ProfileInfoFutureBuilder extends StatelessWidget {
+  const _ProfileInfoFutureBuilder({
+    Key? key,
+    required this.text,
+    required this.boldOption,
+  }) : super(key: key);
+
+  final String text;
+  final bool boldOption;
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+        future: _getProfileInfo(text),
+        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+    return Text(
+      snapshot.data,
+      style: boldOption
+          ? const TextStyle(
+              fontSize: 20,
+              color: Colors.black87,
+              fontWeight: FontWeight.bold)
+          : const TextStyle(fontSize: 17, color: Colors.black87),
+    );
+        },
+      );
+  }
+}
+
+Future<String> _getProfileInfo(String text) async {
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  var user = FirebaseAuth.instance.currentUser;
+  var userID = user!.uid;
+  var result = await _firestore
+      .collection('users')
+      .doc(userID)
+      .get()
+      .then((value) => value.data()![text]);
+  var userData = result.toString();
+
+  return userData;
 }

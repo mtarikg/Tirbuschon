@@ -27,7 +27,6 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
           children: const [
             NavigatorButtonCard(text: "Change Username"),
             NavigatorButtonCard(text: "Change Full Name"),
-            NavigatorButtonCard(text: "Change Social Media Info"),
             NavigatorButtonCard(text: "Change Profile Image"),
           ],
         ));

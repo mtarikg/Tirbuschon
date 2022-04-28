@@ -14,6 +14,10 @@ class AuthService {
   }
 
   Future signOut() async {
+    final GoogleSignIn googleSignIn = GoogleSignIn();
+    if (await googleSignIn.isSignedIn()) {
+      googleSignIn.signOut();
+    }
     return await _auth.signOut();
   }
 
@@ -28,6 +32,7 @@ class AuthService {
 
     await _firestore.collection(_usersCollection).doc(userId).set({
       'email': email,
+      'avatarURL': null,
       'createdTime': time,
       'status': true,
     });
@@ -35,11 +40,13 @@ class AuthService {
     return userId;
   }
 
-  Future<String> createGoogleUser(String email, String id) async {
+  Future<String> createGoogleUser(
+      String email, String id, String avatarURL) async {
     final time = DateTime.now();
 
-    await _firestore.collection(_usersCollection).doc(id ?? "").set({
+    await _firestore.collection(_usersCollection).doc(id).set({
       'email': email,
+      'avatarURL': avatarURL,
       'createdTime': time,
       'status': true,
     });

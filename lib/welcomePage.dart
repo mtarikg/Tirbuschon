@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'Auth/furtherInfoToSignUpPage.dart';
 import 'services/authService.dart';
@@ -38,12 +39,12 @@ class _WelcomePageState extends State<WelcomePage> {
         const SizedBox(
           height: 10,
         ),
-        oAuthButtons(context),
+        _oAuthButtons(context),
       ],
     );
   }
 
-  Row oAuthButtons(BuildContext context) {
+  Row _oAuthButtons(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: <Widget>[
@@ -92,7 +93,7 @@ class _WelcomePageState extends State<WelcomePage> {
         child: Container(
           child: TextButton(
             onPressed: () {
-              _loginWithGoogle();
+              _signInWithGoogle();
             },
             child: const Text(
               "Sign in with Google",
@@ -207,32 +208,44 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
-  void _loginWithGoogle() async {
+  void _signInWithGoogle() async {
     final AuthService _authService = AuthService();
-    final googleUser = await _authService.signInWithGoogle();
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-    final String userId, email;
+    final googleUser = await _authService.signInWithGoogle();
+    final String userId, email, avatarURL;
     userId = googleUser!.uid;
     email = googleUser.email!;
+    avatarURL = googleUser.photoURL!;
 
-    _authService.createGoogleUser(email, userId);
+    var document = await _firestore.collection('users').doc(userId).get();
+    var userData = document.data();
+    if (userData != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainPage()),
+      );
+    } else {
+      _authService.createGoogleUser(email, userId, avatarURL);
 
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => FurtherInfoToSignUpPage(id: userId)),
-    ).catchError((error) {
-      String errorDetail;
-      if (error.toString().contains('user-disabled')) {
-        errorDetail = "Email is invalid";
-      } else if (error.toString().contains('user-not-found')) {
-        errorDetail = "The user is not found.";
-      } else {
-        errorDetail = "There is an error that we can not define.$error";
-      }
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => FurtherInfoToSignUpPage(id: userId)),
+      ).catchError((error) {
+        String errorDetail;
+        if (error.toString().contains('user-disabled')) {
+          errorDetail = "Email is invalid";
+        } else if (error.toString().contains('user-not-found')) {
+          errorDetail = "The user is not found.";
+        } else {
+          errorDetail = "There is an error that we can not define.$error";
+        }
 
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(errorDetail.toString()),
-      ));
-    });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(errorDetail.toString()),
+        ));
+      });
+    }
   }
 }

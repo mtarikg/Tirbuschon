@@ -153,11 +153,11 @@ class _SignUpPageState extends State<SignUpPage> {
 
       var uid = await _authService.createUser(email, password);
 
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-              builder: (context) => FurtherInfoToSignUpPage(id: uid)),
-          (route) => false).catchError((error) {
+      Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => FurtherInfoToSignUpPage(id: uid)))
+          .catchError((error) {
         String errorDetail;
         if (error.toString().contains('user-disabled')) {
           errorDetail = "Email is invalid";
