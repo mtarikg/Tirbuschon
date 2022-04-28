@@ -95,10 +95,10 @@ class _MainPageState extends State<MainPage> {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          const Text("Here is the main page.", style: TextStyle(fontSize: 20)),
-          const Text("Resizing images below",
+           Text("Here is the main page.", style: TextStyle(fontSize: 20)),
+           Text("Resizing images below",
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          const Text("Original Image",
+           Text("Original Image",
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
           Container(
             width: MediaQuery.of(context).size.width - 50,
@@ -107,7 +107,7 @@ class _MainPageState extends State<MainPage> {
             child: Image.network(
                 'https://internationalnewsagency.org/wp-content/uploads/2020/11/frozen-face-emoji.jpg'),
           ),
-          const Text("Image after resizing",
+           Text("Image after resizing",
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
           Container(
             width: MediaQuery.of(context).size.width - 20,
@@ -118,14 +118,10 @@ class _MainPageState extends State<MainPage> {
           ),
           const Text("Name hiding below",
               style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold)),
-          Text(
-              (fullName.replaceRange(
-                  2, fullName.length, ("*" * (fullName.length - 2)))),
-              style: const TextStyle(fontSize: 25, fontWeight: FontWeight.bold))
-        ],
+               ],
       )
           //_pages.elementAt(_barIndex),
-          ),
+          );
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _barIndex,
         onTap: _onTapped,
@@ -140,8 +136,7 @@ class _MainPageState extends State<MainPage> {
           ),
           BottomNavigationBarItem(icon: Icon(Icons.person), label: 'Profile')
         ],
-      ),
-    );
+      );
   }
 
   Image resizeImage(String urlLink) {

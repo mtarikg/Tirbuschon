@@ -1,10 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'direct.dart';
-import 'package:tirbuschon_feng497/Restaurant/Screens/helper/navigator.dart';
-import 'package:tirbuschon_feng497/Restaurant/Screens/menu_screen.dart';
-import 'package:tirbuschon_feng497/welcomePage.dart';
 
 
 void main() async {
@@ -16,6 +12,8 @@ void main() async {
 }
 
 class MyApp extends StatefulWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   _MyAppState createState() => _MyAppState();
 }
