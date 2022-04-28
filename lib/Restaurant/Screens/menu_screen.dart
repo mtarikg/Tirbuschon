@@ -13,10 +13,10 @@ class _MenuScreenState extends State<MenuScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text(
-          'Menu',
+          'Welcome',
           style: TextStyle(color: Colors.black87, fontFamily: 'Montserrat'),
         ),
-        actions: <Widget>[
+        /* actions: <Widget>[
           Padding(
             padding: EdgeInsets.only(
               right: MediaQuery.of(context).size.width * 0.04,
@@ -26,30 +26,61 @@ class _MenuScreenState extends State<MenuScreen> {
               color: Colors.black87,
             ),
           )
-        ],
+        ], */
         elevation: 0.0,
         backgroundColor: Colors.transparent,
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _createExercisesList(),
-            SizedBox(
-              height: 15,
+            _createMenuList(),
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    'Restaurant Activities',
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const Icon(
+                    Icons.edit,
+                    color: Colors.black54,
+                  ),
+                ],
+              ),
             ),
-            _createExercisesList(),
-            SizedBox(
-              height: 15,
-            ),
-            _createExercisesList(),
-            SizedBox(
-              height: 15,
-            ),
-            _createExercisesList(),
-            SizedBox(
-              height: 15,
-            ),
-            _createExercisesList(),
+            Padding(
+              padding: EdgeInsets.all(20),
+              child: Column(
+                children: <Widget>[
+                  makeProduct(
+                    image: 'assets/images/muzik.jpg',
+                    title: 'Actity 1',
+                    id: 1,
+                  ),
+                  makeProduct(
+                    image: 'assets/images/muzik.jpg',
+                    title: 'Actity 2',
+                    id: 1,
+                  ),
+                  makeProduct(
+                    image: 'assets/images/muzik.jpg',
+                    title: 'Actity 3',
+                    id: 1,
+                  ),
+                  makeProduct(
+                    image: 'assets/images/muzik.jpg',
+                    title: 'Actity 4',
+                    id: 1,
+                  ),
+                ],
+              ),
+            )
           ],
         ),
       ),
@@ -60,12 +91,21 @@ class _MenuScreenState extends State<MenuScreen> {
 Widget makeProduct({
   image,
   title,
+  id,
 }) {
+  late double height1, weight1;
+  if (id == 0) {
+    height1 = 400;
+    weight1 = 200;
+  } else if(id == 1) {
+      height1 = 200;
+      weight1 = 400;
+    };
   return InkWell(
     onTap: () {},
     child: Container(
-        height: 400,
-        width: 200,
+        height: height1,
+        width: weight1,
         margin: EdgeInsets.only(bottom: 20),
         decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
@@ -77,14 +117,6 @@ Widget makeProduct({
             //crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: <Widget>[
-              Align(
-                alignment: Alignment.bottomRight,
-                child: Icon(
-                  Icons.delete,
-                  color: Colors.white.withOpacity(0.2),
-                  size: 30,
-                ),
-              ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.end,
@@ -106,27 +138,38 @@ Widget makeProduct({
   );
 }
 
-Widget _createExercisesList() {
+Widget _createMenuList() {
   List categories = [
-    'Soups ',
-    'Salads ',
-    'Wraps',
-    'Pasta',
-    'Meat ',
-    'Fish',
+    'Menu ',
   ];
   return Column(
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
-        child: Text(
-          categories[0],
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-          ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              categories[0],
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            InkWell(
+              onTap: () {},
+              child: Text(
+                'See all',
+                style: TextStyle(
+                  color: Colors.black54,
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
       const SizedBox(height: 15),
@@ -138,27 +181,32 @@ Widget _createExercisesList() {
             const SizedBox(width: 20),
             makeProduct(
               image: 'assets/images/exapmleFood.jpg',
-              title: 'Soup',
+              title: 'Fish',
+              id: 0,
             ),
             const SizedBox(width: 20),
             makeProduct(
               image: 'assets/images/exapmleFood.jpg',
-              title: 'Soup',
+              title: 'Fish',
+              id: 0,
             ),
             const SizedBox(width: 20),
             makeProduct(
               image: 'assets/images/exapmleFood.jpg',
-              title: 'Soup',
+              title: 'Fish',
+              id: 0,
             ),
             const SizedBox(width: 20),
             makeProduct(
               image: 'assets/images/exapmleFood.jpg',
-              title: 'Soup',
+              title: 'Fish',
+              id: 0,
             ),
             const SizedBox(width: 20),
             makeProduct(
               image: 'assets/images/exapmleFood.jpg',
-              title: 'Soup',
+              title: 'Fish',
+              id: 0,
             ),
             const SizedBox(width: 20),
           ],
