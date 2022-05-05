@@ -1,13 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Restaurant/Screens/helper/navigator.dart';
+import 'Restaurant/Screens/helper/navigator.dart';
+import 'direct.dart';
 import 'Auth/furtherInfoToSignUpPage.dart';
 import 'services/authService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'Auth/loginPage.dart';
 import 'Auth/signUpPage.dart';
-import 'Core/mainPage.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -204,7 +204,7 @@ class _WelcomePageState extends State<WelcomePage> {
     if (userData != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
+        MaterialPageRoute(builder: (context) => const Direct()),
       );
     } else {
       _authService.createGoogleUser(email, userId, avatarURL);
