@@ -6,6 +6,8 @@ import 'package:tirbuschon_feng497/Restaurant/Screens/reservations_screen.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/review_screen.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
+//BOTTOM_NAVIGATION BAR
+
 class BottomNavigationBar1 extends StatelessWidget {
   const BottomNavigationBar1({Key? key}) : super(key: key);
 
@@ -18,9 +20,9 @@ class BottomNavigationBar1 extends StatelessWidget {
           children: <Widget>[
             MenuScreen(),
             PhotographsScreen(),
-            ReservationScreen(),
-            ReviewScreen(user: '', rate: '', comment: '',),
-            ProfileScreen(),
+            ReservationScreen(capasity: 0, time: DateTime.now(), orders: [], userId: 0,),
+            ReviewScreen(user: '', rate: 0, comment: '',),
+            ProfileScreen(address: '', name: '', phone: '', reservationCapasity: 0, capasity: 0,),
           ],
         ),
         bottomNavigationBar: Material(

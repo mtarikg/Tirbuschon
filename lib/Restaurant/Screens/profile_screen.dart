@@ -1,19 +1,40 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Restaurant/Screens/edit_profile_screen.dart';
 import 'package:tirbuschon_feng497/palette.dart';
-import 'package:firebase_storage/firebase_storage.dart';
-import 'package:flutter/foundation.dart';
-import 'package:firebase_core/firebase_core.dart';
-import 'package:path/path.dart' as path;
-import 'package:image_picker/image_picker.dart';
 
 class ProfileScreen extends StatefulWidget {
-  ProfileScreen({Key? key}) : super(key: key);
+  final String address;
+  final String phone;
+  final int capasity;
+  final int reservationCapasity;
+  final String name;
+
+  ProfileScreen({
+    Key? key,
+    required this.capasity,
+    required this.address,
+    required this.phone,
+    required this.reservationCapasity,
+    required this.name,
+  }) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
 
+//Venue name in docs should be passed authomatically
+//line 33 will be updated
+
 class _ProfileScreenState extends State<ProfileScreen> {
+  //retrieve data from database
+  final CollectionReference collectionReference = FirebaseFirestore.instance
+      .collection('Venues')
+      .doc('Venue Name')
+      .collection('Profile Information');
+
+  late TextEditingController _controller;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,159 +48,193 @@ class _ProfileScreenState extends State<ProfileScreen> {
             padding: EdgeInsets.only(
               right: MediaQuery.of(context).size.width * 0.04,
             ),
-            child: Icon(
-              Icons.error_outline_sharp,
-              color: Colors.black87,
+            child: InkWell(
+              onTap: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => SettingsPage(
+                              address: '',
+                              capasity: 0,
+                              name: '',
+                              phone: '',
+                              reservationCapasity: 0,
+                            )));
+              },
+              child: Icon(
+                Icons.edit,
+                color: Colors.black87,
+              ),
             ),
           )
         ],
         elevation: 0.0,
         backgroundColor: Colors.transparent,
       ),
-      body: ListView(
-        children: <Widget>[
-          Stack(
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(
-                  top: MediaQuery.of(context).size.width * 0.05,
-                ),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: Container(
-                    height: 150.0,
-                    width: 150.0,
-                    decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(50.0),
-                        image: DecorationImage(
-                            image: AssetImage('assets/images/example.jpg'),
-                            fit: BoxFit.cover)),
-                  ),
-                ),
-              ),
-            ],
+      body: Container(
+        padding: EdgeInsets.symmetric(vertical: 10),
+        child: Column(
+          children: [
+            Expanded(
+                child: StreamBuilder(
+              stream: collectionReference.snapshots(),
+              builder: (BuildContext context,
+                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                if (snapshot.hasData) {
+                  return ListView(
+                    children: snapshot.data!.docs
+                        .map((e) => Column(
+                              children: [
+                                ListTile(
+                                  title: restaurantProfileWidget(
+                                    address: e['Address'],
+                                    capasity: e['Capasity'],
+                                    phone: e['Phone'],
+                                    reservationCapasity:
+                                        e['Reservation Capasity'],
+                                    name: e['Venue Name'],
+                                  ),
+                                ),
+                              ],
+                            ))
+                        .toList(),
+                  );
+                }
+                return Center(
+                  child: CircularProgressIndicator(),
+                );
+              },
+            ))
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget restaurantProfileWidget(
+      {address, capasity, phone, reservationCapasity, name}) {
+    return Column(
+      children: <Widget>[
+        Padding(
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).size.width * 0.05,
           ),
-          Column(
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Container(
+              height: 150.0,
+              width: 150.0,
+              decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(50.0),
+                  image: DecorationImage(
+                      image: AssetImage('assets/images/example.jpg'),
+                      fit: BoxFit.cover)),
+            ),
+          ),
+        ),
+        Column(
+          children: <Widget>[
+            SizedBox(
+              height: MediaQuery.of(context).size.width * 0.04,
+            ),
+            Text(
+              name,
+              style: TextStyle(
+                  fontFamily: 'Montserrat', fontSize: 20.0, color: primaryDark),
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.width * 0.04,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                Icon(
+                  Icons.location_on,
+                  color: Colors.grey,
+                ),
+                Text(
+                  address,
+                  style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 14.0,
+                      color: primaryDark),
+                ),
+              ],
+            ),
+            SizedBox(
+              height: MediaQuery.of(context).size.width * 0.04,
+            ),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.phone,
+                  color: Colors.grey,
+                ),
+                Text(
+                  phone,
+                  style: TextStyle(
+                      fontFamily: 'Montserrat',
+                      fontSize: 14.0,
+                      color: primaryDark),
+                ),
+              ],
+            ),
+          ],
+        ),
+        SizedBox(
+          height: MediaQuery.of(context).size.width * 0.05,
+        ),
+        Container(
+          height: 80.0,
+          width: double.infinity,
+          color: Colors.grey.withOpacity(0.05),
+          padding: EdgeInsets.only(
+            top: MediaQuery.of(context).size.width * 0.05,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: <Widget>[
-              SizedBox(
-                height: MediaQuery.of(context).size.width * 0.04,
-              ),
-              Text(
-                'Example Restaurant',
-                style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 20.0,
-                    color: primaryDark),
-              ),
-              SizedBox(
-                height: MediaQuery.of(context).size.width * 0.04,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
+              Column(
                 children: <Widget>[
-                  Icon(
-                    Icons.location_on,
-                    color: Colors.grey,
-                  ),
                   Text(
-                    'Location',
+                    'Restaurant Capasity',
                     style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 14.0,
                         color: primaryDark),
-                  )
+                  ),
+                  Text(
+                    capasity.toString(),
+                    style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 14.0,
+                        color: Colors.red),
+                  ),
                 ],
-              )
+              ),
+              Column(
+                children: <Widget>[
+                  Text(
+                    'Reservation Capasity',
+                    style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 14.0,
+                        color: primaryDark),
+                  ),
+                  Text(
+                    reservationCapasity.toString(),
+                    style: TextStyle(
+                        fontFamily: 'Montserrat',
+                        fontSize: 14.0,
+                        color: Colors.red),
+                  ),
+                ],
+              ),
             ],
           ),
-          SizedBox(
-            height: MediaQuery.of(context).size.width * 0.05,
-          ),
-          Container(
-            height: 80.0,
-            width: double.infinity,
-            color: Colors.grey.withOpacity(0.05),
-            padding: EdgeInsets.only(
-              top: MediaQuery.of(context).size.width * 0.05,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: <Widget>[
-                Column(
-                  children: <Widget>[
-                    Text(
-                      '1500',
-                      style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14.0,
-                          color: Colors.red),
-                    ),
-                    Text(
-                      'Reviews',
-                      style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14.0,
-                          color: primaryDark),
-                    )
-                  ],
-                ),
-                Column(
-                  children: <Widget>[
-                    Text(
-                      '50',
-                      style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14.0,
-                          color: Colors.red),
-                    ),
-                    Text(
-                      'Following',
-                      style: TextStyle(
-                          fontFamily: 'Montserrat',
-                          fontSize: 14.0,
-                          color: primaryDark),
-                    )
-                  ],
-                ),
-              ],
-            ),
-          ),
-          SizedBox(
-            height: MediaQuery.of(context).size.width * 0.05,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              Text(
-                'Contact Info',
-                style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 18.0,
-                    color: primaryDark),
-              ),
-              Text(
-                '0232-567-22-22',
-                style: TextStyle(
-                    fontFamily: 'Montserrat',
-                    fontSize: 18.0,
-                    color: primaryDark),
-              ),
-
-              Icon(
-              Icons.edit,
-              color: primaryDark,
-            ),
-            ],
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }
-
-
-
-
-
-
-

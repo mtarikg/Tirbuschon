@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Restaurant/Screens/see_all_menu_screen.dart';
 
 class MenuScreen extends StatefulWidget {
   MenuScreen({Key? key}) : super(key: key);
@@ -33,7 +34,7 @@ class _MenuScreenState extends State<MenuScreen> {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _createMenuList(),
+            _createMenuList(context),
             Padding(
               padding: const EdgeInsets.all(20.0),
               child: Row(
@@ -138,7 +139,7 @@ Widget makeProduct({
   );
 }
 
-Widget _createMenuList() {
+Widget _createMenuList(BuildContext context) {
   List categories = [
     'Menu ',
   ];
@@ -159,7 +160,13 @@ Widget _createMenuList() {
               ),
             ),
             InkWell(
-              onTap: () {},
+              /* onTap: () {
+                Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => ListMenu(menuType: '',))); 
+                
+              },*/
               child: Text(
                 'See all',
                 style: TextStyle(
