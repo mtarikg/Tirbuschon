@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Core/mainPage.dart';
+import '../direct.dart';
 import '../services/authService.dart';
 import 'loginPage.dart';
 
@@ -211,7 +212,7 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
           .then((value) {
         Navigator.pushAndRemoveUntil(
             context,
-            MaterialPageRoute(builder: (context) => const MainPage()),
+            MaterialPageRoute(builder: (context) => const Direct()),
             (route) => false);
       }).catchError((error) {
         ScaffoldMessenger.of(context).showSnackBar(SnackBar(

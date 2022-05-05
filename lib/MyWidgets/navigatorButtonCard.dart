@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/welcomePage.dart';
 
 import '../Core/mainPage.dart';
+import '../services/authService.dart';
 
 class NavigatorButtonCard extends StatelessWidget {
   final String text;
@@ -126,6 +127,7 @@ _changeProfileImage() {}
 
 _deleteAccount(BuildContext context) {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final AuthService _authService = AuthService();
 
   showDialog(
           context: context,
@@ -138,6 +140,7 @@ _deleteAccount(BuildContext context) {
                     onPressed: () {
                       var user = FirebaseAuth.instance.currentUser;
                       var userID = user!.uid;
+                      _authService.signOut();
                       _firestore.collection('users').doc(userID).delete();
                       user.delete();
                       Navigator.of(context).pop();

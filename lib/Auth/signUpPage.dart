@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Core/mainPage.dart';
 import '../services/authService.dart';
 import 'furtherInfoToSignUpPage.dart';
 import 'loginPage.dart';
@@ -21,102 +20,29 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         title: const Text("Sign Up"),
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(height: 5),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-      
-                  _tirbuschonText(),
-                  const SizedBox(height: 10),
-                  Column(
-                    children: [
-                      /* _emailTextField(),
-                      _passwordTextField(),
-                      const SizedBox(height: 10),
-                      _signUpButton(context), */
-                    ],),
-      
-                   const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person),
-                        labelText: "Name",
-                        hintText: "Please enter your name",
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.mail),
-                        labelText: "Email",
-                        hintText: "Please enter your email",
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: TextField(
-                      obscureText: true,
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.lock),
-                        labelText: "Password",
-                        hintText: "Please enter your password",
-                      ),
-                    ),
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.all(10.0),
-                    child: TextField(
-                      decoration: InputDecoration(
-                        prefixIcon: Icon(Icons.person),
-                        labelText: "Phone number",
-                        hintText: "Please enter your mobile phone number",
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  Container(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width - 10,
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(30),
-                      border: Border.all(width: 1),
-                      color: Colors.blue,
-                    ),
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const MainPage()),
-                        );
-                      },
-                      child: const Text(
-                        "Sign Up",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 20,
-                        ),
-                      ),
-                    ),
-      
-                  ),
-                ],
-              ),
-              _alreadySignedUpReminderButton(context),
-            ],
-          ),
+      body: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            const SizedBox(height: 5),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _tirbuschonText(),
+                const SizedBox(height: 10),
+                Column(
+                  children: [
+                    _emailTextField(),
+                    _passwordTextField(),
+                    const SizedBox(height: 10),
+                    _signUpButton(context),
+                  ],
+                ),
+              ],
+            ),
+            _alreadySignedUpReminderButton(context),
+          ],
         ),
       ),
     );
@@ -215,7 +141,7 @@ class _SignUpPageState extends State<SignUpPage> {
           MaterialPageRoute(builder: (context) => const LoginPage()),
         );
       },
-      child: const Text("Already have an account? Please Login!"),
+      child: const Text("Signed Up Before? Login Instead."),
     );
   }
 
@@ -228,9 +154,9 @@ class _SignUpPageState extends State<SignUpPage> {
       var uid = await _authService.createUser(email, password);
 
       Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => FurtherInfoToSignUpPage(id: uid)))
+          context,
+          MaterialPageRoute(
+              builder: (context) => FurtherInfoToSignUpPage(id: uid)))
           .catchError((error) {
         String errorDetail;
         if (error.toString().contains('user-disabled')) {

@@ -1,14 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Restaurant/Screens/helper/navigator.dart';
+import 'Restaurant/Screens/helper/navigator.dart';
+import 'direct.dart';
 import 'Auth/furtherInfoToSignUpPage.dart';
 import 'services/authService.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'Auth/loginPage.dart';
 import 'Auth/signUpPage.dart';
-import 'Core/mainPage.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -70,9 +69,7 @@ class _WelcomePageState extends State<WelcomePage> {
             ),
           ),
           _mottoText(),
-          const SizedBox(
-            height: 15,
-          ),
+          const SizedBox(height: 15),
           Column(
             children: [
               Container(
@@ -100,9 +97,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   borderRadius: BorderRadius.circular(45),
                 ),
               ),
-              const SizedBox(
-                height: 30,
-              ),
+              const SizedBox(height: 30),
               Container(
                 height: 50,
                 width: MediaQuery.of(context).size.width - 50,
@@ -128,9 +123,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   borderRadius: BorderRadius.circular(45),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
@@ -141,11 +134,6 @@ class _WelcomePageState extends State<WelcomePage> {
                               text: "Sign up with Google", onPressed: () async {
                         try {
                           _signInWithGoogle();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MainPage()),
-                          );
                         } catch (e) {
                           if (e is FirebaseAuthException) {
                             print(e.message!);
@@ -165,32 +153,33 @@ class _WelcomePageState extends State<WelcomePage> {
                       ),
                     ),
                   ),
-                  SizedBox(height: 40,),
+                  const SizedBox(height: 40),
                   Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width - 50,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const BottomNavigationBar1()),
-                    );
-                  },
-                  child: const Text(
-                    "Venue Login",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
+                    height: 50,
+                    width: MediaQuery.of(context).size.width - 50,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const BottomNavigationBar1()),
+                        );
+                      },
+                      child: const Text(
+                        "Venue Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 110, 20, 229),
+                      borderRadius: BorderRadius.circular(45),
                     ),
                   ),
-                ),
-                decoration: BoxDecoration(
-                  color: Color.fromARGB(255, 110, 20, 229),
-                  borderRadius: BorderRadius.circular(45),
-                ),
-              ),
                 ],
               ),
             ],
@@ -215,7 +204,7 @@ class _WelcomePageState extends State<WelcomePage> {
     if (userData != null) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MainPage()),
+        MaterialPageRoute(builder: (context) => const Direct()),
       );
     } else {
       _authService.createGoogleUser(email, userId, avatarURL);
@@ -238,49 +227,6 @@ class _WelcomePageState extends State<WelcomePage> {
           content: Text(errorDetail.toString()),
         ));
       });
-    }
-    final FirebaseAuth _auth = FirebaseAuth.instance;
-    final GoogleSignIn _googleSignIn = GoogleSignIn();
-
-    Future<String?> signInwithGoogle() async {
-      try {
-        final GoogleSignInAccount? googleSignInAccount =
-            await _googleSignIn.signIn();
-        final GoogleSignInAuthentication googleSignInAuthentication =
-            await googleSignInAccount!.authentication;
-        final AuthCredential credential = GoogleAuthProvider.credential(
-          accessToken: googleSignInAuthentication.accessToken,
-          idToken: googleSignInAuthentication.idToken,
-        );
-        await _auth.signInWithCredential(credential);
-      } on FirebaseAuthException catch (e) {
-        print(e.message);
-        throw e;
-      }
-    }
-
-    Future<void> signOutFromGoogle() async {
-      await _googleSignIn.signOut();
-      await _auth.signOut();
-    }
-
-    void showMessage(String message) {
-      showDialog(
-          context: context,
-          builder: (BuildContext context) {
-            return AlertDialog(
-              title: Text("Error"),
-              content: Text(message),
-              actions: [
-                TextButton(
-                  child: Text("Ok"),
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                )
-              ],
-            );
-          });
     }
   }
 }
