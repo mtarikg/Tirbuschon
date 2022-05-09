@@ -40,8 +40,8 @@ class _MenuScreenState extends State<MenuScreen> {
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  Text(
-                    'Restaurant Activities',
+                  const Text(
+                    'Planned Activities',
                     style: TextStyle(
                       color: Colors.black,
                       fontSize: 18,

@@ -1,14 +1,14 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Admin/sign_up/page/sign_up_page.dart';
+import 'Restaurant/Screens/helper/navigator.dart';
+import 'direct.dart';
+import 'Auth/furtherInfoToSignUpPage.dart';
+import 'services/authService.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:flutter/services.dart';
 import 'Auth/loginPage.dart';
 import 'Auth/signUpPage.dart';
-import 'Auth/FirebaseService.dart';
-import 'Core/mainPage.dart';
 
 class WelcomePage extends StatefulWidget {
   const WelcomePage({Key? key}) : super(key: key);
@@ -29,40 +29,48 @@ class _WelcomePageState extends State<WelcomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          Container(
-            alignment: Alignment.center,
-            child: Column(
-              children: const [
-                SizedBox(height: 50),
-                Text(
-                  "Welcome",
-                  style: TextStyle(
-                    color: Colors.green,
-                    fontSize: 50,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  "Tirbuschon",
-                  style: TextStyle(
-                    color: Colors.blue,
-                    fontSize: 20,
-                  ),
-                ),
-              ],
+          _welcomeTextContainer(),
+        ],
+      ),
+    );
+  }
+
+  Padding _mottoText() {
+    return const Padding(
+      padding: EdgeInsets.all(15.0),
+      child: Text(
+        "Making reservations with Tirbuschon is easy peasy!",
+        style: TextStyle(
+          color: Colors.grey,
+          fontSize: 20,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Container _welcomeTextContainer() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        children: [
+          const Text(
+            "Welcome",
+            style: TextStyle(
+              color: Colors.green,
+              fontSize: 30,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(15.0),
-            child: Text(
-              "Making reservations with Tirbuschon is easy peasy!",
-              textAlign: TextAlign.center,
-              style: TextStyle(
-                color: Colors.grey,
-                fontSize: 20,
-              ),
+          const Text(
+            "Tirbuschon",
+            style: TextStyle(
+              color: Colors.blue,
+              fontSize: 50,
             ),
           ),
+          _mottoText(),
+          const SizedBox(height: 15),
           Column(
             children: [
               Container(
@@ -90,9 +98,7 @@ class _WelcomePageState extends State<WelcomePage> {
                   borderRadius: BorderRadius.circular(45),
                 ),
               ),
-              const SizedBox(
-                height: 50,
-              ),
+              const SizedBox(height: 30),
               Container(
                 height: 50,
                 width: MediaQuery.of(context).size.width - 50,
@@ -118,46 +124,87 @@ class _WelcomePageState extends State<WelcomePage> {
                   borderRadius: BorderRadius.circular(45),
                 ),
               ),
-              const SizedBox(
-                height: 10,
-              ),
+              const SizedBox(height: 10),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
                   Padding(
                       padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                       child: Expanded(
-                          child: Container(
-                              child: SignInButton(Buttons.Google,
-                                  text: "Sign up with Google",
-                                  onPressed: () async {
+                          child: SignInButton(Buttons.Google,
+                              text: "Sign up with Google", onPressed: () async {
                         try {
-                          await signInwithGoogle();
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MainPage()),
-                          );
+                          _signInWithGoogle();
                         } catch (e) {
                           if (e is FirebaseAuthException) {
-                            showMessage(e.message!);
+                            print(e.message!);
                           }
-                          ;
                         }
-                      })))),
+                      }))),
                   const SizedBox(width: 5),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                     child: Expanded(
-                      child: Container(
-                        child: SignInButton(
-                          Buttons.Facebook,
-                          text: "Sign up with Facebook",
-                          onPressed: () {
-                            // signInWithFacebook();
-                          },
+                      child: SignInButton(
+                        Buttons.Facebook,
+                        text: "Sign up with Facebook",
+                        onPressed: () {
+                          // signInWithFacebook();
+                        },
+                      ),
+                    ),
+                  ),
+                  const SizedBox(height: 40),
+                  Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width - 50,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const BottomNavigationBar1()),
+                        );
+                      },
+                      child: const Text(
+                        "Venue Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 110, 20, 229),
+                      borderRadius: BorderRadius.circular(45),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width - 50,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AdminSignUpPage()),
+                        );
+                      },
+                      child: const Text(
+                        "Admin Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 110, 20, 229),
+                      borderRadius: BorderRadius.circular(45),
                     ),
                   ),
                 ],
@@ -169,47 +216,44 @@ class _WelcomePageState extends State<WelcomePage> {
     );
   }
 
-  static final FirebaseAuth _auth = FirebaseAuth.instance;
-  static final GoogleSignIn _googleSignIn = GoogleSignIn();
+  void _signInWithGoogle() async {
+    final AuthService _authService = AuthService();
+    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  static Future<String?> signInwithGoogle() async {
-    try {
-      final GoogleSignInAccount? googleSignInAccount =
-          await _googleSignIn.signIn();
-      final GoogleSignInAuthentication googleSignInAuthentication =
-          await googleSignInAccount!.authentication;
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        accessToken: googleSignInAuthentication.accessToken,
-        idToken: googleSignInAuthentication.idToken,
+    final googleUser = await _authService.signInWithGoogle();
+    final String userId, email, avatarURL;
+    userId = googleUser!.uid;
+    email = googleUser.email!;
+    avatarURL = googleUser.photoURL!;
+
+    var document = await _firestore.collection('users').doc(userId).get();
+    var userData = document.data();
+    if (userData != null) {
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Direct()),
       );
-      await _auth.signInWithCredential(credential);
-    } on FirebaseAuthException catch (e) {
-      print(e.message);
-      throw e;
+    } else {
+      _authService.createGoogleUser(email, userId, avatarURL);
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => FurtherInfoToSignUpPage(id: userId)),
+      ).catchError((error) {
+        String errorDetail;
+        if (error.toString().contains('user-disabled')) {
+          errorDetail = "Email is invalid";
+        } else if (error.toString().contains('user-not-found')) {
+          errorDetail = "The user is not found.";
+        } else {
+          errorDetail = "There is an error that we can not define.$error";
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(errorDetail.toString()),
+        ));
+      });
     }
-  }
-
-  Future<void> signOutFromGoogle() async {
-    await _googleSignIn.signOut();
-    await _auth.signOut();
-  }
-
-  void showMessage(String message) {
-    showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: Text("Error"),
-            content: Text(message),
-            actions: [
-              TextButton(
-                child: Text("Ok"),
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-              )
-            ],
-          );
-        });
   }
 }
