@@ -50,7 +50,7 @@ class Grid extends StatelessWidget {
           child: Container(
             child: FittedBox(
               fit: BoxFit.fill,
-              child: (item!.image == null) ? Image.asset('assets/no-preview.png') : (isAsset ? Image.asset(item.image.toString()) : Image.network(item.image.toString())),
+              child: (item.image == null) ? Image.asset('assets/no-preview.png') : (isAsset ? Image.asset(item.image.toString()) : Image.network(item.image.toString())),
             ),
           ),
           footer: Container(

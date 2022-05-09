@@ -23,36 +23,38 @@ class _LoginPageState extends State<LoginPage> {
         title: const Text("Login"),
       ),
       backgroundColor: Colors.grey[100],
-      body: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SizedBox(
-              height: 5,
-            ),
-            Text(
-              "Tirbuschon",
-              style: TextStyle(
-                fontSize: 42,
-                color: Colors.blue[400],
-                fontStyle: FontStyle.italic,
-                fontWeight: FontWeight.bold,
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(
+                height: 5,
               ),
-            ),
-            Column(
-              children: [
-                _emailTextField(),
-                _passwordTextField(),
-                _forgotPasswordButton(context),
-                const SizedBox(
-                  height: 10,
+              Text(
+                "Tirbuschon",
+                style: TextStyle(
+                  fontSize: 42,
+                  color: Colors.blue[400],
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
                 ),
-                _loginButton(context),
-              ],
-            ),
-            _newUserReminderButton(context),
-          ],
+              ),
+              Column(
+                children: [
+                  _emailTextField(),
+                  _passwordTextField(),
+                  _forgotPasswordButton(context),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  _loginButton(context),
+                ],
+              ),
+              _newUserReminderButton(context),
+            ],
+          ),
         ),
       ),
     );
