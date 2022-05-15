@@ -16,7 +16,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       body: ListView(
         children: [
-          _profileImage(),
+          const _UserProfileImageContainer(),
           _profileInfo(context),
           _previousReservationsText(),
           _showReservations()
@@ -33,19 +33,6 @@ class _ProfilePageState extends State<ProfilePage> {
           _UserInfoContainer(text: "fullName", boldOption: true),
           _UserInfoContainer(text: "username", boldOption: false)
         ],
-      ),
-    );
-  }
-
-  Center _profileImage() {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(20),
-        child: SizedBox(
-          height: 100,
-          width: 100,
-          child: _showProfileImage(),
-        ),
       ),
     );
   }
@@ -153,17 +140,6 @@ class _ProfilePageState extends State<ProfilePage> {
     return TextButton(
         onPressed: () => Navigator.pop(context), child: const Text("Back"));
   }
-
-  Widget _showProfileImage() {
-    var user = FirebaseAuth.instance.currentUser;
-    var photoURL = user?.photoURL;
-
-    if (photoURL == null) {
-      return Image.asset('assets/placeholder.jpg');
-    }
-
-    return Image.network(photoURL);
-  }
 }
 
 class _ReservationDetailContainer extends StatelessWidget {
@@ -189,6 +165,45 @@ class _ReservationDetailContainer extends StatelessWidget {
           Flexible(child: Text(text)),
         ],
       ),
+    );
+  }
+}
+
+class _UserProfileImageContainer extends StatelessWidget {
+  const _UserProfileImageContainer({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder(
+      future: _getProfileInfo("avatarURL"),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        if (snapshot.data == "null") {
+          return Center(
+              child: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                child: Center(
+                  child: Image.asset('assets/placeholder.jpg'),
+                )),
+          ));
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(top: 20.0),
+          child: SizedBox(
+              width: MediaQuery.of(context).size.width,
+              height: 150,
+              child: Center(
+                child: Image.network(snapshot.data),
+              )),
+        );
+      },
     );
   }
 }
@@ -229,19 +244,21 @@ class _ProfileInfoFutureBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-        future: _getProfileInfo(text),
-        builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-    return Text(
-      snapshot.data,
-      style: boldOption
-          ? const TextStyle(
-              fontSize: 20,
-              color: Colors.black87,
-              fontWeight: FontWeight.bold)
-          : const TextStyle(fontSize: 17, color: Colors.black87),
+      future: _getProfileInfo(text),
+      builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+        return !snapshot.hasData
+            ? const Center(child: CircularProgressIndicator())
+            : Text(
+                snapshot.data,
+                style: boldOption
+                    ? const TextStyle(
+                        fontSize: 20,
+                        color: Colors.black87,
+                        fontWeight: FontWeight.bold)
+                    : const TextStyle(fontSize: 17, color: Colors.black87),
+              );
+      },
     );
-        },
-      );
   }
 }
 
@@ -251,10 +268,11 @@ Future<String> _getProfileInfo(String text) async {
   var user = FirebaseAuth.instance.currentUser;
   var userID = user!.uid;
   var result = await _firestore
-      .collection('users')
+      .collection('Users')
       .doc(userID)
+      .collection('profileInfo')
       .get()
-      .then((value) => value.data()![text]);
+      .then((value) => value.docs[0].data()[text]);
   var userData = result.toString();
 
   return userData;

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/MyWidgets/navigatorButtonCard.dart';
+import '../../MyWidgets/navigatorButtonCard.dart';
 
 class UpdateProfilePage extends StatefulWidget {
   const UpdateProfilePage({Key? key}) : super(key: key);
@@ -27,6 +27,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
           children: const [
             NavigatorButtonCard(text: "Change Username"),
             NavigatorButtonCard(text: "Change Full Name"),
+            NavigatorButtonCard(text: "Change Phone Number"),
             NavigatorButtonCard(text: "Change Profile Image"),
           ],
         ));

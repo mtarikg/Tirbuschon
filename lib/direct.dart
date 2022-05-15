@@ -2,7 +2,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'Core/mainPage.dart';
-import 'Restaurant/Screens/helper/navigator.dart';
 import 'welcomePage.dart';
 
 class Direct extends StatelessWidget {
@@ -18,11 +17,7 @@ class Direct extends StatelessWidget {
         }
 
         if (snapshot.hasData) {
-          if (snapshot.toString().contains('Customer')) {
-            return const MainPage();
-          } else if (snapshot.toString().contains('Venue Owner')) {
-            return const BottomNavigationBar1();
-          }
+          return const MainPage();
         }
 
         return const WelcomePage();
@@ -38,9 +33,8 @@ class Direct extends StatelessWidget {
     var currentUserID = currentUser!.uid;
 
     var document =
-        await _firestore.collection('users').doc(currentUserID).get();
-    var userData = document.data();
+    _firestore.collection('Users').doc(currentUserID);
 
-    return userData!['role'];
+    return document.id;
   }
 }

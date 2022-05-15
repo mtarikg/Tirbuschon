@@ -17,30 +17,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          _emailTextField(),
+          const EmailTextWidget(),
           const SizedBox(
             height: 20,
           ),
           _resetPasswordButton(context),
         ],
       ),
-    );
-  }
-
-  Column _emailTextField() {
-    return Column(
-      children: const [
-        Padding(
-          padding: EdgeInsets.all(10.0),
-          child: TextField(
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.mail),
-              labelText: "Email",
-              hintText: "Please enter your email",
-            ),
-          ),
-        ),
-      ],
     );
   }
 
@@ -64,6 +47,30 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class EmailTextWidget extends StatelessWidget {
+  const EmailTextWidget({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: const [
+        Padding(
+          padding: EdgeInsets.all(10.0),
+          child: TextField(
+            decoration: InputDecoration(
+              prefixIcon: Icon(Icons.mail),
+              labelText: "Email",
+              hintText: "Please enter your email",
+            ),
+          ),
+        ),
+      ],
     );
   }
 }

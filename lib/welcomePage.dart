@@ -141,20 +141,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           }
                         }
                       }))),
-                  const SizedBox(width: 5),
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                    child: Expanded(
-                      child: SignInButton(
-                        Buttons.Facebook,
-                        text: "Sign up with Facebook",
-                        onPressed: () {
-                          // signInWithFacebook();
-                        },
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
+                  const SizedBox(height: 30),
                   Container(
                     height: 50,
                     width: MediaQuery.of(context).size.width - 50,
@@ -226,9 +213,15 @@ class _WelcomePageState extends State<WelcomePage> {
     email = googleUser.email!;
     avatarURL = googleUser.photoURL!;
 
-    var document = await _firestore.collection('users').doc(userId).get();
-    var userData = document.data();
-    if (userData != null) {
+    var collectionExist = false;
+    await _firestore
+        .collection('Users')
+        .doc(userId)
+        .collection("profileInfo")
+        .get()
+        .then((value) => collectionExist = value.docs.isNotEmpty);
+
+    if (collectionExist) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Direct()),
