@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../direct.dart';
 import '../services/authService.dart';
 import 'loginPage.dart';
@@ -104,6 +105,9 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextFormField(
+        initialValue: '+905',
+        keyboardType: TextInputType.number,
+        inputFormatters: [LengthLimitingTextInputFormatter(13)],
         decoration: const InputDecoration(
           prefixIcon: Icon(Icons.phone),
           labelText: "Phone number",
@@ -112,8 +116,10 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
         validator: (value) {
           if (value!.isEmpty) {
             return "Phone number field can not be empty!";
-          } else if (value.trim().length < 4) {
-            return "Phone number should be at least 4 chars without country code.";
+          } else if (value.trim().length != 13) {
+            return "Phone number should consist of 10 digits with the country code.";
+          } else if (value.contains(RegExp(r'[,. ]'))){
+            return "Only numbers";
           }
           return null;
         },

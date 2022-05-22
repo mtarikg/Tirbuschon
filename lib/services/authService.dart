@@ -95,6 +95,10 @@ class AuthService {
     final result = await _auth.signInWithCredential(credential);
     return result.user;
   }
+
+  Future<void> resetPassword(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
 }
 
 const String _usersCollection = "Users";
