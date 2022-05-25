@@ -46,6 +46,7 @@ dependencies:
   material_design_icons_flutter: ^5.0.6595
   provider: ^6.0.2
   flutter_bloc: ^8.0.1
+  async: ^2.8.2
 
 
 

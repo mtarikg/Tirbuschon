@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/Auth/loginPage.dart';
@@ -26,11 +27,19 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   //retrieve data from database
-  
-  final CollectionReference collectionReference = FirebaseFirestore.instance
-      .collection('Venues')
-      .doc('Venue Name')
-      .collection('Profile Information');
+
+  late String uid1;
+  late CollectionReference collectionReference;
+
+  @override
+  void initState() {
+    String userId = FirebaseAuth.instance.currentUser!.uid.toString();
+    collectionReference = FirebaseFirestore.instance
+        .collection('Venues')
+        .doc(userId)
+        .collection('Profile Information');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

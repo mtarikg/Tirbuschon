@@ -2,10 +2,10 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tirbuschon_feng497/Admin/sign_up/bloc/sign_up_bloc.dart';
-import 'package:tirbuschon_feng497/Admin/sign_up/common_widgets/admin_button.dart';
-import 'package:tirbuschon_feng497/Admin/sign_up/common_widgets/admin_loading.dart';
-import 'package:tirbuschon_feng497/Admin/sign_up/common_widgets/admin_text_field.dart';
+import 'package:tirbuschon_feng497/Admin/add_new_restaurant/bloc/rest_add_bloc.dart';
+import 'package:tirbuschon_feng497/Admin/add_new_restaurant/common_widgets/admin_button.dart';
+import 'package:tirbuschon_feng497/Admin/add_new_restaurant/common_widgets/admin_loading.dart';
+import 'package:tirbuschon_feng497/Admin/add_new_restaurant/common_widgets/admin_text_field.dart';
 import 'package:tirbuschon_feng497/Admin/validation_service.dart';
 
 class SignUpContent extends StatelessWidget {

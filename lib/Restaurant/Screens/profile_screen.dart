@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/edit_profile_screen.dart';
 import 'package:tirbuschon_feng497/palette.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String address;
@@ -27,11 +28,31 @@ class ProfileScreen extends StatefulWidget {
 //line 33 will be updated
 
 class _ProfileScreenState extends State<ProfileScreen> {
+  late CollectionReference collectionReference;
+  late var photoUrl;
+
+  @override
+  void initState() {
+    String userId = FirebaseAuth.instance.currentUser!.uid.toString();
+    photoUrl = FirebaseAuth.instance.currentUser!.photoURL ?? null;
+    collectionReference = FirebaseFirestore.instance
+        .collection('Venues')
+        .doc(userId)
+        .collection('Profile Information');
+    super.initState();
+  }
+/* 
+  Future<void> getVenueData() async {
+    String userId = await FirebaseAuth.instance.currentUser!.uid;
+    //final User? user = FirebaseAuth.instance.currentUser;
+
+    /* setState(() {
+      uid1 = user!.uid;
+    }); */
+    
+  } */
+
   //retrieve data from database
-  final CollectionReference collectionReference = FirebaseFirestore.instance
-      .collection('Venues')
-      .doc('Venue Name')
-      .collection('Profile Information');
 
   late TextEditingController _controller;
 
@@ -121,15 +142,25 @@ class _ProfileScreenState extends State<ProfileScreen> {
           ),
           child: Align(
             alignment: Alignment.topCenter,
-            child: Container(
-              height: 150.0,
-              width: 150.0,
-              decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(50.0),
-                  image: DecorationImage(
-                      image: AssetImage('assets/images/example.jpg'),
-                      fit: BoxFit.cover)),
-            ),
+            child: GestureDetector(
+                child: photoUrl == null
+                    ? CircleAvatar(
+                      backgroundColor: Colors.white,
+                        backgroundImage: AssetImage(
+                          'assets/resticon.png',
+                        ),
+                        radius: 60)
+                    : CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: ClipOval(
+                            child: FadeInImage.assetNetwork(
+                                placeholder: 'assets/resticon.png',
+                                image: photoUrl,
+                                fit: BoxFit.cover,
+                                width: 200,
+                                height: 120)),
+                        radius: 25),
+                onTap: () {}),
           ),
         ),
         Column(

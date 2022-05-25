@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Admin/sign_up/page/sign_up_page.dart';
+import 'package:tirbuschon_feng497/Admin/add_new_restaurant/page/rest_add_page.dart';
+import 'package:tirbuschon_feng497/Admin/adm_bottom_navigation/admin_navigator.dart';
 import 'Restaurant/Screens/helper/navigator.dart';
 import 'direct.dart';
 import 'Auth/furtherInfoToSignUpPage.dart';
@@ -152,59 +153,6 @@ class _WelcomePageState extends State<WelcomePage> {
                           // signInWithFacebook();
                         },
                       ),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-                  Container(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width - 50,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const BottomNavigationBar1()),
-                        );
-                      },
-                      child: const Text(
-                        "Venue Login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 110, 20, 229),
-                      borderRadius: BorderRadius.circular(45),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width - 50,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AdminSignUpPage()),
-                        );
-                      },
-                      child: const Text(
-                        "Admin Login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 110, 20, 229),
-                      borderRadius: BorderRadius.circular(45),
                     ),
                   ),
                 ],

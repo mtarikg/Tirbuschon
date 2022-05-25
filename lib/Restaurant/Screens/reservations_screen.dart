@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
@@ -25,10 +26,18 @@ class ReservationScreen extends StatefulWidget {
 
 class _ReservationScreenState extends State<ReservationScreen> {
   //retrieve data from database
-  final CollectionReference collectionReference = FirebaseFirestore.instance
-      .collection('Venues')
-      .doc('Venue Name')
-      .collection('Reservations');
+
+  late CollectionReference collectionReference;
+
+  @override
+  void initState() {
+    String userId = FirebaseAuth.instance.currentUser!.uid.toString();
+    collectionReference = FirebaseFirestore.instance
+        .collection('Venues')
+        .doc(userId)
+        .collection('Reservations');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,7 +51,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
         backgroundColor: Colors.transparent,
       ),
       body: Container(
-        padding: EdgeInsets.symmetric( vertical: 10),
+        padding: EdgeInsets.symmetric(vertical: 10),
         child: Column(
           children: [
             Expanded(
@@ -97,7 +106,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Row(
-      
               children: <Widget>[
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,

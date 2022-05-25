@@ -1,4 +1,4 @@
-part of 'sign_up_bloc.dart';
+part of 'rest_add_bloc.dart';
 
 @immutable
 abstract class SignupEvent {}
