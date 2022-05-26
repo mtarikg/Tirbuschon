@@ -26,7 +26,7 @@ class AdminAuthService {
       'Venue Name': name,
       'Address': address,
       'Phone': phone,
-      'Reservation Capacity': reservationCapasity,
+      'Reservation Capasity': reservationCapasity,
       'Capasity': capasity,
     });
     final User user = result.user!;

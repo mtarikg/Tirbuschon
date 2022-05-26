@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
@@ -19,10 +20,18 @@ class ReviewScreen extends StatefulWidget {
 //line 23 will be updated
 class _ReviewScreenState extends State<ReviewScreen> {
   //retrieve data from database
-  final CollectionReference collectionReference = FirebaseFirestore.instance
-      .collection('Venues')
-      .doc('Venue Name')
-      .collection("Reviews");
+
+  late CollectionReference collectionReference;
+
+  @override
+  void initState() {
+    String userId = FirebaseAuth.instance.currentUser!.uid.toString();
+    collectionReference = FirebaseFirestore.instance
+        .collection('Venues')
+        .doc(userId)
+        .collection('Reviews');
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {

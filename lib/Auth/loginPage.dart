@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Admin/adm_bottom_navigation/admin_navigator.dart';
+import 'package:tirbuschon_feng497/Restaurant/Screens/helper/navigator.dart';
+import '../Core/mainPage.dart';
 import '../direct.dart';
 import '../services/authService.dart';
 import 'forgotPassword.dart';
@@ -161,10 +164,30 @@ class _LoginPageState extends State<LoginPage> {
       _formState.save();
 
       await _authService.signInWithEmail(email, password).then((value) {
-        Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const Direct()),
-            (route) => false);
+        //venue email validation
+        var venueValidation =
+            RegExp("\b*@tirbuschon\.com\$", caseSensitive: false);
+        //admin email validation
+        var adminValidation =
+            RegExp("\b*@tirbuschon\.admin.com\$", caseSensitive: false);
+        if (venueValidation.hasMatch(email)) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const BottomNavigationBar1()),
+              (route) => false);
+        } else if (adminValidation.hasMatch(email)) {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const AdminBottomNavBar()),
+              (route) => false);
+        } else {
+          Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const Direct()),
+              (route) => false);
+        }
       }).catchError((error) {
         String errorDetail;
         if (error.toString().contains('invalid-email')) {

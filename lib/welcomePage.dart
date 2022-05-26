@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Admin/sign_up/page/sign_up_page.dart';
+import 'package:tirbuschon_feng497/Admin/add_new_restaurant/page/rest_add_page.dart';
+import 'package:tirbuschon_feng497/Admin/adm_bottom_navigation/admin_navigator.dart';
 import 'Restaurant/Screens/helper/navigator.dart';
 import 'direct.dart';
 import 'Auth/furtherInfoToSignUpPage.dart';
@@ -141,6 +142,19 @@ class _WelcomePageState extends State<WelcomePage> {
                           }
                         }
                       }))),
+
+                  const SizedBox(width: 5),
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                    child: Expanded(
+                      child: SignInButton(
+                        Buttons.Facebook,
+                        text: "Sign up with Facebook",
+                        onPressed: () {
+                          // signInWithFacebook();
+                        },
+                      ),
+                    ),
                   const SizedBox(height: 30),
                   Container(
                     height: 50,

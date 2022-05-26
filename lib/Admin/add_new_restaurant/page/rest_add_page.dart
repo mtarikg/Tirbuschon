@@ -1,8 +1,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:tirbuschon_feng497/Admin/sign_up/bloc/sign_up_bloc.dart';
-import 'package:tirbuschon_feng497/Admin/sign_up/widget/sign_up_content.dart';
+import 'package:tirbuschon_feng497/Admin/add_new_restaurant/bloc/rest_add_bloc.dart';
+import 'package:tirbuschon_feng497/Admin/add_new_restaurant/widget/rest_add_content.dart';
 
 class AdminSignUpPage extends StatelessWidget {
   @override

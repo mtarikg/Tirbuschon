@@ -1,12 +1,12 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Admin/auth_service.dart';
+import 'package:tirbuschon_feng497/Admin/rest_add_service.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:tirbuschon_feng497/Admin/validation_service.dart';
 
-part 'sign_up_event.dart';
-part 'sign_up_state.dart';
+part 'rest_add_event.dart';
+part 'rest_add_state.dart';
 
 class SignUpBloc extends Bloc<SignupEvent, SignUpState> {
   SignUpBloc() : super(SignupInitial()) {
