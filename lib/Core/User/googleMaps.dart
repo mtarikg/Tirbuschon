@@ -223,13 +223,13 @@ class _MapViewState extends State<MapView> {
         ),
       );
 
-      // Calculating the distance between the start and the end positions
+      //Calculating the distance between the start and the end positions
       // with a straight path, without considering any route
       // double distanceInMeters = await Geolocator().bearingBetween(
-      //   startCoordinates.latitude,
-      //   startCoordinates.longitude,
-      //   destinationCoordinates.latitude,
-      //   destinationCoordinates.longitude,
+      // startCoordinates.latitude,
+      // startCoordinates.longitude,
+      // destinationCoordinates.latitude,
+      // destinationCoordinates.longitude,
       // );
 
       await _createPolylines(startLatitude, startLongitude, destinationLatitude,
