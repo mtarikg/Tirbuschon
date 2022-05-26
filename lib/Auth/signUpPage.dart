@@ -109,6 +109,7 @@ class _SignUpPageState extends State<SignUpPage> {
   }
 
   Padding _confirmPasswordTextField() {
+    var passwordValue = passwordKey.currentState?.value;
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextFormField(
@@ -120,19 +121,21 @@ class _SignUpPageState extends State<SignUpPage> {
         ),
         validator: (value) {
           String? errorDetail;
-          var passwordValue = passwordKey.currentState!.value;
+
           if (value != passwordValue) {
             errorDetail = "Passwords should be matched!";
           }
 
           errorDetail != null
               ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-            content: Text(errorDetail.toString()),
-          ))
+                  content: Text(errorDetail.toString()),
+                ))
               : null;
         },
         onSaved: (value) {
-          password = value.toString();
+          if (value == passwordValue) {
+            password = value.toString();
+          }
         },
       ),
     );

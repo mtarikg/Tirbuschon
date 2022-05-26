@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'User/googleMaps.dart';
 import 'User/settingsPage.dart';
 import 'User/homePage.dart';
 import 'User/profilePage.dart';
@@ -73,9 +74,9 @@ class _MainPageState extends State<MainPage> {
         });
       },
       controller: _pageController,
-      children: const [
+      children: [
         HomePage(),
-        SearchPage(),
+        MapView(),
         ProfilePage(),
       ],
     );
