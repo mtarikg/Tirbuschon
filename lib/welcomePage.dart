@@ -142,6 +142,7 @@ class _WelcomePageState extends State<WelcomePage> {
                           }
                         }
                       }))),
+
                   const SizedBox(width: 5),
                   Padding(
                     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -153,6 +154,58 @@ class _WelcomePageState extends State<WelcomePage> {
                           // signInWithFacebook();
                         },
                       ),
+                    ),
+                  const SizedBox(height: 30),
+                  Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width - 50,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) =>
+                                  const BottomNavigationBar1()),
+                        );
+                      },
+                      child: const Text(
+                        "Venue Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 110, 20, 229),
+                      borderRadius: BorderRadius.circular(45),
+                    ),
+                  ),
+                  const SizedBox(height: 10),
+                  Container(
+                    height: 50,
+                    width: MediaQuery.of(context).size.width - 50,
+                    child: TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => AdminSignUpPage()),
+                        );
+                      },
+                      child: const Text(
+                        "Admin Login",
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    decoration: BoxDecoration(
+                      color: Color.fromARGB(255, 110, 20, 229),
+                      borderRadius: BorderRadius.circular(45),
                     ),
                   ),
                 ],
@@ -174,9 +227,15 @@ class _WelcomePageState extends State<WelcomePage> {
     email = googleUser.email!;
     avatarURL = googleUser.photoURL!;
 
-    var document = await _firestore.collection('users').doc(userId).get();
-    var userData = document.data();
-    if (userData != null) {
+    var collectionExist = false;
+    await _firestore
+        .collection('Users')
+        .doc(userId)
+        .collection("profileInfo")
+        .get()
+        .then((value) => collectionExist = value.docs.isNotEmpty);
+
+    if (collectionExist) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Direct()),

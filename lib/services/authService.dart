@@ -30,7 +30,12 @@ class AuthService {
     var result = user.user;
     var userId = result!.uid;
 
-    await _firestore.collection(_usersCollection).doc(userId).set({
+    await _firestore
+        .collection(_usersCollection)
+        .doc(userId)
+        .collection('profileInfo')
+        .doc()
+        .set({
       'email': email,
       'avatarURL': null,
       'createdTime': time,
@@ -44,7 +49,12 @@ class AuthService {
       String email, String id, String avatarURL) async {
     final time = DateTime.now();
 
-    await _firestore.collection(_usersCollection).doc(id).set({
+    await _firestore
+        .collection(_usersCollection)
+        .doc(id)
+        .collection('profileInfo')
+        .doc()
+        .set({
       'email': email,
       'avatarURL': avatarURL,
       'createdTime': time,
@@ -55,15 +65,22 @@ class AuthService {
   }
 
   Future<void> updateUser(String? id,
-      [String? username,
-      String? fullName,
-      String? phoneNumber,
-      String? role]) async {
-    await _firestore.collection(_usersCollection).doc(id).update({
+      [String? username, String? fullName, String? phoneNumber]) async {
+    var profileInfoDoc = _firestore
+        .collection(_usersCollection)
+        .doc(id)
+        .collection('profileInfo')
+        .get();
+    var docID = await profileInfoDoc.then((value) => value.docs[0].id);
+    await _firestore
+        .collection(_usersCollection)
+        .doc(id)
+        .collection('profileInfo')
+        .doc(docID)
+        .update({
       'username': username,
       'fullName': fullName,
       'phoneNumber': phoneNumber,
-      'role': role,
     });
   }
 
@@ -78,6 +95,10 @@ class AuthService {
     final result = await _auth.signInWithCredential(credential);
     return result.user;
   }
+
+  Future<void> resetPassword(String email) async {
+    await _auth.sendPasswordResetEmail(email: email);
+  }
 }
 
-const String _usersCollection = "users";
+const String _usersCollection = "Users";

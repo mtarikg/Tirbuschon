@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Core/User/uploadProfileImagePage.dart';
 import 'package:tirbuschon_feng497/welcomePage.dart';
 
 import '../Core/mainPage.dart';
@@ -29,8 +30,10 @@ class NavigatorButtonCard extends StatelessWidget {
                 _changeUsername(context);
               } else if (text.toLowerCase().contains("full name")) {
                 _changeFullName(context);
+              } else if (text.toLowerCase().contains("phone number")) {
+                _changePhoneNumber(context);
               } else if (text.toLowerCase().contains("profile image")) {
-                _changeProfileImage();
+                _changeProfileImage(context);
               } else if (text.toLowerCase().contains("delete account")) {
                 _deleteAccount(context);
               }
@@ -47,6 +50,46 @@ class NavigatorButtonCard extends StatelessWidget {
   }
 }
 
+_changePhoneNumber(BuildContext context) {
+  FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  TextEditingController _textFieldController = TextEditingController();
+
+  showDialog(
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("New Phone number"),
+        content: TextField(
+          onChanged: (value) async {
+            var user = FirebaseAuth.instance.currentUser;
+            var userID = user!.uid;
+
+            var document = await _firestore
+                .collection('Users')
+                .doc(userID)
+                .collection('profileInfo')
+                .get();
+            document.docs[0].reference.update({'phoneNumber': value});
+          },
+          controller: _textFieldController,
+          decoration: const InputDecoration(
+              hintText: "Please enter your new phone number."),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text("OK"))
+        ],
+      );
+    },
+  ).then((value) => Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const MainPage()),
+      (route) => false));
+}
+
 _changeUsername(BuildContext context) {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
   TextEditingController _textFieldController = TextEditingController();
@@ -61,10 +104,12 @@ _changeUsername(BuildContext context) {
             var user = FirebaseAuth.instance.currentUser;
             var userID = user!.uid;
 
-            await _firestore
-                .collection('users')
+            var document = await _firestore
+                .collection('Users')
                 .doc(userID)
-                .update({'username': value});
+                .collection('profileInfo')
+                .get();
+            document.docs[0].reference.update({'username': value});
           },
           controller: _textFieldController,
           decoration: const InputDecoration(
@@ -99,10 +144,12 @@ _changeFullName(BuildContext context) {
             var user = FirebaseAuth.instance.currentUser;
             var userID = user!.uid;
 
-            await _firestore
-                .collection('users')
+            var document = await _firestore
+                .collection('Users')
                 .doc(userID)
-                .update({'fullName': value});
+                .collection('profileInfo')
+                .get();
+            document.docs[0].reference.update({'fullName': value});
           },
           controller: _textFieldController,
           decoration: const InputDecoration(
@@ -123,7 +170,12 @@ _changeFullName(BuildContext context) {
       (route) => false));
 }
 
-_changeProfileImage() {}
+_changeProfileImage(BuildContext context) {
+  Navigator.push(
+      context,
+      MaterialPageRoute(
+          builder: (context) => const UploadProfileImage()));
+}
 
 _deleteAccount(BuildContext context) {
   FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -141,7 +193,7 @@ _deleteAccount(BuildContext context) {
                       var user = FirebaseAuth.instance.currentUser;
                       var userID = user!.uid;
                       _authService.signOut();
-                      _firestore.collection('users').doc(userID).delete();
+                      deleteUserCollection(_firestore, userID, "profileInfo");
                       user.delete();
                       Navigator.of(context).pop();
                     },
@@ -153,4 +205,18 @@ _deleteAccount(BuildContext context) {
           context,
           MaterialPageRoute(builder: (context) => const WelcomePage()),
           (route) => false));
+}
+
+void deleteUserCollection(
+    FirebaseFirestore _firestore, String userID, String subCollection) {
+  _firestore
+      .collection('Users')
+      .doc(userID)
+      .collection(subCollection)
+      .get()
+      .then((QuerySnapshot querySnapshot) {
+    for (var doc in querySnapshot.docs) {
+      doc.reference.delete();
+    }
+  });
 }

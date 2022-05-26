@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../Core/mainPage.dart';
+import 'package:flutter/services.dart';
 import '../direct.dart';
 import '../services/authService.dart';
 import 'loginPage.dart';
@@ -16,10 +16,7 @@ class FurtherInfoToSignUpPage extends StatefulWidget {
 
 class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
   final _formKey = GlobalKey<FormState>();
-
   late String username, fullName, phoneNumber;
-  String roleValue = 'Customer';
-  var roles = ['Customer', 'Venue Owner'];
 
   @override
   Widget build(BuildContext context) {
@@ -43,7 +40,6 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
                     _fullNameTextField(),
                     _usernameTextField(),
                     _phoneNumberTextField(),
-                    _userTypeDropdown(),
                     const SizedBox(height: 10),
                     _completeButton(context),
                   ],
@@ -109,6 +105,9 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextFormField(
+        initialValue: '+905',
+        keyboardType: TextInputType.number,
+        inputFormatters: [LengthLimitingTextInputFormatter(13)],
         decoration: const InputDecoration(
           prefixIcon: Icon(Icons.phone),
           labelText: "Phone number",
@@ -117,8 +116,10 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
         validator: (value) {
           if (value!.isEmpty) {
             return "Phone number field can not be empty!";
-          } else if (value.trim().length < 4) {
-            return "Phone number should be at least 4 chars without country code.";
+          } else if (value.trim().length != 13) {
+            return "Phone number should consist of 10 digits with the country code.";
+          } else if (value.contains(RegExp(r'[,. ]'))){
+            return "Only numbers";
           }
           return null;
         },
@@ -153,30 +154,6 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
     );
   }
 
-  Padding _userTypeDropdown() {
-    return Padding(
-        padding: const EdgeInsets.all(10.0),
-        child: DropdownButtonFormField(
-          decoration: const InputDecoration(
-              contentPadding: EdgeInsets.all(10.0),
-              labelText: 'Select your user type',
-              labelStyle: TextStyle(fontSize: 20)),
-          value: roleValue,
-          icon: const Icon(Icons.keyboard_arrow_down),
-          items: roles.map((String roles) {
-            return DropdownMenuItem(
-              value: roles,
-              child: Text(roles),
-            );
-          }).toList(),
-          onChanged: (String? selectedValue) {
-            setState(() {
-              roleValue = selectedValue!;
-            });
-          },
-        ));
-  }
-
   Text _tirbuschonText() {
     return Text(
       "Tirbuschon",
@@ -208,7 +185,7 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
       _formState.save();
 
       await _authService
-          .updateUser(widget.id, username, fullName, phoneNumber, roleValue)
+          .updateUser(widget.id, username, fullName, phoneNumber)
           .then((value) {
         Navigator.pushAndRemoveUntil(
             context,
