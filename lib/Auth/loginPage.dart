@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Admin/adm_bottom_navigation/admin_navigator.dart';
-import 'package:tirbuschon_feng497/Restaurant/Screens/helper/navigator.dart';
-import '../Core/mainPage.dart';
+import '../Admin/adm_bottom_navigation/admin_navigator.dart';
+import '../Restaurant/Screens/helper/navigator.dart';
 import '../direct.dart';
 import '../services/authService.dart';
 import 'forgotPassword.dart';
@@ -16,67 +15,125 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  late String email, password;
+  late String email = "", password = "";
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        child: Scaffold(
-          appBar: AppBar(
-            title: const Text("Login"),
-          ),
-          backgroundColor: Colors.grey[100],
-          body: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox(
-                  height: 5,
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Login"),
+        ),
+        backgroundColor: Colors.grey[100],
+        body: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(height: 5),
+              Text(
+                "Tirbuschon",
+                style: TextStyle(
+                  fontSize: 42,
+                  color: Colors.blue[400],
+                  fontStyle: FontStyle.italic,
+                  fontWeight: FontWeight.bold,
                 ),
-                Text(
-                  "Tirbuschon",
-                  style: TextStyle(
-                    fontSize: 42,
-                    color: Colors.blue[400],
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
+              ),
+              Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: _emailTextField(),
                   ),
-                ),
-                Column(
-                  children: [
-                    _emailTextField(),
-                    _passwordTextField(),
-                    _forgotPasswordButton(context),
-                    const SizedBox(
-                      height: 10,
-                    ),
-                    _loginButton(context),
-                  ],
-                ),
-                _newUserReminderButton(context),
-              ],
-            ),
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: _passwordTextField(),
+                  ),
+                  ForgotPasswordButton(context: context),
+                  const SizedBox(height: 10),
+                  LoginButton(
+                      email: email,
+                      password: password,
+                      context: context,
+                      formKey: _formKey),
+                ],
+              ),
+              NewUserReminderButton(context: context),
+            ],
           ),
         ),
       ),
     );
   }
 
-  Container _loginButton(BuildContext context) {
+  TextField _passwordTextField() {
+    return TextField(
+      obscureText: true,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.lock),
+        labelText: "Password",
+        hintText: "Please enter your password",
+      ),
+      onChanged: (value) {
+        setState(() {
+          password = value.toString();
+        });
+      },
+    );
+  }
+
+  TextField _emailTextField() {
+    return TextField(
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.mail),
+        labelText: "Email",
+        hintText: "Please enter your email",
+      ),
+      onChanged: (value) {
+        setState(() {
+          email = value.toString();
+        });
+      },
+    );
+  }
+}
+
+class LoginButton extends StatelessWidget {
+  const LoginButton({
+    Key? key,
+    required this.email,
+    required this.password,
+    required this.context,
+    required this.formKey,
+  }) : super(key: key);
+
+  final String email;
+  final String password;
+  final BuildContext context;
+  final GlobalKey<FormState> formKey;
+
+  @override
+  Widget build(BuildContext context) {
+    var isEmailNull = email.isEmpty;
+    var isPasswordNull = password.isEmpty;
+    var result = isEmailNull || isPasswordNull;
+    var isDisabled = result;
+
     return Container(
       height: 50,
       width: MediaQuery.of(context).size.width - 10,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         border: Border.all(width: 1),
-        color: Colors.blue,
+        color: isDisabled ? Colors.grey : Colors.blue,
       ),
       child: TextButton(
-        onPressed: () {
-          _loginWithEmailPassword();
-        },
+        onPressed: isDisabled
+            ? null
+            : () {
+                _loginWithEmailPassword();
+              },
         child: const Text(
           "Login",
           style: TextStyle(
@@ -88,78 +145,10 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 
-  Padding _passwordTextField() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        obscureText: true,
-        decoration: const InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          labelText: "Password",
-          hintText: "Please enter your password",
-        ),
-        onSaved: (value) {
-          password = value.toString();
-        },
-      ),
-    );
-  }
-
-  Padding _emailTextField() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        decoration: const InputDecoration(
-          prefixIcon: Icon(Icons.mail),
-          labelText: "Email",
-          hintText: "Please enter your email",
-        ),
-        onSaved: (value) {
-          email = value.toString();
-        },
-      ),
-    );
-  }
-
-  TextButton _forgotPasswordButton(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const ForgotPassword(),
-          ),
-        );
-      },
-      child: const Text(
-        "Forgot Password?",
-        style: TextStyle(
-          color: Colors.black54,
-          fontSize: 15,
-        ),
-      ),
-    );
-  }
-
-  TextButton _newUserReminderButton(BuildContext context) {
-    return TextButton(
-      onPressed: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const SignUpPage()),
-        );
-      },
-      child: const Text(
-        "New User? Create Account.",
-        style: TextStyle(color: Colors.black87),
-      ),
-    );
-  }
-
   void _loginWithEmailPassword() async {
     final AuthService _authService = AuthService();
 
-    var _formState = _formKey.currentState;
+    var _formState = formKey.currentState;
     if (_formState!.validate()) {
       _formState.save();
 
@@ -205,5 +194,60 @@ class _LoginPageState extends State<LoginPage> {
         ));
       });
     }
+  }
+}
+
+class NewUserReminderButton extends StatelessWidget {
+  const NewUserReminderButton({
+    Key? key,
+    required this.context,
+  }) : super(key: key);
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const SignUpPage()),
+        );
+      },
+      child: const Text(
+        "New User? Create Account.",
+        style: TextStyle(color: Colors.black87),
+      ),
+    );
+  }
+}
+
+class ForgotPasswordButton extends StatelessWidget {
+  const ForgotPasswordButton({
+    Key? key,
+    required this.context,
+  }) : super(key: key);
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    return TextButton(
+      onPressed: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const ForgotPassword(),
+          ),
+        );
+      },
+      child: const Text(
+        "Forgot Password?",
+        style: TextStyle(
+          color: Colors.black54,
+          fontSize: 15,
+        ),
+      ),
+    );
   }
 }

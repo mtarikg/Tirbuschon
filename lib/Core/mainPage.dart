@@ -40,7 +40,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Tirbuschon"),
-        actions: [_settingsButton(context)],
+        actions: [SettingsButton(context: context)],
       ),
       body: _body(),
       bottomNavigationBar: _bottomNavigationBar(),
@@ -74,15 +74,25 @@ class _MainPageState extends State<MainPage> {
         });
       },
       controller: _pageController,
-      children: [
+      children: const [
         HomePage(),
         MapView(),
         ProfilePage(),
       ],
     );
   }
+}
 
-  IconButton _settingsButton(BuildContext context) {
+class SettingsButton extends StatelessWidget {
+  const SettingsButton({
+    Key? key,
+    required this.context,
+  }) : super(key: key);
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
     return IconButton(
         onPressed: () {
           Navigator.push(context,

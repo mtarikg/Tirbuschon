@@ -29,6 +29,7 @@ class _MyAppState extends State<MyApp> {
     //MyApp.setLocale(context, locale);
   }
 
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
