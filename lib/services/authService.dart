@@ -32,6 +32,10 @@ class AuthService {
 
     await _firestore
         .collection(_usersCollection)
+        .doc(userId).set({'status':true});
+
+    await _firestore
+        .collection(_usersCollection)
         .doc(userId)
         .collection('profileInfo')
         .doc()
@@ -39,15 +43,18 @@ class AuthService {
       'email': email,
       'avatarURL': null,
       'createdTime': time,
-      'status': true,
     });
 
     return userId;
   }
 
-  Future<String> createGoogleUser(
-      String email, String id, String avatarURL) async {
+  Future<String> createGoogleUser(String email, String id,
+      String avatarURL) async {
     final time = DateTime.now();
+
+    await _firestore
+        .collection(_usersCollection)
+        .doc(id).set({'status':true});
 
     await _firestore
         .collection(_usersCollection)
@@ -58,7 +65,6 @@ class AuthService {
       'email': email,
       'avatarURL': avatarURL,
       'createdTime': time,
-      'status': true,
     });
 
     return id;
@@ -87,7 +93,7 @@ class AuthService {
   Future<User?> signInWithGoogle() async {
     final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
     final GoogleSignInAuthentication googleAuth =
-        await googleUser!.authentication;
+    await googleUser!.authentication;
 
     final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken, idToken: googleAuth.idToken);
