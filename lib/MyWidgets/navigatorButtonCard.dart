@@ -1,22 +1,24 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Core/User/uploadProfileImagePage.dart';
-import 'package:tirbuschon_feng497/welcomePage.dart';
-
+import 'package:flutter/services.dart';
+import '../Core/User/uploadProfileImagePage.dart';
+import '../welcomePage.dart';
 import '../Core/mainPage.dart';
 import '../services/authService.dart';
 
-class NavigatorButtonCard extends StatelessWidget {
+class NavigatorButtonCard extends StatefulWidget {
   final String text;
   final dynamic pageToNavigate;
 
-  const NavigatorButtonCard({
-    required this.text,
-    this.pageToNavigate,
-    Key? key,
-  }) : super(key: key);
+  NavigatorButtonCard({Key? key, required this.text, this.pageToNavigate})
+      : super(key: key);
 
+  @override
+  State<NavigatorButtonCard> createState() => _NavigatorButtonCardState();
+}
+
+class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
   @override
   Widget build(BuildContext context) {
     return Card(
@@ -26,197 +28,357 @@ class NavigatorButtonCard extends StatelessWidget {
         height: 60,
         child: ElevatedButton(
             onPressed: () {
-              if (text.toLowerCase().contains("username")) {
+              var lowerCaseText = widget.text.toLowerCase();
+              if (lowerCaseText.contains("username")) {
                 _changeUsername(context);
-              } else if (text.toLowerCase().contains("full name")) {
+              } else if (lowerCaseText.contains("full name")) {
                 _changeFullName(context);
-              } else if (text.toLowerCase().contains("phone number")) {
+              } else if (lowerCaseText.contains("phone number")) {
                 _changePhoneNumber(context);
-              } else if (text.toLowerCase().contains("profile image")) {
+              } else if (lowerCaseText.contains("profile image")) {
                 _changeProfileImage(context);
-              } else if (text.toLowerCase().contains("delete account")) {
+              } else if (lowerCaseText.contains("delete account")) {
                 _deleteAccount(context);
               }
 
-              pageToNavigate == null
+              widget.pageToNavigate == null
                   ? null
-                  : Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => pageToNavigate));
+                  : Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => widget.pageToNavigate));
             },
-            child: Text(text,
+            child: Text(widget.text,
                 style: const TextStyle(color: Colors.white, fontSize: 20))),
       ),
     );
   }
-}
 
-_changePhoneNumber(BuildContext context) {
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  TextEditingController _textFieldController = TextEditingController();
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("New Phone number"),
-        content: TextField(
-          onChanged: (value) async {
-            var user = FirebaseAuth.instance.currentUser;
-            var userID = user!.uid;
+  void _changePhoneNumber(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+    late String phoneNumberValue = "";
 
-            var document = await _firestore
-                .collection('Users')
-                .doc(userID)
-                .collection('profileInfo')
-                .get();
-            document.docs[0].reference.update({'phoneNumber': value});
-          },
-          controller: _textFieldController,
-          decoration: const InputDecoration(
-              hintText: "Please enter your new phone number."),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("New Phone Number"),
+          content: Form(
+            key: _formKey,
+            child: TextFormField(
+              initialValue: '+905',
+              keyboardType: TextInputType.number,
+              inputFormatters: [LengthLimitingTextInputFormatter(13)],
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              decoration: const InputDecoration(
+                  hintText: "Please enter your new phone number."),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "Phone number field can not be empty!";
+                } else if (value.trim().length != 13) {
+                  return "Phone number should consist of 13 digits with the country code.";
+                } else if (value.contains(RegExp(r'[,. ]'))) {
+                  return "Only numbers";
+                }
+                return null;
               },
-              child: const Text("OK"))
-        ],
-      );
-    },
-  ).then((value) => Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const MainPage()),
-      (route) => false));
-}
-
-_changeUsername(BuildContext context) {
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  TextEditingController _textFieldController = TextEditingController();
-
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("New Username"),
-        content: TextField(
-          onChanged: (value) async {
-            var user = FirebaseAuth.instance.currentUser;
-            var userID = user!.uid;
-
-            var document = await _firestore
-                .collection('Users')
-                .doc(userID)
-                .collection('profileInfo')
-                .get();
-            document.docs[0].reference.update({'username': value});
-          },
-          controller: _textFieldController,
-          decoration: const InputDecoration(
-              hintText: "Please enter your new username."),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+              onChanged: (value) {
+                setState(() {
+                  phoneNumberValue = value;
+                });
               },
-              child: const Text("OK"))
-        ],
-      );
-    },
-  ).then((value) => Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const MainPage()),
-      (route) => false));
-}
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  var formState = _formKey.currentState!;
 
-_changeFullName(BuildContext context) {
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  TextEditingController _textFieldController = TextEditingController();
+                  if (formState.validate()) {
+                    var user = FirebaseAuth.instance.currentUser;
+                    var userID = user!.uid;
 
-  showDialog(
-    context: context,
-    builder: (context) {
-      return AlertDialog(
-        title: const Text("New Full Name"),
-        content: TextField(
-          onChanged: (value) async {
-            var user = FirebaseAuth.instance.currentUser;
-            var userID = user!.uid;
+                    var document = await _firestore
+                        .collection('Users')
+                        .doc(userID)
+                        .collection('profileInfo')
+                        .get();
+                    document.docs[0].reference
+                        .update({'phoneNumber': phoneNumberValue});
 
-            var document = await _firestore
-                .collection('Users')
-                .doc(userID)
-                .collection('profileInfo')
-                .get();
-            document.docs[0].reference.update({'fullName': value});
-          },
-          controller: _textFieldController,
-          decoration: const InputDecoration(
-              hintText: "Please enter your new username."),
-        ),
-        actions: [
-          TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
+                    var alert = AlertDialog(
+                      title: const Text("Change Successful"),
+                      content: const Text(
+                          "Phone number has been changed successfully."),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MainPage()),
+                                      (route) => false);
+                            },
+                            child: const Text("OK"))
+                      ],
+                    );
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => alert);
+                  } else {
+                    var alert = AlertDialog(
+                      title: const Text("Change Unsuccessful"),
+                      content: const Text("Phone number has not changed."),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("OK"))
+                      ],
+                    );
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => alert);
+                  }
+                },
+                child: const Text("OK"))
+          ],
+        );
+      },
+    );
+  }
+
+  void _changeUsername(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+    late String usernameValue = "";
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("New Username"),
+          content: Form(
+            key: _formKey,
+            child: TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              decoration: const InputDecoration(
+                  hintText: "Please enter your new username."),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "Username field can not be empty!";
+                } else if (value.trim().length < 4 ||
+                    value.trim().length > 15) {
+                  return "Username can be at least 4 and most 15 chars.";
+                }
+
+                return null;
               },
-              child: const Text("OK"))
-        ],
-      );
-    },
-  ).then((value) => Navigator.pushAndRemoveUntil(
-      context,
-      MaterialPageRoute(builder: (context) => const MainPage()),
-      (route) => false));
-}
+              onChanged: (value) {
+                setState(() {
+                  usernameValue = value;
+                });
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  var formState = _formKey.currentState!;
 
-_changeProfileImage(BuildContext context) {
-  Navigator.push(
-      context,
-      MaterialPageRoute(
-          builder: (context) => const UploadProfileImage()));
-}
+                  if (formState.validate()) {
+                    var user = FirebaseAuth.instance.currentUser;
+                    var userID = user!.uid;
 
-_deleteAccount(BuildContext context) {
-  FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final AuthService _authService = AuthService();
+                    var document = await _firestore
+                        .collection('Users')
+                        .doc(userID)
+                        .collection('profileInfo')
+                        .get();
+                    document.docs[0].reference
+                        .update({'username': usernameValue});
 
-  showDialog(
-          context: context,
-          builder: (context) {
-            return AlertDialog(
-              title: const Text("Account Deleted"),
-              content: const Text("Your account has been deleted."),
-              actions: [
-                TextButton(
-                    onPressed: () {
-                      var user = FirebaseAuth.instance.currentUser;
-                      var userID = user!.uid;
-                      _authService.signOut();
-                      deleteUserCollection(_firestore, userID, "profileInfo");
-                      user.delete();
-                      Navigator.of(context).pop();
-                    },
-                    child: const Text("OK"))
-              ],
-            );
-          })
-      .then((value) => Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(builder: (context) => const WelcomePage()),
-          (route) => false));
-}
+                    var alert = AlertDialog(
+                      title: const Text("Change Successful"),
+                      content:
+                          const Text("Username has been changed successfully."),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MainPage()),
+                                  (route) => false);
+                            },
+                            child: const Text("OK"))
+                      ],
+                    );
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => alert);
+                  } else {
+                    var alert = AlertDialog(
+                      title: const Text("Change Unsuccessful"),
+                      content: const Text("Username has not changed."),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("OK"))
+                      ],
+                    );
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => alert);
+                  }
+                },
+                child: const Text("OK"))
+          ],
+        );
+      },
+    );
+  }
 
-void deleteUserCollection(
-    FirebaseFirestore _firestore, String userID, String subCollection) {
-  _firestore
-      .collection('Users')
-      .doc(userID)
-      .collection(subCollection)
-      .get()
-      .then((QuerySnapshot querySnapshot) {
-    for (var doc in querySnapshot.docs) {
-      doc.reference.delete();
-    }
-  });
+  void _changeFullName(BuildContext context) {
+    final _formKey = GlobalKey<FormState>();
+    late String fullNameValue = "";
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("New Full Name"),
+          content: Form(
+            key: _formKey,
+            child: TextFormField(
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              decoration: const InputDecoration(
+                  hintText: "Please enter your new full name."),
+              validator: (value) {
+                if (value!.isEmpty) {
+                  return "Full name field can not be empty!";
+                } else if (value.trim().length < 4) {
+                  return "Full name should be at least 4 characters.";
+                }
+
+                return null;
+              },
+              onChanged: (value) {
+                setState(() {
+                  fullNameValue = value;
+                });
+              },
+            ),
+          ),
+          actions: [
+            TextButton(
+                onPressed: () async {
+                  var formState = _formKey.currentState!;
+
+                  if (formState.validate()) {
+                    var user = FirebaseAuth.instance.currentUser;
+                    var userID = user!.uid;
+
+                    var document = await _firestore
+                        .collection('Users')
+                        .doc(userID)
+                        .collection('profileInfo')
+                        .get();
+                    document.docs[0].reference
+                        .update({'fullName': fullNameValue});
+
+                    var alert = AlertDialog(
+                      title: const Text("Change Successful"),
+                      content: const Text(
+                          "Full Name has been changed successfully."),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.pushAndRemoveUntil(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => const MainPage()),
+                                  (route) => false);
+                            },
+                            child: const Text("OK"))
+                      ],
+                    );
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => alert);
+                  } else {
+                    var alert = AlertDialog(
+                      title: const Text("Change Unsuccessful"),
+                      content: const Text("Full name has not changed."),
+                      actions: [
+                        TextButton(
+                            onPressed: () {
+                              Navigator.of(context).pop();
+                            },
+                            child: const Text("OK"))
+                      ],
+                    );
+                    showDialog(
+                        context: context,
+                        builder: (BuildContext context) => alert);
+                  }
+                },
+                child: const Text("OK"))
+          ],
+        );
+      },
+    );
+  }
+
+  void _changeProfileImage(BuildContext context) {
+    Navigator.push(context,
+        MaterialPageRoute(builder: (context) => const UploadProfileImage()));
+  }
+
+  void _deleteAccount(BuildContext context) {
+    final AuthService _authService = AuthService();
+
+    showDialog(
+            context: context,
+            builder: (context) {
+              return AlertDialog(
+                title: const Text("Account Deleted"),
+                content: const Text("Your account has been deleted."),
+                actions: [
+                  TextButton(
+                      onPressed: () {
+                        var user = FirebaseAuth.instance.currentUser;
+                        var userID = user!.uid;
+                        _authService.signOut();
+                        deleteUserCollection(_firestore, userID, "profileInfo");
+                        user.delete();
+                        Navigator.of(context).pop();
+                      },
+                      child: const Text("OK"))
+                ],
+              );
+            })
+        .then((value) => Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const WelcomePage()),
+            (route) => false));
+  }
+
+  void deleteUserCollection(
+      FirebaseFirestore _firestore, String userID, String subCollection) async {
+    await _firestore
+        .collection('Users')
+        .doc(userID)
+        .collection(subCollection)
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        doc.reference.delete();
+      }
+    });
+  }
 }

@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class FirestoreService {
   final _firestore = FirebaseFirestore.instance;
@@ -20,5 +21,28 @@ class FirestoreService {
     }
 
     return null;
+  }
+
+  Future<bool> userExists(String userID) async {
+    var existingUser = false;
+
+    await _firestore
+        .collection('Users')
+        .doc(userID)
+        .collection("profileInfo")
+        .get()
+        .then((value) => existingUser = value.docs.isNotEmpty);
+    return existingUser;
+  }
+
+  Future<String> getUser() async {
+    final FirebaseAuth _auth = FirebaseAuth.instance;
+
+    var currentUser = _auth.currentUser;
+    var currentUserID = currentUser!.uid;
+
+    var document = _firestore.collection('Users').doc(currentUserID);
+
+    return document.id;
   }
 }
