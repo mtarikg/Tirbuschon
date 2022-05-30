@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import '../Core/User/uploadProfileImagePage.dart';
 import '../welcomePage.dart';
-import '../Core/mainPage.dart';
+import '../Core/User/mainPage.dart';
 import '../services/authService.dart';
 
 class NavigatorButtonCard extends StatefulWidget {

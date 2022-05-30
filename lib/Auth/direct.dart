@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'services/firestoreService.dart';
-import 'Core/mainPage.dart';
-import 'welcomePage.dart';
+import '../services/firestoreService.dart';
+import '../Core/User/mainPage.dart';
+import '../welcomePage.dart';
 
 class Direct extends StatelessWidget {
   const Direct({Key? key}) : super(key: key);
@@ -16,7 +16,7 @@ class Direct extends StatelessWidget {
           }
 
           if (snapshot.hasData) {
-            return MainPage();
+            return const MainPage();
           }
 
           return const WelcomePage();

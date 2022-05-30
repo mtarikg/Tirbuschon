@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../direct.dart';
+import 'direct.dart';
 import '../services/authService.dart';
 
 class FurtherInfoToSignUpPage extends StatefulWidget {
