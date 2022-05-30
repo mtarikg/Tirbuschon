@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'User/googleMaps.dart';
-import 'User/settingsPage.dart';
-import 'User/homePage.dart';
-import 'User/profilePage.dart';
-import 'User/searchPage.dart';
+import 'settingsPage.dart';
+import 'homePage.dart';
+import 'profilePage.dart';
+import 'searchPage.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -76,7 +75,7 @@ class _MainPageState extends State<MainPage> {
       controller: _pageController,
       children: const [
         HomePage(),
-        MapView(),
+        SearchPage(),
         ProfilePage(),
       ],
     );

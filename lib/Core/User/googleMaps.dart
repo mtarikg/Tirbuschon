@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'dart:math' show cos, sqrt, asin;
-
+import 'mainPage.dart';
 
 class MapView extends StatefulWidget {
-  const MapView({Key? key}) : super(key: key);
+  const MapView({Key? key, required this.venueAddress}) : super(key: key);
+
+  final String venueAddress;
 
   @override
   _MapViewState createState() => _MapViewState();
 }
 
 class _MapViewState extends State<MapView> {
-  final CameraPosition _initialLocation = const CameraPosition(target: LatLng(0.0, 0.0));
+  final CameraPosition _initialLocation =
+      const CameraPosition(target: LatLng(39.9272, 32.8644), zoom: 5);
   late GoogleMapController mapController;
 
   late Position _currentPosition;
@@ -28,13 +29,8 @@ class _MapViewState extends State<MapView> {
 
   String _startAddress = '';
   String _destinationAddress = '';
-  String? _placeDistance;
 
   Set<Marker> markers = {};
-
-  late PolylinePoints polylinePoints;
-  Map<PolylineId, Polyline> polylines = {};
-  List<LatLng> polylineCoordinates = [];
 
   final _scaffoldKey = GlobalKey<ScaffoldState>();
 
@@ -120,7 +116,7 @@ class _MapViewState extends State<MapView> {
 
       setState(() {
         _currentAddress =
-        "${place.name}, ${place.locality}, ${place.postalCode}, ${place.country}";
+            "${place.name}, ${place.locality}, ${place.postalCode}, ${place.country}";
         startAddressController.text = _currentAddress;
         _startAddress = _currentAddress;
       });
@@ -131,13 +127,12 @@ class _MapViewState extends State<MapView> {
     }
   }
 
-  // Method for calculating the distance between two places
-  Future<bool> _calculateDistance() async {
+  Future<void> _showMarkers() async {
     try {
       // Retrieving placemarks from addresses
       List<Location>? startPlacemark = await locationFromAddress(_startAddress);
       List<Location>? destinationPlacemark =
-      await locationFromAddress(_destinationAddress);
+          await locationFromAddress(_destinationAddress);
 
       // Use the retrieved coordinates of the current position,
       // instead of the address if the start position is user's
@@ -180,15 +175,10 @@ class _MapViewState extends State<MapView> {
       );
 
       // Adding the markers to the list
-      markers.add(startMarker);
-      markers.add(destinationMarker);
-
-      print(
-        'START COORDINATES: ($startLatitude, $startLongitude)',
-      );
-      print(
-        'DESTINATION COORDINATES: ($destinationLatitude, $destinationLongitude)',
-      );
+      setState(() {
+        markers.add(startMarker);
+        markers.add(destinationMarker);
+      });
 
       // Calculating to check that the position relative
       // to the frame, and pan & zoom the camera accordingly.
@@ -222,92 +212,18 @@ class _MapViewState extends State<MapView> {
           100.0,
         ),
       );
-
-      //Calculating the distance between the start and the end positions
-      // with a straight path, without considering any route
-      // double distanceInMeters = await Geolocator().bearingBetween(
-      // startCoordinates.latitude,
-      // startCoordinates.longitude,
-      // destinationCoordinates.latitude,
-      // destinationCoordinates.longitude,
-      // );
-
-      await _createPolylines(startLatitude, startLongitude, destinationLatitude,
-          destinationLongitude);
-
-      double totalDistance = 0.0;
-
-      // Calculating the total distance by adding the distance
-      // between small segments
-      for (int i = 0; i < polylineCoordinates.length - 1; i++) {
-        totalDistance += _coordinateDistance(
-          polylineCoordinates[i].latitude,
-          polylineCoordinates[i].longitude,
-          polylineCoordinates[i + 1].latitude,
-          polylineCoordinates[i + 1].longitude,
-        );
-      }
-
-      setState(() {
-        _placeDistance = totalDistance.toStringAsFixed(2);
-        print('DISTANCE: $_placeDistance km');
-      });
-
-      return true;
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
       ));
     }
-    return false;
-  }
-
-  // Formula for calculating distance between two coordinates
-  // https://stackoverflow.com/a/54138876/11910277
-  double _coordinateDistance(lat1, lon1, lat2, lon2) {
-    var p = 0.017453292519943295;
-    var c = cos;
-    var a = 0.5 -
-        c((lat2 - lat1) * p) / 2 +
-        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
-    return 12742 * asin(sqrt(a));
-  }
-
-  // Create the polylines for showing the route between two places
-  _createPolylines(
-      double startLatitude,
-      double startLongitude,
-      double destinationLatitude,
-      double destinationLongitude,
-      ) async {
-    polylinePoints = PolylinePoints();
-    PolylineResult result = await polylinePoints.getRouteBetweenCoordinates(
-      Secrets.API_KEY, // Google Maps API Key
-      PointLatLng(startLatitude, startLongitude),
-      PointLatLng(destinationLatitude, destinationLongitude),
-      travelMode: TravelMode.transit,
-    );
-
-    if (result.points.isNotEmpty) {
-      for (var point in result.points) {
-        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
-      }
-    }
-
-    PolylineId id = const PolylineId('poly');
-    Polyline polyline = Polyline(
-      polylineId: id,
-      color: Colors.red,
-      points: polylineCoordinates,
-      width: 3,
-    );
-    polylines[id] = polyline;
   }
 
   @override
   void initState() {
     super.initState();
-    _getCurrentLocation();
+    destinationAddressController.text = widget.venueAddress;
+    _destinationAddress = destinationAddressController.text;
   }
 
   @override
@@ -318,6 +234,19 @@ class _MapViewState extends State<MapView> {
       height: height,
       width: width,
       child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Venue Location"),
+          leading: IconButton(
+            icon: const Icon(Icons.arrow_back),
+            iconSize: 20,
+            onPressed: () {
+              Navigator.pushAndRemoveUntil(
+                  context,
+                  MaterialPageRoute(builder: (context) => const MainPage()),
+                  (route) => false);
+            },
+          ),
+        ),
         key: _scaffoldKey,
         body: Stack(
           children: <Widget>[
@@ -330,9 +259,11 @@ class _MapViewState extends State<MapView> {
               mapType: MapType.normal,
               zoomGesturesEnabled: true,
               zoomControlsEnabled: false,
-              polylines: Set<Polyline>.of(polylines.values),
               onMapCreated: (GoogleMapController controller) {
-                mapController = controller;
+                setState(() {
+                  mapController = controller;
+                  _getCurrentLocation();
+                });
               },
             ),
             // Show zoom buttons
@@ -415,8 +346,11 @@ class _MapViewState extends State<MapView> {
                               suffixIcon: IconButton(
                                 icon: const Icon(Icons.my_location),
                                 onPressed: () {
-                                  startAddressController.text = _currentAddress;
-                                  _startAddress = _currentAddress;
+                                  setState(() {
+                                    startAddressController.text =
+                                        _currentAddress;
+                                    _startAddress = _currentAddress;
+                                  });
                                 },
                               ),
                               controller: startAddressController,
@@ -435,78 +369,14 @@ class _MapViewState extends State<MapView> {
                               controller: destinationAddressController,
                               focusNode: destinationAddressFocusNode,
                               width: width,
-                              locationCallback: (String value) {
+                              locationCallback: (value) {
                                 setState(() {
-                                  _destinationAddress = value;
+                                  _destinationAddress =
+                                      destinationAddressController.text;
                                 });
                               }),
                           const SizedBox(height: 10),
-                          Visibility(
-                            visible: _placeDistance == null ? false : true,
-                            child: Text(
-                              'DISTANCE: $_placeDistance km',
-                              style: const TextStyle(
-                                fontSize: 16,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(height: 5),
-                          ElevatedButton(
-                            onPressed: (_startAddress != '' &&
-                                _destinationAddress != '')
-                                ? () async {
-                              startAddressFocusNode.unfocus();
-                              destinationAddressFocusNode.unfocus();
-                              setState(() {
-                                if (markers.isNotEmpty) {
-                                  markers.clear();
-                                }
-                                if (polylines.isNotEmpty) {
-                                  polylines.clear();
-                                }
-                                if (polylineCoordinates.isNotEmpty) {
-                                  polylineCoordinates.clear();
-                                }
-                                _placeDistance = null;
-                              });
-
-                              _calculateDistance().then((isCalculated) {
-                                if (isCalculated) {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Distance Calculated Sucessfully'),
-                                    ),
-                                  );
-                                } else {
-                                  ScaffoldMessenger.of(context)
-                                      .showSnackBar(
-                                    const SnackBar(
-                                      content: Text(
-                                          'Error Calculating Distance'),
-                                    ),
-                                  );
-                                }
-                              });
-                            }
-                                : null,
-                            // color: Colors.red,
-                            // shape: RoundedRectangleBorder(
-                            //   borderRadius: BorderRadius.circular(20.0),
-                            // ),
-                            child: Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Text(
-                                'Show Route'.toUpperCase(),
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 20.0,
-                                ),
-                              ),
-                            ),
-                          ),
+                          _showVenueButton(),
                         ],
                       ),
                     ),
@@ -550,6 +420,29 @@ class _MapViewState extends State<MapView> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  ElevatedButton _showVenueButton() {
+    return ElevatedButton(
+      onPressed: (_startAddress.isNotEmpty && _destinationAddress.isNotEmpty)
+          ? () {
+              markers.clear();
+              startAddressFocusNode.unfocus();
+              destinationAddressFocusNode.unfocus();
+              _showMarkers();
+            }
+          : null,
+      child: const Padding(
+        padding: EdgeInsets.all(8.0),
+        child: Text(
+          'Show Venue',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20.0,
+          ),
         ),
       ),
     );

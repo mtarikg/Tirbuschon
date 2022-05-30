@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/Admin/add_new_restaurant/page/rest_add_page.dart';
 import 'services/firestoreService.dart';
 import 'Restaurant/Screens/helper/navigator.dart';
-import 'direct.dart';
+import 'Auth/direct.dart';
 import 'Auth/furtherInfoToSignUpPage.dart';
 import 'services/authService.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';

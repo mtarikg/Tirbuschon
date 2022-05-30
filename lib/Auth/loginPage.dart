@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import '../Admin/adm_bottom_navigation/admin_navigator.dart';
 import '../Restaurant/Screens/helper/navigator.dart';
-import '../direct.dart';
+import 'direct.dart';
 import '../services/authService.dart';
 import 'forgotPassword.dart';
 import 'signUpPage.dart';
