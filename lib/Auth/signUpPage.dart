@@ -109,7 +109,11 @@ class _SignUpPageState extends State<SignUpPage> {
         validator: (value) {
           if (value!.isEmpty) {
             return "Email field can not be empty!";
-          } else if (!value.contains("@")) {
+          } 
+          else if (value.contains("@tirbuschon.com")) {
+            return "You cannot signup with @tirbuschon.com domain";
+          } 
+          else if (!value.contains("@")) {
             return "Value should be an email format.";
           }
           return null;

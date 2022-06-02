@@ -1,6 +1,9 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Auth/loginPage.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/edit_profile_screen.dart';
+import 'package:tirbuschon_feng497/Restaurant/Screens/email_sender.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 
@@ -30,6 +33,7 @@ class ProfileScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfileScreen> {
   late CollectionReference collectionReference;
   late var photoUrl;
+  bool switchValue = true;
 
   @override
   void initState() {
@@ -145,7 +149,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             child: GestureDetector(
                 child: photoUrl == null
                     ? CircleAvatar(
-                      backgroundColor: Colors.white,
+                        backgroundColor: Colors.white,
                         backgroundImage: AssetImage(
                           'assets/resticon.png',
                         ),
@@ -263,6 +267,64 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 ],
               ),
             ],
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Text(
+              "Notifications",
+              style: TextStyle(
+                  fontFamily: 'Montserrat', fontSize: 20.0, color: primaryDark),
+            ),
+            SizedBox(
+              width: MediaQuery.of(context).size.width * 0.50,
+            ),
+            CupertinoSwitch(
+              value: switchValue,
+              onChanged: (value) {
+                setState(() {
+                  switchValue = value;
+                });
+              },
+            ),
+          ],
+        ),
+        Divider(
+          height: 15,
+          thickness: 2,
+        ),
+        Center(
+          child: OutlineButton(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => LoginPage()));
+            },
+            child: Text(
+              "SIGN OUT",
+              style: TextStyle(
+                  fontFamily: 'Montserrat', fontSize: 16.0, color: primaryDark),
+            ),
+          ),
+        ),
+        Center(
+          child: OutlineButton(
+            padding: EdgeInsets.symmetric(horizontal: 40),
+            shape:
+                RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            onPressed: () {
+              Navigator.push(context,
+                  MaterialPageRoute(builder: (context) => EmailSender()));
+            },
+            child: Text(
+              "REPORT an ISSUE",
+              style: TextStyle(
+                  fontFamily: 'Montserrat', fontSize: 16.0, color: primaryDark),
+            ),
           ),
         ),
       ],
