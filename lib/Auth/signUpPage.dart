@@ -133,7 +133,25 @@ class _SignUpPageState extends State<SignUpPage> {
           errorDetail = "Value should be an email format.";
         }
 
-        return errorDetail ?? null;
+          if (value!.isEmpty) {
+            return "Email field can not be empty!";
+          } else if (value.contains("@tirbuschon.com")) {
+            return "You cannot signup with @tirbuschon.com domain";
+          } else if (!value.contains("@")) {
+            return "Value should be an email format.";
+            errorDetail = "Email field can not be empty!";
+          } else if (!value.contains("@")) {
+            errorDetail = "Value should be an email format.";
+          }
+
+          errorDetail != null
+              ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(errorDetail.toString()),
+                ))
+              : null;
+        },
+        onSaved: (value) {
+      
       },
       onChanged: (value) {
         setState(() {

@@ -65,61 +65,17 @@ class _WelcomePageState extends State<WelcomePage> {
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
+                  
                   Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                      child: GoogleSignUp(context: context)),
-                  const SizedBox(width: 5),
-                  const SizedBox(height: 30),
-                  Container(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width - 50,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) =>
-                                  const BottomNavigationBar1()),
-                        );
-                      },
-                      child: const Text(
-                        "Venue Login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
+                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                    child: Expanded(
+                      child: SignInButton(
+                        Buttons.Facebook,
+                        text: "Sign up with Facebook",
+                        onPressed: () {
+                          // signInWithFacebook();
+                        },
                       ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 110, 20, 229),
-                      borderRadius: BorderRadius.circular(45),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Container(
-                    height: 50,
-                    width: MediaQuery.of(context).size.width - 50,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => AdminSignUpPage()),
-                        );
-                      },
-                      child: const Text(
-                        "Admin Login",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    decoration: BoxDecoration(
-                      color: Color.fromARGB(255, 110, 20, 229),
-                      borderRadius: BorderRadius.circular(45),
                     ),
                   ),
                 ],

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/Admin/add_new_restaurant/page/rest_add_page.dart';
 import 'package:tirbuschon_feng497/Admin/view_restaurant_screen/view_restautants.dart';
+import 'package:tirbuschon_feng497/Admin/view_users/view_all_users.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
 //BOTTOM_NAVIGATION BAR
@@ -11,12 +12,13 @@ class AdminBottomNavBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
-      length: 2,
+      length: 3,
       child: Scaffold(
         body: TabBarView(
           children: <Widget>[
             AdminSignUpPage(),
             ViewAllRestaurants(),
+            ViewAllUsers(),
           ],
         ),
         bottomNavigationBar: Material(
@@ -33,6 +35,9 @@ class AdminBottomNavBar extends StatelessWidget {
               ),
               Tab(
                 icon: Icon(Icons.menu, size: 28),
+              ),
+              Tab(
+                icon: Icon(Icons.person,size: 28),
               ),
             ],
           ),
