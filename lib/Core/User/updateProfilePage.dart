@@ -24,7 +24,7 @@ class _UpdateProfilePageState extends State<UpdateProfilePage> {
         ),
         body: Column(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: const [
+          children: [
             NavigatorButtonCard(text: "Change Username"),
             NavigatorButtonCard(text: "Change Full Name"),
             NavigatorButtonCard(text: "Change Phone Number"),

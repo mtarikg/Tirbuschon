@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import '../services/authService.dart';
 
 class ForgotPassword extends StatefulWidget {
@@ -10,7 +9,7 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-  late String email;
+  late String email = "";
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +27,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           const SizedBox(
             height: 20,
           ),
-          _resetPasswordButton(context),
+          ResetPasswordButton(email: email, context: context),
         ],
       ),
     );
@@ -42,25 +41,42 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         hintText: "Please enter your email",
       ),
       onChanged: (value) {
-        email = value;
+        setState(() {
+          email = value;
+        });
       },
     );
   }
+}
 
-  Container _resetPasswordButton(BuildContext context) {
+class ResetPasswordButton extends StatelessWidget {
+  const ResetPasswordButton({
+    Key? key,
+    required this.email,
+    required this.context,
+  }) : super(key: key);
+
+  final String email;
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    var isEnabled = email.isNotEmpty;
     return Container(
       height: 50,
       width: MediaQuery.of(context).size.width - 10,
       decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(30),
-          color: Colors.blueAccent,
+          color: isEnabled ? Colors.blueAccent : Colors.grey,
           border: Border.all(
             width: 1,
           )),
       child: TextButton(
-        onPressed: () {
+        onPressed: isEnabled
+            ? () {
           _resetPassword(email);
-        },
+              }
+            : null,
         child: const Text(
           "Request Password Reset",
           style: TextStyle(

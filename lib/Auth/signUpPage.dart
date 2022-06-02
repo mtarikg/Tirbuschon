@@ -12,8 +12,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
-  final passwordKey = GlobalKey<FormFieldState>();
-  late String email, password;
+  late String email = "", password = "", confirmedPassword = "";
 
   @override
   Widget build(BuildContext context) {
@@ -34,124 +33,105 @@ class _SignUpPageState extends State<SignUpPage> {
                 const SizedBox(height: 10),
                 Column(
                   children: [
-                    _emailTextField(),
-                    _passwordTextField(),
-                    _confirmPasswordTextField(),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: _emailTextField(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: _passwordTextField(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: _confirmPasswordTextField(),
+                    ),
                     const SizedBox(height: 10),
-                    _signUpButton(context),
+                    SignUpButton(
+                        context: context,
+                        email: email,
+                        password: password,
+                        confirmedPassword: confirmedPassword,
+                        formKey: _formKey),
                   ],
                 ),
               ],
             ),
-            _alreadySignedUpReminderButton(context),
+            AlreadySignedUpReminderButton(context: context),
           ],
         ),
       ),
     );
   }
 
-  Container _signUpButton(BuildContext context) {
-    return Container(
-      height: 50,
-      width: MediaQuery.of(context).size.width - 10,
-      decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(30),
-        border: Border.all(width: 1),
-        color: Colors.blue,
+  TextFormField _passwordTextField() {
+    return TextFormField(
+      obscureText: true,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.lock),
+        labelText: "Password",
+        hintText: "Please enter your password",
       ),
-      child: TextButton(
-        onPressed: () {
-          _createUser();
-        },
-        child: const Text(
-          "Sign Up",
-          style: TextStyle(
-            color: Colors.white,
-            fontSize: 20,
-          ),
-        ),
-      ),
+      validator: (value) {
+        String pattern = r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9]).{6,}$';
+        String? errorDetail;
+
+        if (value!.isEmpty) {
+          errorDetail = "Password field can not be empty!";
+        } else if (!value.contains(RegExp(pattern))) {
+          errorDetail =
+              "1 uppercase, 1 lowercase and 1 numeric with at least 6 in total.";
+        }
+
+        return errorDetail ?? null;
+      },
+      onChanged: (value) {
+        setState(() {
+          password = value.toString();
+        });
+      },
     );
   }
 
-  Padding _passwordTextField() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        key: passwordKey,
-        obscureText: true,
-        decoration: const InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          labelText: "Password",
-          hintText: "Please enter your password",
-        ),
-        validator: (value) {
-          String pattern =
-              r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,}$';
-          String? errorDetail;
-
-          if (value!.isEmpty) {
-            errorDetail = "Password field can not be empty!";
-          } else if (!value.contains(RegExp(pattern))) {
-            errorDetail =
-                "Password should consist of at least 1 uppercase, 1 lowercase, 1 numeric and 1 special character "
-                "with at least 6 characters in total.";
-          }
-
-          errorDetail != null
-              ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(errorDetail.toString()),
-                ))
-              : null;
-        },
+  TextFormField _confirmPasswordTextField() {
+    return TextFormField(
+      obscureText: true,
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.lock),
+        labelText: "Confirm Password",
+        hintText: "Please confirm your password",
       ),
+      validator: (value) {
+        String? errorDetail;
+
+        if (confirmedPassword != password) {
+          errorDetail = "Passwords should be matched!";
+        }
+
+        return errorDetail ?? null;
+      },
+      onChanged: (value) {
+        setState(() {
+          confirmedPassword = value.toString();
+        });
+      },
     );
   }
 
-  Padding _confirmPasswordTextField() {
-    var passwordValue = passwordKey.currentState?.value;
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        obscureText: true,
-        decoration: const InputDecoration(
-          prefixIcon: Icon(Icons.lock),
-          labelText: "Confirm Password",
-          hintText: "Please confirm your password",
-        ),
-        validator: (value) {
-          String? errorDetail;
-
-          if (value != passwordValue) {
-            errorDetail = "Passwords should be matched!";
-          }
-
-          errorDetail != null
-              ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(errorDetail.toString()),
-                ))
-              : null;
-        },
-        onSaved: (value) {
-          if (value == passwordValue) {
-            password = value.toString();
-          }
-        },
+  TextFormField _emailTextField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.mail),
+        labelText: "Email",
+        hintText: "Please enter your email",
       ),
-    );
-  }
+      validator: (value) {
+        String? errorDetail;
 
-  Padding _emailTextField() {
-    return Padding(
-      padding: const EdgeInsets.all(10.0),
-      child: TextFormField(
-        decoration: const InputDecoration(
-          prefixIcon: Icon(Icons.mail),
-          labelText: "Email",
-          hintText: "Please enter your email",
-        ),
-        validator: (value) {
-          String? errorDetail;
+        if (value!.isEmpty) {
+          errorDetail = "Email field can not be empty!";
+        } else if (!value.contains("@")) {
+          errorDetail = "Value should be an email format.";
+        }
 
           if (value!.isEmpty) {
             return "Email field can not be empty!";
@@ -171,9 +151,13 @@ class _SignUpPageState extends State<SignUpPage> {
               : null;
         },
         onSaved: (value) {
+      
+      },
+      onChanged: (value) {
+        setState(() {
           email = value.toString();
-        },
-      ),
+        });
+      },
     );
   }
 
@@ -188,8 +172,18 @@ class _SignUpPageState extends State<SignUpPage> {
       ),
     );
   }
+}
 
-  TextButton _alreadySignedUpReminderButton(BuildContext context) {
+class AlreadySignedUpReminderButton extends StatelessWidget {
+  const AlreadySignedUpReminderButton({
+    Key? key,
+    required this.context,
+  }) : super(key: key);
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
     return TextButton(
       onPressed: () {
         Navigator.push(
@@ -200,33 +194,80 @@ class _SignUpPageState extends State<SignUpPage> {
       child: const Text("Signed Up Before? Login Instead."),
     );
   }
+}
+
+class SignUpButton extends StatelessWidget {
+  const SignUpButton(
+      {Key? key,
+      required this.context,
+      required this.formKey,
+      required this.email,
+      required this.password,
+      required this.confirmedPassword})
+      : super(key: key);
+
+  final BuildContext context;
+  final GlobalKey<FormState> formKey;
+  final String email, password, confirmedPassword;
+
+  @override
+  Widget build(BuildContext context) {
+    var isEmailNull = email.isEmpty;
+    var isPasswordNull = password.isEmpty;
+    var isConfirmedPasswordNull = confirmedPassword.isEmpty;
+    var result = isEmailNull || isPasswordNull || isConfirmedPasswordNull;
+    var isDisabled = result;
+
+    return Container(
+      height: 50,
+      width: MediaQuery.of(context).size.width - 10,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(width: 1),
+        color: isDisabled ? Colors.grey : Colors.blue,
+      ),
+      child: TextButton(
+        onPressed: isDisabled
+            ? null
+            : () {
+                _createUser();
+              },
+        child: const Text(
+          "Sign Up",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+          ),
+        ),
+      ),
+    );
+  }
 
   void _createUser() async {
     final AuthService _authService = AuthService();
-    var _formState = _formKey.currentState;
-    if (_formState!.validate()) {
-      _formState.save();
+    try {
+      var _formState = formKey.currentState!;
+      if (_formState.validate()) {
+        _formState.save();
 
-      var uid = await _authService.createUser(email, password);
+        var uid = await _authService.createUser(email, password);
 
-      Navigator.push(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => FurtherInfoToSignUpPage(id: uid)))
-          .catchError((error) {
-        String errorDetail;
-        if (error.toString().contains('user-disabled')) {
-          errorDetail = "This account is disabled.";
-        } else if (error.toString().contains('user-not-found')) {
-          errorDetail = "The user has not been found.";
-        } else {
-          errorDetail = "There is an error that we can not define.$error";
-        }
+        Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) => FurtherInfoToSignUpPage(id: uid)));
+      }
+    } on Exception catch (e) {
+      String errorDetail;
+      if (e.toString().contains('user-disabled')) {
+        errorDetail = "This account is disabled.";
+      } else {
+        errorDetail = "There is an error that we can not define.$e";
+      }
 
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(errorDetail.toString()),
-        ));
-      });
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(errorDetail.toString()),
+      ));
     }
   }
 }

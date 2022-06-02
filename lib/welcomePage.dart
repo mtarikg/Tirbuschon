@@ -1,12 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/Admin/add_new_restaurant/page/rest_add_page.dart';
-import 'package:tirbuschon_feng497/Admin/adm_bottom_navigation/admin_navigator.dart';
+import 'services/firestoreService.dart';
 import 'Restaurant/Screens/helper/navigator.dart';
-import 'direct.dart';
+import 'Auth/direct.dart';
 import 'Auth/furtherInfoToSignUpPage.dart';
 import 'services/authService.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'Auth/loginPage.dart';
 import 'Auth/signUpPage.dart';
@@ -30,27 +28,13 @@ class _WelcomePageState extends State<WelcomePage> {
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          _welcomeTextContainer(),
+          _bodyContainer(),
         ],
       ),
     );
   }
 
-  Padding _mottoText() {
-    return const Padding(
-      padding: EdgeInsets.all(15.0),
-      child: Text(
-        "Making reservations with Tirbuschon is easy peasy!",
-        style: TextStyle(
-          color: Colors.grey,
-          fontSize: 20,
-        ),
-        textAlign: TextAlign.center,
-      ),
-    );
-  }
-
-  Container _welcomeTextContainer() {
+  Container _bodyContainer() {
     return Container(
       alignment: Alignment.center,
       child: Column(
@@ -70,79 +54,18 @@ class _WelcomePageState extends State<WelcomePage> {
               fontSize: 50,
             ),
           ),
-          _mottoText(),
+          const MottoText(),
           const SizedBox(height: 15),
           Column(
             children: [
-              Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width - 50,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const LoginPage()),
-                    );
-                  },
-                  child: const Text(
-                    "Login",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.blue,
-                  borderRadius: BorderRadius.circular(45),
-                ),
-              ),
+              LoginContainer(context: context),
               const SizedBox(height: 30),
-              Container(
-                height: 50,
-                width: MediaQuery.of(context).size.width - 50,
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const SignUpPage()),
-                    );
-                  },
-                  child: const Text(
-                    "Sign Up",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-                decoration: BoxDecoration(
-                  color: Colors.green,
-                  borderRadius: BorderRadius.circular(45),
-                ),
-              ),
+              SignUpContainer(context: context),
               const SizedBox(height: 10),
               Column(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: <Widget>[
-                  Padding(
-                      padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                      child: Expanded(
-                          child: SignInButton(Buttons.Google,
-                              text: "Sign up with Google", onPressed: () async {
-                        try {
-                          _signInWithGoogle();
-                        } catch (e) {
-                          if (e is FirebaseAuthException) {
-                            print(e.message!);
-                          }
-                        }
-                      }))),
-                  const SizedBox(width: 5),
+                  
                   Padding(
                     padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
                     child: Expanded(
@@ -163,51 +86,138 @@ class _WelcomePageState extends State<WelcomePage> {
       ),
     );
   }
+}
+
+class GoogleSignUp extends StatelessWidget {
+  const GoogleSignUp({Key? key, required this.context}) : super(key: key);
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+        child: SignInButton(Buttons.Google, text: "Sign up with Google",
+            onPressed: () {
+      _signInWithGoogle();
+    }));
+  }
 
   void _signInWithGoogle() async {
     final AuthService _authService = AuthService();
-    final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+    final FirestoreService _firestoreService = FirestoreService();
 
     final googleUser = await _authService.signInWithGoogle();
-    final String userId, email, avatarURL;
-    userId = googleUser!.uid;
+    final String userID, email, avatarURL;
+    userID = googleUser!.uid;
     email = googleUser.email!;
     avatarURL = googleUser.photoURL!;
 
-    var collectionExist = false;
-    await _firestore
-        .collection('Users')
-        .doc(userId)
-        .collection("profileInfo")
-        .get()
-        .then((value) => collectionExist = value.docs.isNotEmpty);
-
-    if (collectionExist) {
+    var result = await _firestoreService.userExists(userID);
+    if (result) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Direct()),
       );
     } else {
-      _authService.createGoogleUser(email, userId, avatarURL);
+      _authService.createGoogleUser(email, userID, avatarURL);
 
       Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => FurtherInfoToSignUpPage(id: userId)),
+            builder: (context) => FurtherInfoToSignUpPage(id: userID)),
       ).catchError((error) {
-        String errorDetail;
-        if (error.toString().contains('user-disabled')) {
-          errorDetail = "Email is invalid";
-        } else if (error.toString().contains('user-not-found')) {
-          errorDetail = "The user is not found.";
-        } else {
-          errorDetail = "There is an error that we can not define.$error";
-        }
-
-        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-          content: Text(errorDetail.toString()),
-        ));
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text(error.toString())));
       });
     }
+  }
+}
+
+class SignUpContainer extends StatelessWidget {
+  const SignUpContainer({Key? key, required this.context}) : super(key: key);
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      width: MediaQuery.of(context).size.width - 50,
+      child: TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const SignUpPage()),
+          );
+        },
+        child: const Text(
+          "Sign Up",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.green,
+        borderRadius: BorderRadius.circular(45),
+      ),
+    );
+  }
+}
+
+class LoginContainer extends StatelessWidget {
+  const LoginContainer({Key? key, required this.context}) : super(key: key);
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 50,
+      width: MediaQuery.of(context).size.width - 50,
+      child: TextButton(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const LoginPage()),
+          );
+        },
+        child: const Text(
+          "Login",
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 18,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+      decoration: BoxDecoration(
+        color: Colors.blue,
+        borderRadius: BorderRadius.circular(45),
+      ),
+    );
+  }
+}
+
+class MottoText extends StatelessWidget {
+  const MottoText({
+    Key? key,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.all(15.0),
+      child: Text(
+        "Making reservations with Tirbuschon is easy peasy!",
+        style: TextStyle(
+          color: Colors.grey,
+          fontSize: 20,
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
   }
 }

@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'User/googleMaps.dart';
-import 'User/settingsPage.dart';
-import 'User/homePage.dart';
-import 'User/profilePage.dart';
-import 'User/searchPage.dart';
+import 'settingsPage.dart';
+import 'homePage.dart';
+import 'profilePage.dart';
+import 'searchPage.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({Key? key}) : super(key: key);
@@ -40,7 +39,7 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       appBar: AppBar(
         title: const Text("Tirbuschon"),
-        actions: [_settingsButton(context)],
+        actions: [SettingsButton(context: context)],
       ),
       body: _body(),
       bottomNavigationBar: _bottomNavigationBar(),
@@ -74,15 +73,25 @@ class _MainPageState extends State<MainPage> {
         });
       },
       controller: _pageController,
-      children: [
+      children: const [
         HomePage(),
-        MapView(),
+        SearchPage(),
         ProfilePage(),
       ],
     );
   }
+}
 
-  IconButton _settingsButton(BuildContext context) {
+class SettingsButton extends StatelessWidget {
+  const SettingsButton({
+    Key? key,
+    required this.context,
+  }) : super(key: key);
+
+  final BuildContext context;
+
+  @override
+  Widget build(BuildContext context) {
     return IconButton(
         onPressed: () {
           Navigator.push(context,
