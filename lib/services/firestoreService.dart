@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 class FirestoreService {
   final _firestore = FirebaseFirestore.instance;
 
-  Future<List?> getCurrentVenues() async {
+  Future<List?> getAllVenues() async {
     final QuerySnapshot qs = await _firestore.collection("Venues").get();
     var venuesList = [];
 
@@ -18,6 +18,33 @@ class FirestoreService {
       }
 
       return venuesList;
+    }
+
+    return null;
+  }
+
+  Future<String?> getVenueByName(String venueName) async {
+    final QuerySnapshot qs = await _firestore
+        .collection("Venues")
+        .where("Venue", isEqualTo: venueName)
+        .get();
+
+    if (qs.docs.isNotEmpty) {
+      return qs.docs[0].id;
+    }
+
+    return null;
+  }
+
+  Future<dynamic> getMenu(String venueID) async {
+    final QuerySnapshot qs = await _firestore
+        .collection("Venues")
+        .doc(venueID)
+        .collection("Menu")
+        .get();
+
+    if(qs.docs.isNotEmpty){
+      return qs.docs[0];
     }
 
     return null;

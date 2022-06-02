@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../MyWidgets/navigatorButtonCard.dart';
+import '../../../MyWidgets/navigatorButtonCard.dart';
 import 'updateProfilePage.dart';
 
 class ProfileSettingsPage extends StatefulWidget {

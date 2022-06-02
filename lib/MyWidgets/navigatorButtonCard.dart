@@ -2,9 +2,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import '../Core/User/uploadProfileImagePage.dart';
+import '../Core/User/ProfilePages/uploadProfileImagePage.dart';
 import '../welcomePage.dart';
-import '../Core/User/mainPage.dart';
+import '../Core/User/BottomNavigationBarPages/mainPage.dart';
 import '../services/authService.dart';
 
 class NavigatorButtonCard extends StatefulWidget {

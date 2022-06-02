@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/firestoreService.dart';
-import '../Core/User/mainPage.dart';
+import '../Core/User/BottomNavigationBarPages/mainPage.dart';
 import '../welcomePage.dart';
 
 class Direct extends StatelessWidget {
@@ -23,8 +23,8 @@ class Direct extends StatelessWidget {
         });
   }
 
-  Future<String> getUser() {
+  Future<String> getUser() async {
     FirestoreService _firestoreService = FirestoreService();
-    return _firestoreService.getUser();
+    return await _firestoreService.getUser();
   }
 }
