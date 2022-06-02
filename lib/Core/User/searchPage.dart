@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'googleMaps.dart';
 import '../../services/firestoreService.dart';
+import 'menuPage.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -20,7 +21,7 @@ class _SearchPageState extends State<SearchPage> {
   TextEditingController searchController = TextEditingController();
 
   getVenues() async {
-    var venuesData = await FirestoreService().getCurrentVenues();
+    var venuesData = await FirestoreService().getAllVenues();
 
     setState(() {
       venuesData?.forEach((element) {
@@ -39,7 +40,7 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-            child: test.isEmpty
+            child: venues.isEmpty
                 ? Column(
                     children: [
                       Padding(
@@ -128,14 +129,18 @@ class _SearchPageState extends State<SearchPage> {
                                             onPressed: () {
                                               _showLocation(venues[index]);
                                             },
-                                            child: const Text(
-                                                "Show on Google Maps")),
+                                            child: const Text("Show location")),
                                         TextButton(
                                             onPressed: () {
-                                              _showMenus();
+                                              _showMenu(venues[index]);
+                                            },
+                                            child: const Text("Show menu!")),
+                                        TextButton(
+                                            onPressed: () {
+                                              _makeReservation();
                                             },
                                             child: const Text(
-                                                "Make a reservation!"))
+                                                "Make a reservation!")),
                                       ],
                                     )
                                   ],
@@ -240,7 +245,19 @@ class _SearchPageState extends State<SearchPage> {
             builder: (context) => MapView(venueAddress: address)));
   }
 
-  void _showMenus() {}
+  void _showMenu(var venue) async {
+    var venueID = await FirestoreService().getVenueByName(venue["Venue Name"]);
+
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => MenuPage(
+                  venueName: venue["Venue Name"],
+                  venueID: venueID.toString(),
+                )));
+  }
+
+  void _makeReservation() {}
 
   Future<void> _searchVenueByName(String value) async {}
 }

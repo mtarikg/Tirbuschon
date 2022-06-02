@@ -23,8 +23,8 @@ class Direct extends StatelessWidget {
         });
   }
 
-  Future<String> getUser() {
+  Future<String> getUser() async {
     FirestoreService _firestoreService = FirestoreService();
-    return _firestoreService.getUser();
+    return await _firestoreService.getUser();
   }
 }
