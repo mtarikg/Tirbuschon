@@ -20,44 +20,46 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         title: const Text("Sign Up"),
       ),
-      body: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const SizedBox(height: 5),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _tirbuschonText(),
-                const SizedBox(height: 10),
-                Column(
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: _emailTextField(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: _passwordTextField(),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: _confirmPasswordTextField(),
-                    ),
-                    const SizedBox(height: 10),
-                    SignUpButton(
-                        context: context,
-                        email: email,
-                        password: password,
-                        confirmedPassword: confirmedPassword,
-                        formKey: _formKey),
-                  ],
-                ),
-              ],
-            ),
-            AlreadySignedUpReminderButton(context: context),
-          ],
+      body: SingleChildScrollView(
+        child: Form(
+          key: _formKey,
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const SizedBox(height: 5),
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  _tirbuschonText(),
+                  const SizedBox(height: 10),
+                  Column(
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: _emailTextField(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: _passwordTextField(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: _confirmPasswordTextField(),
+                      ),
+                      const SizedBox(height: 10),
+                      SignUpButton(
+                          context: context,
+                          email: email,
+                          password: password,
+                          confirmedPassword: confirmedPassword,
+                          formKey: _formKey),
+                    ],
+                  ),
+                ],
+              ),
+              AlreadySignedUpReminderButton(context: context),
+            ],
+          ),
         ),
       ),
     );
@@ -131,27 +133,11 @@ class _SignUpPageState extends State<SignUpPage> {
           errorDetail = "Email field can not be empty!";
         } else if (!value.contains("@")) {
           errorDetail = "Value should be an email format.";
+        } else if(value.contains("@tirbuschon.com")){
+          errorDetail = "You cannot signup with @tirbuschon.com domain.";
         }
 
-          if (value!.isEmpty) {
-            return "Email field can not be empty!";
-          } else if (value.contains("@tirbuschon.com")) {
-            return "You cannot signup with @tirbuschon.com domain";
-          } else if (!value.contains("@")) {
-            return "Value should be an email format.";
-            errorDetail = "Email field can not be empty!";
-          } else if (!value.contains("@")) {
-            errorDetail = "Value should be an email format.";
-          }
-
-          errorDetail != null
-              ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-                  content: Text(errorDetail.toString()),
-                ))
-              : null;
-        },
-        onSaved: (value) {
-      
+        return errorDetail ?? null;
       },
       onChanged: (value) {
         setState(() {
