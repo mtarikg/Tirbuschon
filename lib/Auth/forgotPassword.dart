@@ -74,7 +74,7 @@ class ResetPasswordButton extends StatelessWidget {
       child: TextButton(
         onPressed: isEnabled
             ? () {
-          _resetPassword(email);
+                _resetPassword(email);
               }
             : null,
         child: const Text(
@@ -104,5 +104,9 @@ class ResetPasswordButton extends StatelessWidget {
         content: Text(errorDetail.toString()),
       ));
     });
+
+    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+      content: Text("A link has been sent you to reset your password."),
+    ));
   }
 }
