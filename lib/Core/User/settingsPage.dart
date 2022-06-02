@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../MyWidgets/navigatorButtonCard.dart';
-import 'profileSettingsPage.dart';
+import 'ProfilePages/profileSettingsPage.dart';
 import '../../welcomePage.dart';
 import '../../services/authService.dart';
-import 'policyPage.dart';
+import 'ProfilePages/policyPage.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({Key? key}) : super(key: key);

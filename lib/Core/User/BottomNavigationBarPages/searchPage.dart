@@ -1,8 +1,8 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'googleMaps.dart';
-import '../../services/firestoreService.dart';
-import 'menuPage.dart';
+import '../SearchPages/googleMaps.dart';
+import '../../../services/firestoreService.dart';
+import '../SearchPages/menuPage.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);

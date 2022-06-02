@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../services/firestoreService.dart';
+import '../../../services/firestoreService.dart';
 
 class MenuPage extends StatefulWidget {
   final String venueName;

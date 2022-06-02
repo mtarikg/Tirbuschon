@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../services/firestoreService.dart';
-import '../Core/User/mainPage.dart';
+import '../Core/User/BottomNavigationBarPages/mainPage.dart';
 import '../welcomePage.dart';
 
 class Direct extends StatelessWidget {

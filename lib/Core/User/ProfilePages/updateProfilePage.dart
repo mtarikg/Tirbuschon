@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../MyWidgets/navigatorButtonCard.dart';
+import '../../../MyWidgets/navigatorButtonCard.dart';
 
 class UpdateProfilePage extends StatefulWidget {
   const UpdateProfilePage({Key? key}) : super(key: key);
