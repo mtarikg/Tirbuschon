@@ -1,10 +1,6 @@
 import 'dart:async';
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
-import 'package:image_picker/image_picker.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
 class EmailSender extends StatefulWidget {
@@ -19,8 +15,11 @@ class _EmailSenderState extends State<EmailSender> {
     text: 'berna@tirbuschon.admin.com',
   );
 
-  final _subjectController = TextEditingController();
+  final _phoneController = TextEditingController(
+    text: '+905357894152',
+  );
 
+  final _subjectController = TextEditingController();
   final _bodyController = TextEditingController();
 
   Future<void> send() async {
@@ -83,6 +82,17 @@ class _EmailSenderState extends State<EmailSender> {
             Padding(
               padding: EdgeInsets.all(8.0),
               child: TextField(
+                controller: _phoneController,
+                readOnly: true,
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Phone',
+                ),
+              ),
+            ),
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: TextField(
                 controller: _subjectController,
                 decoration: InputDecoration(
                   border: OutlineInputBorder(),
@@ -100,8 +110,7 @@ class _EmailSenderState extends State<EmailSender> {
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
                   decoration: InputDecoration(
-                      hintText: "Description",
-                      border: OutlineInputBorder()),
+                      hintText: "Description", border: OutlineInputBorder()),
                 ),
               ),
             ),

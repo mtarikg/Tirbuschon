@@ -7,6 +7,7 @@ import 'package:tirbuschon_feng497/Admin/add_new_restaurant/common_widgets/admin
 import 'package:tirbuschon_feng497/Admin/add_new_restaurant/common_widgets/admin_loading.dart';
 import 'package:tirbuschon_feng497/Admin/add_new_restaurant/common_widgets/admin_text_field.dart';
 import 'package:tirbuschon_feng497/Admin/validation_service.dart';
+import 'package:tirbuschon_feng497/Auth/loginPage.dart';
 
 class SignUpContent extends StatelessWidget {
   @override
@@ -55,6 +56,8 @@ class SignUpContent extends StatelessWidget {
             const SizedBox(height: 40),
             _createSignUpButton(context),
             // Spacer(),
+            const SizedBox(height: 40),
+            _createSignOutButton(context),
             const SizedBox(height: 40),
           ],
         ),
@@ -202,6 +205,19 @@ class SignUpContent extends StatelessWidget {
               bloc.add(SignUpTappedEvent());
             },
           );
+        },
+      ),
+    );
+  }
+
+  Widget _createSignOutButton(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20),
+      child: AdminButton(
+        title: 'Sign Out',
+        onTap: () {
+          Navigator.push(
+              context, MaterialPageRoute(builder: (context) => LoginPage()));
         },
       ),
     );

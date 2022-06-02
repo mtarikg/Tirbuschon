@@ -25,42 +25,44 @@ class _LoginPageState extends State<LoginPage> {
           title: const Text("Login"),
         ),
         backgroundColor: Colors.grey[100],
-        body: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(height: 5),
-              Text(
-                "Tirbuschon",
-                style: TextStyle(
-                  fontSize: 42,
-                  color: Colors.blue[400],
-                  fontStyle: FontStyle.italic,
-                  fontWeight: FontWeight.bold,
+        body: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const SizedBox(height: 5),
+                Text(
+                  "Tirbuschon",
+                  style: TextStyle(
+                    fontSize: 42,
+                    color: Colors.blue[400],
+                    fontStyle: FontStyle.italic,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
-              ),
-              Column(
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: _emailTextField(),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: _passwordTextField(),
-                  ),
-                  ForgotPasswordButton(context: context),
-                  const SizedBox(height: 10),
-                  LoginButton(
-                      email: email,
-                      password: password,
-                      context: context,
-                      formKey: _formKey),
-                ],
-              ),
-              NewUserReminderButton(context: context),
-            ],
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: _emailTextField(),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: _passwordTextField(),
+                    ),
+                    ForgotPasswordButton(context: context),
+                    const SizedBox(height: 10),
+                    LoginButton(
+                        email: email,
+                        password: password,
+                        context: context,
+                        formKey: _formKey),
+                  ],
+                ),
+                NewUserReminderButton(context: context),
+              ],
+            ),
           ),
         ),
       ),
