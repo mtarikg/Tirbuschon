@@ -12,6 +12,7 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
+  final passwordKey = GlobalKey<FormFieldState>();
   late String email, password;
 
   @override
@@ -35,6 +36,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   children: [
                     _emailTextField(),
                     _passwordTextField(),
+                    _confirmPasswordTextField(),
                     const SizedBox(height: 10),
                     _signUpButton(context),
                   ],
@@ -76,6 +78,7 @@ class _SignUpPageState extends State<SignUpPage> {
     return Padding(
       padding: const EdgeInsets.all(10.0),
       child: TextFormField(
+        key: passwordKey,
         obscureText: true,
         decoration: const InputDecoration(
           prefixIcon: Icon(Icons.lock),
@@ -83,15 +86,56 @@ class _SignUpPageState extends State<SignUpPage> {
           hintText: "Please enter your password",
         ),
         validator: (value) {
+          String pattern =
+              r'^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[!@#\$&*~]).{6,}$';
+          String? errorDetail;
+
           if (value!.isEmpty) {
-            return "Password field can not be empty!";
-          } else if (value.trim().length < 4) {
-            return "Password can not be less then 4 chars.";
+            errorDetail = "Password field can not be empty!";
+          } else if (!value.contains(RegExp(pattern))) {
+            errorDetail =
+                "Password should consist of at least 1 uppercase, 1 lowercase, 1 numeric and 1 special character "
+                "with at least 6 characters in total.";
           }
-          return null;
+
+          errorDetail != null
+              ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(errorDetail.toString()),
+                ))
+              : null;
+        },
+      ),
+    );
+  }
+
+  Padding _confirmPasswordTextField() {
+    var passwordValue = passwordKey.currentState?.value;
+    return Padding(
+      padding: const EdgeInsets.all(10.0),
+      child: TextFormField(
+        obscureText: true,
+        decoration: const InputDecoration(
+          prefixIcon: Icon(Icons.lock),
+          labelText: "Confirm Password",
+          hintText: "Please confirm your password",
+        ),
+        validator: (value) {
+          String? errorDetail;
+
+          if (value != passwordValue) {
+            errorDetail = "Passwords should be matched!";
+          }
+
+          errorDetail != null
+              ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(errorDetail.toString()),
+                ))
+              : null;
         },
         onSaved: (value) {
-          password = value.toString();
+          if (value == passwordValue) {
+            password = value.toString();
+          }
         },
       ),
     );
@@ -107,16 +151,24 @@ class _SignUpPageState extends State<SignUpPage> {
           hintText: "Please enter your email",
         ),
         validator: (value) {
+          String? errorDetail;
+
           if (value!.isEmpty) {
             return "Email field can not be empty!";
-          } 
-          else if (value.contains("@tirbuschon.com")) {
+          } else if (value.contains("@tirbuschon.com")) {
             return "You cannot signup with @tirbuschon.com domain";
-          } 
-          else if (!value.contains("@")) {
+          } else if (!value.contains("@")) {
             return "Value should be an email format.";
+            errorDetail = "Email field can not be empty!";
+          } else if (!value.contains("@")) {
+            errorDetail = "Value should be an email format.";
           }
-          return null;
+
+          errorDetail != null
+              ? ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+                  content: Text(errorDetail.toString()),
+                ))
+              : null;
         },
         onSaved: (value) {
           email = value.toString();
@@ -158,15 +210,15 @@ class _SignUpPageState extends State<SignUpPage> {
       var uid = await _authService.createUser(email, password);
 
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => FurtherInfoToSignUpPage(id: uid)))
+              context,
+              MaterialPageRoute(
+                  builder: (context) => FurtherInfoToSignUpPage(id: uid)))
           .catchError((error) {
         String errorDetail;
         if (error.toString().contains('user-disabled')) {
-          errorDetail = "Email is invalid";
+          errorDetail = "This account is disabled.";
         } else if (error.toString().contains('user-not-found')) {
-          errorDetail = "The user is not found.";
+          errorDetail = "The user has not been found.";
         } else {
           errorDetail = "There is an error that we can not define.$error";
         }

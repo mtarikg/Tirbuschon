@@ -174,9 +174,15 @@ class _WelcomePageState extends State<WelcomePage> {
     email = googleUser.email!;
     avatarURL = googleUser.photoURL!;
 
-    var document = await _firestore.collection('users').doc(userId).get();
-    var userData = document.data();
-    if (userData != null) {
+    var collectionExist = false;
+    await _firestore
+        .collection('Users')
+        .doc(userId)
+        .collection("profileInfo")
+        .get()
+        .then((value) => collectionExist = value.docs.isNotEmpty);
+
+    if (collectionExist) {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const Direct()),

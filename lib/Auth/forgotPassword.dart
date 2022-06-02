@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../services/authService.dart';
+
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({Key? key}) : super(key: key);
 
@@ -8,16 +10,21 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
+  late String email;
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Forget Password"),
+        title: const Text("Forgot Password"),
       ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
-          _emailTextField(),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: _emailTextField(),
+          ),
           const SizedBox(
             height: 20,
           ),
@@ -27,20 +34,16 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     );
   }
 
-  Column _emailTextField() {
-    return Column(
-      children: const [
-        Padding(
-          padding: EdgeInsets.all(10.0),
-          child: TextField(
-            decoration: InputDecoration(
-              prefixIcon: Icon(Icons.mail),
-              labelText: "Email",
-              hintText: "Please enter your email",
-            ),
-          ),
-        ),
-      ],
+  TextField _emailTextField() {
+    return TextField(
+      decoration: const InputDecoration(
+        prefixIcon: Icon(Icons.mail),
+        labelText: "Email",
+        hintText: "Please enter your email",
+      ),
+      onChanged: (value) {
+        email = value;
+      },
     );
   }
 
@@ -55,7 +58,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             width: 1,
           )),
       child: TextButton(
-        onPressed: () {},
+        onPressed: () {
+          _resetPassword(email);
+        },
         child: const Text(
           "Request Password Reset",
           style: TextStyle(
@@ -65,5 +70,23 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         ),
       ),
     );
+  }
+
+  void _resetPassword(String email) {
+    final AuthService _authService = AuthService();
+    _authService.resetPassword(email).catchError((error) {
+      String errorDetail;
+      if (error.toString().contains('invalid-email')) {
+        errorDetail = "Email is badly formatted";
+      } else if (error.toString().contains('user-not-found')) {
+        errorDetail = "The user has not been found.";
+      } else {
+        errorDetail = "There is an error that we can not define.$error";
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(errorDetail.toString()),
+      ));
+    });
   }
 }
