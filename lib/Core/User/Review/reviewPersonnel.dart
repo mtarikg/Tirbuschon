@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'package:tirbuschon_feng497/Core/mainPage.dart';
+import 'package:tirbuschon_feng497/Core/User/mainPage.dart';
 
 class ReviewPersonnelPage extends StatefulWidget {
   const ReviewPersonnelPage({Key? key}) : super(key: key);
