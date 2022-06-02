@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../SearchPages/googleMaps.dart';
 import '../../../services/firestoreService.dart';
@@ -40,118 +39,120 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-            child: venues.isEmpty
-                ? Column(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: _searchTextField(),
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: _venueTypeDropdown(),
-                            ),
+            child: Column(
+              children: [
+                Column(
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(10.0),
+                      child: _searchTextField(),
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                      children: [
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: _venueTypeDropdown(),
                           ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: _cityDropdown(),
-                            ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: _cityDropdown(),
                           ),
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.all(10.0),
-                              child: _districtDropdown(),
-                            ),
+                        ),
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: _districtDropdown(),
                           ),
-                        ],
-                      ),
-                      const SizedBox(height: 50),
-                      const Text("There is no venue available.")
-                    ],
-                  )
-                : ListView.builder(
-                    itemCount: venues.length,
-                    itemBuilder: (context, int index) {
-                      return Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          const SizedBox(height: 10),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Flexible(
-                              child: Container(
-                                width: MediaQuery.of(context).size.width - 30,
-                                decoration: BoxDecoration(
-                                  border:
-                                      Border.all(width: 1, color: Colors.grey),
-                                  borderRadius: BorderRadius.circular(20),
-                                ),
-                                child: Column(
-                                  children: [
-                                    venues[index]["imageURL"] == null
-                                        ? const SizedBox()
-                                        : Padding(
-                                            padding: const EdgeInsets.only(
-                                                top: 10, bottom: 10),
-                                            child: Container(
-                                              width: MediaQuery.of(context)
-                                                      .size
-                                                      .width -
-                                                  60,
-                                              height: 230,
-                                              decoration: BoxDecoration(
-                                                border: Border.all(
-                                                    width: 1,
-                                                    color: Colors.grey),
-                                              ),
-                                              child: Image.network(
-                                                venues[index]["imageURL"],
-                                                fit: BoxFit.cover,
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 25),
+                Expanded(
+                  child: ListView.builder(
+                      itemCount: venues.length,
+                      itemBuilder: (context, int index) {
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            const SizedBox(height: 10),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Flexible(
+                                child: Container(
+                                  width: MediaQuery.of(context).size.width - 30,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(width: 1, color: Colors.grey),
+                                    borderRadius: BorderRadius.circular(20),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      venues[index]["imageURL"] == null
+                                          ? const SizedBox()
+                                          : Padding(
+                                              padding: const EdgeInsets.only(
+                                                  top: 10, bottom: 10),
+                                              child: Container(
+                                                width: MediaQuery.of(context)
+                                                        .size
+                                                        .width -
+                                                    60,
+                                                height: 230,
+                                                decoration: BoxDecoration(
+                                                  border: Border.all(
+                                                      width: 1, color: Colors.grey),
+                                                ),
+                                                child: Image.network(
+                                                  venues[index]["imageURL"],
+                                                  fit: BoxFit.cover,
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                    Padding(
-                                      padding: const EdgeInsets.only(left: 9),
-                                      child: Text(venues[index]["Venue Name"],
-                                          style: const TextStyle(
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                                    Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.spaceEvenly,
-                                      children: [
-                                        TextButton(
-                                            onPressed: () {
-                                              _showLocation(venues[index]);
-                                            },
-                                            child: const Text("Show location")),
-                                        TextButton(
-                                            onPressed: () {
-                                              _showMenu(venues[index]);
-                                            },
-                                            child: const Text("Show menu!")),
-                                        TextButton(
-                                            onPressed: () {
-                                              _makeReservation();
-                                            },
-                                            child: const Text(
-                                                "Make a reservation!")),
-                                      ],
-                                    )
-                                  ],
+                                      Padding(
+                                        padding: const EdgeInsets.only(left: 9),
+                                        child: Text(venues[index]["Venue Name"],
+                                            style: const TextStyle(
+                                                fontWeight: FontWeight.bold)),
+                                      ),
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceEvenly,
+                                        children: [
+                                          TextButton(
+                                              onPressed: () {
+                                                _showLocation(venues[index]);
+                                              },
+                                              child: const Text("Show location")),
+                                          TextButton(
+                                              onPressed: () {
+                                                _showMenu(venues[index]);
+                                              },
+                                              child: const Text("Show menu!")),
+                                          TextButton(
+                                              onPressed: () {
+                                                _makeReservation();
+                                              },
+                                              child:
+                                                  const Text("Make a reservation!")),
+                                        ],
+                                      )
+                                    ],
+                                  ),
                                 ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 10),
-                        ],
-                      );
-                    })));
+                            const SizedBox(height: 10),
+                          ],
+                        );
+                      }),
+                ),
+              ],
+            )));
   }
 
   DropdownButtonFormField<String> _venueTypeDropdown() {

@@ -23,8 +23,6 @@ class FirestoreService {
     return null;
   }
 
-  Future<dynamic> getVenueByID(String venueID) async {}
-
   Future<String?> getVenueByName(String venueName) async {
     final QuerySnapshot qs = await _firestore
         .collection("Venues")
