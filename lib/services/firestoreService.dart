@@ -43,11 +43,44 @@ class FirestoreService {
         .collection("Menu")
         .get();
 
-    if(qs.docs.isNotEmpty){
+    if (qs.docs.isNotEmpty) {
       return qs.docs[0];
     }
 
     return null;
+  }
+
+  Future<bool> makeReservation(String venueID) async {
+    final QuerySnapshot qs = await _firestore
+        .collection("Venues")
+        .doc(venueID)
+        .collection("Profile Information")
+        .get();
+
+    if (qs.docs.isNotEmpty) {
+      var subCollectionID = qs.docs[0].id;
+
+      var reservationCapacity = await _firestore
+          .collection("Venues")
+          .doc(venueID)
+          .collection("Profile Information")
+          .doc(subCollectionID)
+          .get()
+          .then((value) => value.data()!["Reservation Capasity"]);
+
+      int newValue = int.parse(reservationCapacity);
+      newValue = newValue - 1;
+
+      await _firestore
+          .collection("Venues")
+          .doc(venueID)
+          .collection("Profile Information")
+          .doc(subCollectionID)
+          .update({"Reservation Capasity": newValue.toString()});
+      return true;
+    }
+
+    return false;
   }
 
   Future<bool> userExists(String userID) async {
