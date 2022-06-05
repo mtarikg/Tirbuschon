@@ -328,7 +328,8 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _showMenu(var venue) async {
-    var venueID = await FirestoreService().getVenueIDByName(venue["Venue Name"]);
+    var venueID =
+        await FirestoreService().getVenueIDByName(venue["Venue Name"]);
 
     Navigator.push(
         context,
@@ -340,7 +341,8 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _makeReservation(var venue) async {
-    var venueID = await FirestoreService().getVenueIDByName(venue["Venue Name"]);
+    var venueID =
+        await FirestoreService().getVenueIDByName(venue["Venue Name"]);
 
     if (venueID!.isNotEmpty) {
       var result = await FirestoreService().makeReservation(venueID);
@@ -349,24 +351,36 @@ class _SearchPageState extends State<SearchPage> {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
           content: Text("You've made a reservation successfully."),
         ));
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+          content: Text("Something went wrong while making a reservation."),
+        ));
       }
-
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Something went wrong while making a reservation."),
+        content: Text("The venue has not been found."),
       ));
     }
-
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text("The venue has not been found."),
-    ));
   }
 
   Future<void> _searchVenueByName(String value) async {
     var result = await FirestoreService().getVenuesByName(value);
-    setState(() {
-      result?.forEach((element) {
-        searchResult.add(element);
-      });
+
+    result?.forEach((element) {
+      var isExist = false;
+
+      for (var item in searchResult) {
+        if (item["Address"] == element["Address"]) {
+          isExist = true;
+          break;
+        }
+      }
+
+      if (!isExist) {
+        setState(() {
+          searchResult.add(element);
+        });
+      }
     });
   }
 }

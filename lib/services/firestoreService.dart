@@ -28,7 +28,7 @@ class FirestoreService {
 
     final QuerySnapshot qs = await _firestore
         .collection("Venues")
-        .where("Venue", isEqualTo: venueName)
+        .where("Venue", isGreaterThanOrEqualTo: venueName)
         .get();
 
     if (qs.docs.isNotEmpty) {
