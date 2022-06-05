@@ -23,7 +23,30 @@ class FirestoreService {
     return null;
   }
 
-  Future<String?> getVenueByName(String venueName) async {
+  Future<List?> getVenuesByName(String venueName) async {
+    var venuesList = [];
+
+    final QuerySnapshot qs = await _firestore
+        .collection("Venues")
+        .where("Venue", isEqualTo: venueName)
+        .get();
+
+    if (qs.docs.isNotEmpty) {
+      for (var doc in qs.docs) {
+        var profileInfo = await doc.reference
+            .collection("Profile Information")
+            .get()
+            .then((value) => value.docs[0].data());
+        venuesList.add(profileInfo);
+      }
+
+      return venuesList;
+    }
+
+    return null;
+  }
+
+  Future<String?> getVenueIDByName(String venueName) async {
     final QuerySnapshot qs = await _firestore
         .collection("Venues")
         .where("Venue", isEqualTo: venueName)
