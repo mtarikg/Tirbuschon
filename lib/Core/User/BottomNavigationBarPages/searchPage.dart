@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ReservationPages/selectDatePage.dart';
 import '../SearchPages/googleMaps.dart';
 import '../../../services/firestoreService.dart';
 import '../SearchPages/menuPage.dart';
@@ -12,7 +13,7 @@ class SearchPage extends StatefulWidget {
 
 class _SearchPageState extends State<SearchPage> {
   var venues = [];
-  var test = [];
+  var searchResult = [];
   String searchValue = '';
   String venueType = '';
   String districtValue = '';
@@ -74,80 +75,163 @@ class _SearchPageState extends State<SearchPage> {
         ),
         const SizedBox(height: 25),
         Expanded(
-          child: ListView.builder(
-              itemCount: venues.length,
-              itemBuilder: (context, int index) {
-                return Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 10),
-                    Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Flexible(
-                        child: Container(
-                          width: MediaQuery.of(context).size.width - 30,
-                          decoration: BoxDecoration(
-                            border: Border.all(width: 1, color: Colors.grey),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            children: [
-                              venues[index]["imageURL"] == null
-                                  ? const SizedBox()
-                                  : Padding(
-                                      padding: const EdgeInsets.only(
-                                          top: 10, bottom: 10),
-                                      child: Container(
-                                        width:
-                                            MediaQuery.of(context).size.width -
-                                                60,
-                                        height: 230,
-                                        decoration: BoxDecoration(
-                                          border: Border.all(
-                                              width: 1, color: Colors.grey),
-                                        ),
-                                        child: Image.network(
-                                          venues[index]["imageURL"],
-                                          fit: BoxFit.cover,
-                                        ),
-                                      ),
-                                    ),
-                              Padding(
-                                padding: const EdgeInsets.only(left: 9),
-                                child: Text(venues[index]["Venue Name"],
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
+          child: searchResult.isEmpty
+              ? ListView.builder(
+                  itemCount: venues.length,
+                  itemBuilder: (context, int index) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Flexible(
+                            child: Container(
+                              width: MediaQuery.of(context).size.width - 30,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 1, color: Colors.grey),
+                                borderRadius: BorderRadius.circular(20),
                               ),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceEvenly,
+                              child: Column(
                                 children: [
-                                  TextButton(
-                                      onPressed: () {
-                                        _showLocation(venues[index]);
-                                      },
-                                      child: const Text("Show location")),
-                                  TextButton(
-                                      onPressed: () {
-                                        _showMenu(venues[index]);
-                                      },
-                                      child: const Text("Show menu!")),
-                                  TextButton(
-                                      onPressed: () {
-                                        _makeReservation(venues[index]);
-                                      },
-                                      child: const Text("Make a reservation!")),
+                                  venues[index]["imageURL"] == null
+                                      ? const SizedBox()
+                                      : Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, bottom: 10),
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                60,
+                                            height: 230,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1, color: Colors.grey),
+                                            ),
+                                            child: Image.network(
+                                              venues[index]["imageURL"],
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 9),
+                                    child: Text(venues[index]["Venue Name"],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      TextButton(
+                                          onPressed: () {
+                                            _showLocation(venues[index]);
+                                          },
+                                          child: const Text("Show location")),
+                                      TextButton(
+                                          onPressed: () {
+                                            _showMenu(venues[index]);
+                                          },
+                                          child: const Text("Show menu!")),
+                                      TextButton(
+                                          onPressed: () {
+                                            _makeReservation(venues[index]);
+                                          },
+                                          child: const Text(
+                                              "Make a reservation!")),
+                                    ],
+                                  )
                                 ],
-                              )
-                            ],
+                              ),
+                            ),
                           ),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
-                  ],
-                );
-              }),
+                        const SizedBox(height: 10),
+                      ],
+                    );
+                  })
+              : ListView.builder(
+                  itemCount: searchResult.length,
+                  itemBuilder: (context, int index) {
+                    return Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const SizedBox(height: 10),
+                        Padding(
+                          padding: const EdgeInsets.all(8.0),
+                          child: Flexible(
+                            child: Container(
+                              width: MediaQuery.of(context).size.width - 30,
+                              decoration: BoxDecoration(
+                                border:
+                                    Border.all(width: 1, color: Colors.grey),
+                                borderRadius: BorderRadius.circular(20),
+                              ),
+                              child: Column(
+                                children: [
+                                  searchResult[index]["imageURL"] == null
+                                      ? const SizedBox()
+                                      : Padding(
+                                          padding: const EdgeInsets.only(
+                                              top: 10, bottom: 10),
+                                          child: Container(
+                                            width: MediaQuery.of(context)
+                                                    .size
+                                                    .width -
+                                                60,
+                                            height: 230,
+                                            decoration: BoxDecoration(
+                                              border: Border.all(
+                                                  width: 1, color: Colors.grey),
+                                            ),
+                                            child: Image.network(
+                                              searchResult[index]["imageURL"],
+                                              fit: BoxFit.cover,
+                                            ),
+                                          ),
+                                        ),
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 9),
+                                    child: Text(
+                                        searchResult[index]["Venue Name"],
+                                        style: const TextStyle(
+                                            fontWeight: FontWeight.bold)),
+                                  ),
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      TextButton(
+                                          onPressed: () {
+                                            _showLocation(searchResult[index]);
+                                          },
+                                          child: const Text("Show location")),
+                                      TextButton(
+                                          onPressed: () {
+                                            _showMenu(searchResult[index]);
+                                          },
+                                          child: const Text("Show menu!")),
+                                      TextButton(
+                                          onPressed: () {
+                                            _makeReservation(
+                                                searchResult[index]);
+                                          },
+                                          child: const Text(
+                                              "Make a reservation!")),
+                                    ],
+                                  )
+                                ],
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                      ],
+                    );
+                  }),
         ),
       ],
     )));
@@ -245,7 +329,8 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _showMenu(var venue) async {
-    var venueID = await FirestoreService().getVenueByName(venue["Venue Name"]);
+    var venueID =
+        await FirestoreService().getVenueIDByName(venue["Venue Name"]);
 
     Navigator.push(
         context,
@@ -257,26 +342,33 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _makeReservation(var venue) async {
-    var venueID = await FirestoreService().getVenueByName(venue["Venue Name"]);
+    var venueID =
+        await FirestoreService().getVenueIDByName(venue["Venue Name"]);
 
-    if (venueID!.isNotEmpty) {
-      var result = await FirestoreService().makeReservation(venueID);
-
-      if (result) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("You've made a reservation successfully."),
-        ));
-      }
-
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("Something went wrong while making a reservation."),
-      ));
-    }
-
-    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-      content: Text("The venue has not been found."),
-    ));
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SelectDate(venueID: venueID.toString())));
   }
 
-  Future<void> _searchVenueByName(String value) async {}
+  Future<void> _searchVenueByName(String value) async {
+    var result = await FirestoreService().getVenuesByName(value);
+
+    result?.forEach((element) {
+      var isExist = false;
+
+      for (var item in searchResult) {
+        if (item["Address"] == element["Address"]) {
+          isExist = true;
+          break;
+        }
+      }
+
+      if (!isExist) {
+        setState(() {
+          searchResult.add(element);
+        });
+      }
+    });
+  }
 }

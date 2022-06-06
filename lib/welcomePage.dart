@@ -1,7 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Admin/add_new_restaurant/page/rest_add_page.dart';
 import 'services/firestoreService.dart';
-import 'Restaurant/Screens/helper/navigator.dart';
 import 'Auth/direct.dart';
 import 'Auth/furtherInfoToSignUpPage.dart';
 import 'services/authService.dart';
@@ -61,25 +59,14 @@ class _WelcomePageState extends State<WelcomePage> {
               LoginContainer(context: context),
               const SizedBox(height: 30),
               SignUpContainer(context: context),
+              const SizedBox(height: 30),
+              const Text("Quick sign up"),
+              const Text("(For individual users only)",
+                  style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  
-                  Padding(
-                    padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
-                    child: Expanded(
-                      child: SignInButton(
-                        Buttons.Facebook,
-                        text: "Sign up with Facebook",
-                        onPressed: () {
-                          // signInWithFacebook();
-                        },
-                      ),
-                    ),
-                  ),
-                ],
-              ),
+              Padding(
+                  padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
+                  child: GoogleSignUp(context: context)),
             ],
           ),
         ],
