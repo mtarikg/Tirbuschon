@@ -17,36 +17,35 @@ class _ProfilePageState extends State<ProfilePage> {
       body: ListView(
         children: [
           const _UserProfileImageContainer(),
-          _profileInfo(context),
-          _previousReservationsText(),
+          Padding(
+            padding: const EdgeInsets.only(top: 20),
+            child: _profileInfo(context),
+          ),
+          Padding(
+              padding: const EdgeInsets.only(top: 40, bottom: 10),
+              child: _previousReservationsText()),
           _showReservations()
         ],
       ),
     );
   }
 
-  Padding _profileInfo(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 20),
-      child: Column(
-        children: const [
-          _UserInfoContainer(text: "fullName", boldOption: true),
-          _UserInfoContainer(text: "username", boldOption: false)
-        ],
-      ),
+  Column _profileInfo(BuildContext context) {
+    return Column(
+      children: const [
+        _UserInfoContainer(text: "fullName", boldOption: true),
+        _UserInfoContainer(text: "username", boldOption: false)
+      ],
     );
   }
 
-  Padding _previousReservationsText() {
-    return const Padding(
-      padding: EdgeInsets.only(top: 40, bottom: 10),
-      child: Center(
-          child: Text(
-        "My Previous Reservations",
-        style: TextStyle(
-            fontSize: 20, color: Colors.black87, fontWeight: FontWeight.bold),
-      )),
-    );
+  Widget _previousReservationsText() {
+    return const Center(
+        child: Text(
+      "My Previous Reservations",
+      style: TextStyle(
+          fontSize: 20, color: Colors.black87, fontWeight: FontWeight.bold),
+    ));
   }
 
   Widget _showReservations() {
