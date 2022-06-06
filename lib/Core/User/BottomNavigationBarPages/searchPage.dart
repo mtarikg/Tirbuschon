@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../ReservationPages/selectDatePage.dart';
 import '../SearchPages/googleMaps.dart';
 import '../../../services/firestoreService.dart';
 import '../SearchPages/menuPage.dart';
@@ -344,23 +345,10 @@ class _SearchPageState extends State<SearchPage> {
     var venueID =
         await FirestoreService().getVenueIDByName(venue["Venue Name"]);
 
-    if (venueID!.isNotEmpty) {
-      var result = await FirestoreService().makeReservation(venueID);
-
-      if (result) {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("You've made a reservation successfully."),
-        ));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-          content: Text("Something went wrong while making a reservation."),
-        ));
-      }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("The venue has not been found."),
-      ));
-    }
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => SelectDate(venueID: venueID.toString())));
   }
 
   Future<void> _searchVenueByName(String value) async {

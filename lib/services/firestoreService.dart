@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:uuid/uuid.dart';
 
 class FirestoreService {
   final _firestore = FirebaseFirestore.instance;
@@ -73,7 +74,11 @@ class FirestoreService {
     return null;
   }
 
-  Future<bool> makeReservation(String venueID) async {
+  Future<bool> makeReservation(String userID, String venueID, int capacity,
+      DateTime selectedDate, double price) async {
+    var reservationResult = false;
+    var capacityResult = false;
+
     final QuerySnapshot qs = await _firestore
         .collection("Venues")
         .doc(venueID)
@@ -92,18 +97,59 @@ class FirestoreService {
           .then((value) => value.data()!["Reservation Capasity"]);
 
       int newValue = int.parse(reservationCapacity);
-      newValue = newValue - 1;
+
+      if (newValue != 0) {
+        newValue = newValue - 1;
+
+        await _firestore
+            .collection("Venues")
+            .doc(venueID)
+            .collection("Profile Information")
+            .doc(subCollectionID)
+            .update({"Reservation Capasity": newValue.toString()});
+        capacityResult = true;
+      }
+      else {
+        return reservationResult;
+      }
+    }
+
+    if (capacityResult) {
+      var reservationID = const Uuid().v4();
+      var createdDate = DateTime.now();
 
       await _firestore
           .collection("Venues")
           .doc(venueID)
-          .collection("Profile Information")
-          .doc(subCollectionID)
-          .update({"Reservation Capasity": newValue.toString()});
-      return true;
+          .collection("Reservations")
+          .doc(reservationID)
+          .set({
+        "Capacity": capacity,
+        "Reservation ID": reservationID,
+        "User ID": userID,
+        "Created Date": createdDate,
+        "Reservation Date": selectedDate,
+        "Total Price": price
+      });
+
+      await _firestore
+          .collection("Users")
+          .doc(userID)
+          .collection("Previous Reservations")
+          .doc(reservationID)
+          .set({
+        "Capacity": capacity,
+        "Reservation ID": reservationID,
+        "Venue ID": venueID,
+        "Created Date": createdDate,
+        "Reservation Date": selectedDate,
+        "Total Price": price
+      });
+
+      reservationResult = true;
     }
 
-    return false;
+    return reservationResult;
   }
 
   Future<bool> userExists(String userID) async {
