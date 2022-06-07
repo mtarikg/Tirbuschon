@@ -45,10 +45,10 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _previousReservationsText() {
     return const Center(
         child: Text(
-      "My Reservations",
-      style: TextStyle(
-          fontSize: 20, color: Colors.black87, fontWeight: FontWeight.bold),
-    ));
+          "My Reservations",
+          style: TextStyle(
+              fontSize: 20, color: Colors.black87, fontWeight: FontWeight.bold),
+        ));
   }
 
   Widget _showReservations() {
@@ -58,29 +58,29 @@ class _ProfilePageState extends State<ProfilePage> {
           if (snapshot.hasData) {
             return snapshot.data?.size != 0
                 ? GridView.builder(
-                    padding: const EdgeInsets.all(10),
-                    shrinkWrap: true,
-                    gridDelegate:
-                        const SliverGridDelegateWithFixedCrossAxisCount(
-                      crossAxisCount: 4,
-                      crossAxisSpacing: 5.0,
-                      mainAxisSpacing: 5.0,
-                    ),
-                    itemCount: snapshot.data!.docs.length,
-                    itemBuilder: (context, index) {
-                      var snapshotDocs = snapshot.data!.docs;
-                      return TextButton(
-                          onPressed: () {
-                            _reservationDetail(snapshotDocs[index]);
-                          },
-                          child: Image.asset(
-                              'assets/placeholder-restaurant-300x300.png'));
+              padding: const EdgeInsets.all(10),
+              shrinkWrap: true,
+              gridDelegate:
+              const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                crossAxisSpacing: 5.0,
+                mainAxisSpacing: 5.0,
+              ),
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                var snapshotDocs = snapshot.data!.docs;
+                return TextButton(
+                    onPressed: () {
+                      _reservationDetail(snapshotDocs[index]);
                     },
-                  )
+                    child: Image.asset(
+                        'assets/placeholder-restaurant-300x300.png'));
+              },
+            )
                 : const Padding(
-                    padding: EdgeInsets.all(30.0),
-                    child: Text("No reservations to list."),
-                  );
+              padding: EdgeInsets.all(30.0),
+              child: Text("No reservations to list."),
+            );
           }
           return const Center(
             child: CircularProgressIndicator(),
@@ -90,11 +90,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _reservationDetail(QueryDocumentSnapshot<Object?> snapshotDoc) async {
     var venueData =
-        await FirestoreService().getVenueByID(snapshotDoc["Venue ID"]);
+    await FirestoreService().getVenueByID(snapshotDoc["Venue ID"]);
 
     var reviewData = await FirestoreService()
         .getReviewByReservationID(snapshotDoc["Reservation ID"]);
 
+    var venueImage = venueData["imageURL"];
     var venueName = venueData["Venue Name"];
     var capacity = snapshotDoc["Capacity"].toString();
     var totalPrice = snapshotDoc["Total Price"].toString();
@@ -116,54 +117,57 @@ class _ProfilePageState extends State<ProfilePage> {
 
     showDialog(
       context: context,
-      builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-        child: AlertDialog(
-          title: const Center(child: Text("Reservation Detail")),
-          scrollable: true,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ReservationDetailImageContainer(
-                  context: context, imageURL: venueData["imageURL"]),
-              const SizedBox(height: 40),
-              Flexible(
-                child: Column(
-                  children: [
-                    _ReservationDetailContainer(
-                        iconData: Icons.location_on, text: venueName),
-                    const SizedBox(height: 40),
-                    _ReservationDetailContainer(
-                        iconData: Icons.person, text: capacity),
-                    const SizedBox(height: 40),
-                    _ReservationDetailContainer(
-                        iconData: Icons.price_check, text: totalPrice),
-                    const SizedBox(height: 40),
-                    _ReservationDetailContainer(
-                        iconData: Icons.date_range, text: formattedDate),
-                    if (hasReview) ...[
-                      const SizedBox(height: 40),
-                      _ReservationDetailContainer(
-                          iconData: Icons.star, text: rating.toString()),
-                      if (comment != "") ...[
+      builder: (context) =>
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: AlertDialog(
+              title: const Center(child: Text("Reservation Detail")),
+              scrollable: true,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if(venueImage != null) ...[
+                    ReservationDetailImageContainer(
+                        context: context, imageURL: venueImage),
+                  ],
+                  const SizedBox(height: 40),
+                  Flexible(
+                    child: Column(
+                      children: [
+                        _ReservationDetailContainer(
+                            iconData: Icons.location_on, text: venueName),
                         const SizedBox(height: 40),
                         _ReservationDetailContainer(
-                            iconData: Icons.comment, text: comment),
-                      ]
-                    ]
-                  ],
-                ),
-              )
-            ],
+                            iconData: Icons.person, text: capacity),
+                        const SizedBox(height: 40),
+                        _ReservationDetailContainer(
+                            iconData: Icons.price_check, text: totalPrice),
+                        const SizedBox(height: 40),
+                        _ReservationDetailContainer(
+                            iconData: Icons.date_range, text: formattedDate),
+                        if (hasReview) ...[
+                          const SizedBox(height: 40),
+                          _ReservationDetailContainer(
+                              iconData: Icons.star, text: rating.toString()),
+                          if (comment != "") ...[
+                            const SizedBox(height: 40),
+                            _ReservationDetailContainer(
+                                iconData: Icons.comment, text: comment),
+                          ]
+                        ]
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              actions: [
+                if (!hasReview) ...[
+                  _addReview(context, snapshotDoc["Reservation ID"]),
+                ],
+                _backToProfilePageButton(context)
+              ],
+            ),
           ),
-          actions: [
-            if (!hasReview) ...[
-              _addReview(context, snapshotDoc["Reservation ID"]),
-            ],
-            _backToProfilePageButton(context)
-          ],
-        ),
-      ),
     );
   }
 
@@ -198,10 +202,13 @@ class ReservationDetailImageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: MediaQuery.of(context).size.width - 30,
+        width: MediaQuery
+            .of(context)
+            .size
+            .width - 30,
         height: 250,
         decoration:
-            BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
+        BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
         child: Image.network(
           imageURL,
           fit: BoxFit.fill,
@@ -224,7 +231,10 @@ class _ReservationDetailContainer extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(width: 1, color: Colors.grey))),
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: Row(
         children: [
           Icon(iconData),
@@ -251,20 +261,26 @@ class _UserProfileImageContainer extends StatelessWidget {
         if (snapshot.data == "null") {
           return Center(
               child: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 150,
-                child: Center(
-                  child: Image.asset('assets/placeholder.jpg'),
-                )),
-          ));
+                padding: const EdgeInsets.only(top: 20.0),
+                child: SizedBox(
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
+                    height: 150,
+                    child: Center(
+                      child: Image.asset('assets/placeholder.jpg'),
+                    )),
+              ));
         }
 
         return Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               height: 150,
               child: Center(
                 child: Image.network(snapshot.data),
@@ -290,7 +306,10 @@ class _UserInfoContainer extends StatelessWidget {
           border: Border(
               top: BorderSide(width: 1, color: Colors.grey),
               bottom: BorderSide(width: 1, color: Colors.grey))),
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       height: 50,
       child: Center(
           child: _ProfileInfoFutureBuilder(text: text, boldOption: boldOption)),
@@ -316,14 +335,14 @@ class _ProfileInfoFutureBuilder extends StatelessWidget {
         return !snapshot.hasData
             ? const Center(child: CircularProgressIndicator())
             : Text(
-                snapshot.data,
-                style: boldOption
-                    ? const TextStyle(
-                        fontSize: 20,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold)
-                    : const TextStyle(fontSize: 17, color: Colors.black87),
-              );
+          snapshot.data,
+          style: boldOption
+              ? const TextStyle(
+              fontSize: 20,
+              color: Colors.black87,
+              fontWeight: FontWeight.bold)
+              : const TextStyle(fontSize: 17, color: Colors.black87),
+        );
       },
     );
   }
