@@ -92,7 +92,8 @@ class _ProfilePageState extends State<ProfilePage> {
     var venueData =
         await FirestoreService().getVenueByID(snapshotDoc["Venue ID"]);
 
-    var userData;
+    var reviewData = await FirestoreService()
+        .getReviewByReservationID(snapshotDoc["Reservation ID"]);
 
     var venueName = venueData["Venue Name"];
     var capacity = snapshotDoc["Capacity"].toString();
@@ -100,8 +101,13 @@ class _ProfilePageState extends State<ProfilePage> {
     var reservationDate = DateTime.parse(
         (snapshotDoc["Reservation Date"] as Timestamp).toDate().toString());
     var formattedDate = DateFormat('dd/MM/yyyy, HH:mm').format(reservationDate);
-    var rating;
+    var rating = reviewData["Rating"];
+    var comment = reviewData["Comment"];
     var hasReview = false;
+
+    if (rating.toString().isNotEmpty) {
+      hasReview = true;
+    }
 
     showDialog(
       context: context,
@@ -130,19 +136,23 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 40),
                     _ReservationDetailContainer(
                         iconData: Icons.date_range, text: formattedDate),
-                    const SizedBox(height: 40),
-                    _ReservationDetailContainer(
-                        iconData: Icons.star, text: formattedDate),
-                    const SizedBox(height: 40),
-                    _ReservationDetailContainer(
-                        iconData: Icons.comment, text: formattedDate),
+                    if (hasReview) ...[
+                      const SizedBox(height: 40),
+                      _ReservationDetailContainer(
+                          iconData: Icons.star, text: rating.toString()),
+                      const SizedBox(height: 40),
+                      _ReservationDetailContainer(
+                          iconData: Icons.comment, text: comment),
+                    ]
                   ],
                 ),
               )
             ],
           ),
           actions: [
-            _addReview(context, snapshotDoc["Reservation ID"]),
+            if (!hasReview) ...[
+              _addReview(context, snapshotDoc["Reservation ID"]),
+            ],
             _backToProfilePageButton(context)
           ],
         ),
