@@ -2,6 +2,8 @@ import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:tirbuschon_feng497/services/firestoreService.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -23,8 +25,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Padding(
               padding: const EdgeInsets.only(top: 40, bottom: 10),
-              child: _previousReservationsText()),
-          _showReservations()
+              child: Column(
+                children: [_previousReservationsText(), _showReservations()],
+              ))
         ],
       ),
     );
@@ -42,49 +45,60 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _previousReservationsText() {
     return const Center(
         child: Text(
-      "My Previous Reservations",
+      "My Reservations",
       style: TextStyle(
           fontSize: 20, color: Colors.black87, fontWeight: FontWeight.bold),
     ));
   }
 
   Widget _showReservations() {
-    final photoLinks = [
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-    ];
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(10),
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 5.0,
-        mainAxisSpacing: 5.0,
-      ),
-      itemCount: photoLinks.length,
-      itemBuilder: (context, index) {
-        return TextButton(
-            onPressed: () {
-              _reservationDetail(photoLinks[index]);
-            },
-            child: Image.network(photoLinks[index]));
-      },
-    );
+    return StreamBuilder(
+        stream: FirestoreService().getReservations(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            return snapshot.data?.size != 0
+                ? GridView.builder(
+                    padding: const EdgeInsets.all(10),
+                    shrinkWrap: true,
+                    gridDelegate:
+                        const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 4,
+                      crossAxisSpacing: 5.0,
+                      mainAxisSpacing: 5.0,
+                    ),
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      var snapshotDocs = snapshot.data!.docs;
+                      return TextButton(
+                          onPressed: () {
+                            _reservationDetail(snapshotDocs[index]);
+                          },
+                          child: Image.asset(
+                              'assets/placeholder-restaurant-300x300.png'));
+                    },
+                  )
+                : const Padding(
+                    padding: EdgeInsets.all(30.0),
+                    child: Text("No reservations to list."),
+                  );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
   }
 
-  void _reservationDetail(var photo) {
+  void _reservationDetail(QueryDocumentSnapshot<Object?> snapshotDoc) async {
+    var venueData =
+        await FirestoreService().getVenueByID(snapshotDoc["Venue ID"]);
+
+    var venueName = venueData["Venue Name"];
+    var capacity = snapshotDoc["Capacity"].toString();
+    var totalPrice = snapshotDoc["Total Price"].toString();
+    var reservationDate = DateTime.parse(
+        (snapshotDoc["Reservation Date"] as Timestamp).toDate().toString());
+    var formattedDate = DateFormat('dd/MM/yyyy, HH:mm').format(reservationDate);
+
     showDialog(
       context: context,
       builder: (context) => BackdropFilter(
@@ -95,23 +109,23 @@ class _ProfilePageState extends State<ProfilePage> {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              _imageContainer(context, photo),
+              ReservationDetailImageContainer(
+                  context: context, imageURL: venueData["imageURL"]),
               const SizedBox(height: 40),
               Flexible(
                 child: Column(
-                  children: const [
+                  children: [
                     _ReservationDetailContainer(
-                        iconData: Icons.person, text: "Venue Name"),
-                    SizedBox(height: 40),
+                        iconData: Icons.location_on, text: venueName),
+                    const SizedBox(height: 40),
                     _ReservationDetailContainer(
-                        iconData: Icons.info, text: "Reservation Description"),
-                    SizedBox(height: 40),
+                        iconData: Icons.person, text: capacity),
+                    const SizedBox(height: 40),
                     _ReservationDetailContainer(
-                        iconData: Icons.star_rate_sharp, text: "Your Rating"),
-                    SizedBox(height: 40),
+                        iconData: Icons.price_check, text: totalPrice),
+                    const SizedBox(height: 40),
                     _ReservationDetailContainer(
-                        iconData: Icons.rate_review_rounded,
-                        text: "Your Comment"),
+                        iconData: Icons.date_range, text: formattedDate),
                   ],
                 ),
               )
@@ -123,21 +137,33 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Container _imageContainer(BuildContext context, photo) {
+  TextButton _backToProfilePageButton(BuildContext context) {
+    return TextButton(
+        onPressed: () => Navigator.pop(context), child: const Text("Back"));
+  }
+}
+
+class ReservationDetailImageContainer extends StatelessWidget {
+  final BuildContext context;
+  final String imageURL;
+
+  const ReservationDetailImageContainer({
+    Key? key,
+    required this.imageURL,
+    required this.context,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
         width: MediaQuery.of(context).size.width - 30,
         height: 250,
         decoration:
             BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
         child: Image.network(
-          photo,
+          imageURL,
           fit: BoxFit.fill,
         ));
-  }
-
-  TextButton _backToProfilePageButton(BuildContext context) {
-    return TextButton(
-        onPressed: () => Navigator.pop(context), child: const Text("Back"));
   }
 }
 
@@ -161,7 +187,7 @@ class _ReservationDetailContainer extends StatelessWidget {
         children: [
           Icon(iconData),
           const SizedBox(width: 5),
-          Flexible(child: Text(text)),
+          Flexible(child: Text(text.toString())),
         ],
       ),
     );

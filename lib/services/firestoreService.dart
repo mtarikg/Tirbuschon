@@ -71,6 +71,17 @@ class FirestoreService {
     return null;
   }
 
+  Future<dynamic> getVenueByID(String venueID) async {
+    final venue = await _firestore
+        .collection("Venues")
+        .doc(venueID)
+        .collection("Profile Information")
+        .get()
+        .then((value) => value.docs[0].data());
+
+    return venue;
+  }
+
   Future<String?> getVenueIDByName(String venueName) async {
     final QuerySnapshot qs = await _firestore
         .collection("Venues")
@@ -158,7 +169,7 @@ class FirestoreService {
       await _firestore
           .collection("Users")
           .doc(userID)
-          .collection("Previous Reservations")
+          .collection("Reservations List")
           .doc(reservationID)
           .set({
         "Capacity": capacity,
@@ -173,6 +184,18 @@ class FirestoreService {
     }
 
     return reservationResult;
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getReservations() {
+    var user = FirebaseAuth.instance.currentUser;
+    var userID = user!.uid;
+    var snapshots = _firestore
+        .collection("Users")
+        .doc(userID)
+        .collection("Reservations List")
+        .snapshots();
+
+    return snapshots;
   }
 
   Future<bool> userExists(String userID) async {
