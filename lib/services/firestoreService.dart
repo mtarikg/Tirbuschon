@@ -186,7 +186,31 @@ class FirestoreService {
     return reservationResult;
   }
 
-  Stream<QuerySnapshot<Map<String, dynamic>>> getReservations() {
+  Future<bool> addReview(
+      String reservationID, double rating, String? comment) async {
+    var reviewResult = false;
+    var user = FirebaseAuth.instance.currentUser;
+    var userID = user!.uid;
+    var reviewID = const Uuid().v4();
+    var createdDate = DateTime.now();
+
+    await _firestore
+        .collection("Users")
+        .doc(userID)
+        .collection("Reviews List")
+        .doc(reviewID)
+        .set({
+      "Reservation ID": reservationID,
+      "Review ID": reviewID,
+      "Rating": rating,
+      "Comment": comment,
+      "Created Date": createdDate
+    }).then((value) => {reviewResult = true});
+
+    return reviewResult;
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getUserReservations() {
     var user = FirebaseAuth.instance.currentUser;
     var userID = user!.uid;
     var snapshots = _firestore
@@ -197,6 +221,8 @@ class FirestoreService {
 
     return snapshots;
   }
+
+
 
   Future<bool> userExists(String userID) async {
     var existingUser = false;
@@ -219,5 +245,19 @@ class FirestoreService {
     var document = _firestore.collection('Users').doc(currentUserID);
 
     return document.id;
+  }
+
+  Future<String> getProfileInfo(String text) async {
+    var user = FirebaseAuth.instance.currentUser;
+    var userID = user!.uid;
+    var result = await _firestore
+        .collection('Users')
+        .doc(userID)
+        .collection('profileInfo')
+        .get()
+        .then((value) => value.docs[0].data()[text]);
+    var userData = result.toString();
+
+    return userData;
   }
 }

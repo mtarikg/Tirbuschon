@@ -1,33 +1,23 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
-import 'reviewPersonnel.dart';
+import 'package:profanity_filter/profanity_filter.dart';
+import 'package:tirbuschon_feng497/services/firestoreService.dart';
 
-class ReviewVenuePage extends StatefulWidget {
-  const ReviewVenuePage({Key? key}) : super(key: key);
+import '../BottomNavigationBarPages/mainPage.dart';
+
+class ReviewVenue extends StatefulWidget {
+  final String reservation;
+
+  const ReviewVenue({Key? key, required this.reservation}) : super(key: key);
 
   @override
-  _ReviewVenuePageState createState() => _ReviewVenuePageState();
+  _ReviewVenueState createState() => _ReviewVenueState();
 }
 
-class _ReviewVenuePageState extends State<ReviewVenuePage> {
-  final links = [
-    'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-    'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-    'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-    'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-    'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-    'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-    'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-    'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-    'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-    'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-    'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-    'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-    'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-  ];
-
-  bool photoSelected = false;
-  TextEditingController descriptionController = TextEditingController();
+class _ReviewVenueState extends State<ReviewVenue> {
+  final filter = ProfanityFilter();
+  double rating = 0.0;
+  String comment = "";
 
   @override
   Widget build(BuildContext context) {
@@ -62,31 +52,27 @@ class _ReviewVenuePageState extends State<ReviewVenuePage> {
                   Icons.star,
                   color: Colors.amber,
                 ),
-                onRatingUpdate: (rating) {
-                  print(rating);
+                onRatingUpdate: (value) {
+                  rating = value;
                 },
               ),
               const SizedBox(height: 50),
               SizedBox(
                 width: 300,
-                child: TextFormField(
-                  controller: descriptionController,
+                child: TextField(
                   decoration: const InputDecoration(
                     border: OutlineInputBorder(),
                     hintText: "Add more information (optional)",
                   ),
+                  onChanged: (value) {
+                    setState(() {
+                      comment = filter.hasProfanity(value)
+                          ? filter.censor(value)
+                          : value;
+                    });
+                  },
                 ),
               ),
-              const SizedBox(height: 50),
-              (!photoSelected
-                  ? (ElevatedButton(
-                      onPressed: () {
-                        setState(() {
-                          photoSelected = true;
-                        });
-                      },
-                      child: const Icon(Icons.add)))
-                  : Expanded(child: _addPhotos())),
               const SizedBox(height: 50),
               ElevatedButton(
                 child: const Text(
@@ -94,12 +80,7 @@ class _ReviewVenuePageState extends State<ReviewVenuePage> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 onPressed: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const ReviewPersonnelPage(),
-                    ),
-                  );
+                  _addReview(widget.reservation, rating, comment);
                 },
               ),
               const SizedBox(height: 20),
@@ -108,35 +89,30 @@ class _ReviewVenuePageState extends State<ReviewVenuePage> {
         ));
   }
 
-  Widget _addPhotos() {
-    final photoLinks = [
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-    ];
+  void _addReview(String reservationID, double rating, String? comment) async {
+    var result = await FirestoreService()
+        .addReview(reservationID, rating, comment)
+        .catchError((error) {
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text(error.toString()),
+      ));
+    });
 
-    return GridView.builder(
-      padding: const EdgeInsets.all(10),
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 5.0,
-        mainAxisSpacing: 5.0,
-      ),
-      itemCount: photoLinks.length,
-      itemBuilder: (context, index) {
-        return Image.network(photoLinks[index]);
-      },
-    );
+    if (result) {
+      var duration = const Duration(seconds: 2);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: const Text("The review has been successfully added."),
+        duration: duration,
+      ));
+
+      Future.delayed(duration, () {
+        Navigator.push(
+            context, MaterialPageRoute(builder: (context) => const MainPage()));
+      });
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Something went wrong while adding a review."),
+      ));
+    }
   }
 }

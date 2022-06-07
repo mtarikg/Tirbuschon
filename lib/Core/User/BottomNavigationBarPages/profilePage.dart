@@ -1,9 +1,9 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:tirbuschon_feng497/services/firestoreService.dart';
+import '../Review/reviewVenuePage.dart';
+import '../../../services/firestoreService.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -53,7 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   Widget _showReservations() {
     return StreamBuilder(
-        stream: FirestoreService().getReservations(),
+        stream: FirestoreService().getUserReservations(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
           if (snapshot.hasData) {
             return snapshot.data?.size != 0
@@ -92,12 +92,16 @@ class _ProfilePageState extends State<ProfilePage> {
     var venueData =
         await FirestoreService().getVenueByID(snapshotDoc["Venue ID"]);
 
+    var userData;
+
     var venueName = venueData["Venue Name"];
     var capacity = snapshotDoc["Capacity"].toString();
     var totalPrice = snapshotDoc["Total Price"].toString();
     var reservationDate = DateTime.parse(
         (snapshotDoc["Reservation Date"] as Timestamp).toDate().toString());
     var formattedDate = DateFormat('dd/MM/yyyy, HH:mm').format(reservationDate);
+    var rating;
+    var hasReview = false;
 
     showDialog(
       context: context,
@@ -126,12 +130,21 @@ class _ProfilePageState extends State<ProfilePage> {
                     const SizedBox(height: 40),
                     _ReservationDetailContainer(
                         iconData: Icons.date_range, text: formattedDate),
+                    const SizedBox(height: 40),
+                    _ReservationDetailContainer(
+                        iconData: Icons.star, text: formattedDate),
+                    const SizedBox(height: 40),
+                    _ReservationDetailContainer(
+                        iconData: Icons.comment, text: formattedDate),
                   ],
                 ),
               )
             ],
           ),
-          actions: [_backToProfilePageButton(context)],
+          actions: [
+            _addReview(context, snapshotDoc["Reservation ID"]),
+            _backToProfilePageButton(context)
+          ],
         ),
       ),
     );
@@ -140,6 +153,18 @@ class _ProfilePageState extends State<ProfilePage> {
   TextButton _backToProfilePageButton(BuildContext context) {
     return TextButton(
         onPressed: () => Navigator.pop(context), child: const Text("Back"));
+  }
+
+  TextButton _addReview(BuildContext context, String reservationID) {
+    return TextButton(
+        child: const Text("Add a review!"),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      ReviewVenue(reservation: reservationID)));
+        });
   }
 }
 
@@ -200,7 +225,7 @@ class _UserProfileImageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _getProfileInfo("avatarURL"),
+      future: FirestoreService().getProfileInfo("avatarURL"),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -269,7 +294,7 @@ class _ProfileInfoFutureBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _getProfileInfo(text),
+      future: FirestoreService().getProfileInfo(text),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         return !snapshot.hasData
             ? const Center(child: CircularProgressIndicator())
@@ -285,20 +310,4 @@ class _ProfileInfoFutureBuilder extends StatelessWidget {
       },
     );
   }
-}
-
-Future<String> _getProfileInfo(String text) async {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  var user = FirebaseAuth.instance.currentUser;
-  var userID = user!.uid;
-  var result = await _firestore
-      .collection('Users')
-      .doc(userID)
-      .collection('profileInfo')
-      .get()
-      .then((value) => value.docs[0].data()[text]);
-  var userData = result.toString();
-
-  return userData;
 }

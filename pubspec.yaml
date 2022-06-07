@@ -56,6 +56,7 @@ dependencies:
   flutter_polyline_points: ^1.0.0
   csc_picker: ^0.2.6
   intl: ^0.17.0
+  profanity_filter: ^2.0.0
 
 
 dev_dependencies:
