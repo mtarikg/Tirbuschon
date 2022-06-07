@@ -15,11 +15,11 @@ class SearchPage extends StatefulWidget {
 class _SearchPageState extends State<SearchPage> {
   var venues = [];
   var searchResult = [];
-  String searchValue = '';
+  String? searchValue = '';
   String venueType = '';
   String countryValue = '';
-  String districtValue = '';
-  String cityValue = '';
+  String? districtValue = '';
+  String? cityValue = '';
   TextEditingController searchController = TextEditingController();
 
   getVenues() async {
@@ -118,23 +118,24 @@ class _SearchPageState extends State<SearchPage> {
                     ),
                   ),
                 ),
-                Column(
-                  children: [
-                    TextButton(
-                        onPressed: () {
-                          setState(() {
-                            cityValue = "";
-                            districtValue = "";
-                          });
-                        },
-                        child: const Text("Clear")),
-                    TextButton(
-                        onPressed: () {
-                          _searchVenueByCityDistrict(cityValue, districtValue);
-                        },
-                        child: const Text("Search")),
-                  ],
-                )
+                TextButton(
+                    onPressed: () {
+                      if (cityValue == "null") {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text("Please select a city!"),
+                        ));
+                      } else if (districtValue == "null") {
+                        ScaffoldMessenger.of(context)
+                            .showSnackBar(const SnackBar(
+                          content: Text("Please select a district!"),
+                        ));
+                      } else {
+                        _searchVenueByCityDistrict(
+                            cityValue.toString(), districtValue.toString());
+                      }
+                    },
+                    child: const Text("Search"))
               ],
             ),
           ],
@@ -330,7 +331,13 @@ class _SearchPageState extends State<SearchPage> {
         suffixIcon: IconButton(
             icon: const Icon(Icons.search),
             onPressed: () {
-              _searchVenueByName(searchValue);
+              if (searchValue == "null") {
+                ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                  content: Text("Please enter a venue name!"),
+                ));
+              } else {
+                _searchVenueByName(searchValue.toString());
+              }
             }),
         labelText: "Search venues",
         hintText: "Please enter name of a venue",
@@ -420,6 +427,11 @@ class _SearchPageState extends State<SearchPage> {
         }
       }
     } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content:
+            Text("There is no venue available for the given city-district."),
+      ));
+
       setState(() {
         searchResult.clear();
       });

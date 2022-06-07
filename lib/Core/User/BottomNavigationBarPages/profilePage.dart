@@ -1,7 +1,9 @@
 import 'dart:ui';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import '../Review/reviewVenuePage.dart';
+import '../../../services/firestoreService.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -23,8 +25,9 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           Padding(
               padding: const EdgeInsets.only(top: 40, bottom: 10),
-              child: _previousReservationsText()),
-          _showReservations()
+              child: Column(
+                children: [_previousReservationsText(), _showReservations()],
+              ))
         ],
       ),
     );
@@ -42,102 +45,174 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _previousReservationsText() {
     return const Center(
         child: Text(
-      "My Previous Reservations",
-      style: TextStyle(
-          fontSize: 20, color: Colors.black87, fontWeight: FontWeight.bold),
-    ));
+          "My Reservations",
+          style: TextStyle(
+              fontSize: 20, color: Colors.black87, fontWeight: FontWeight.bold),
+        ));
   }
 
   Widget _showReservations() {
-    final photoLinks = [
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://cwdaust.com.au/wpress/wp-content/uploads/2015/04/placeholder-restaurant-300x300.png',
-      'https://thumbs.dreamstime.com/z/restaurant-placeholder-vector-icon-symbol-location-isolated-white-background-eps-restaurant-placeholder-vector-icon-symbol-159301081.jpg',
-    ];
-
-    return GridView.builder(
-      padding: const EdgeInsets.all(10),
-      shrinkWrap: true,
-      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        crossAxisSpacing: 5.0,
-        mainAxisSpacing: 5.0,
-      ),
-      itemCount: photoLinks.length,
-      itemBuilder: (context, index) {
-        return TextButton(
-            onPressed: () {
-              _reservationDetail(photoLinks[index]);
-            },
-            child: Image.network(photoLinks[index]));
-      },
-    );
+    return StreamBuilder(
+        stream: FirestoreService().getUserReservations(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.hasData) {
+            return snapshot.data?.size != 0
+                ? GridView.builder(
+              padding: const EdgeInsets.all(10),
+              shrinkWrap: true,
+              gridDelegate:
+              const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                crossAxisSpacing: 5.0,
+                mainAxisSpacing: 5.0,
+              ),
+              itemCount: snapshot.data!.docs.length,
+              itemBuilder: (context, index) {
+                var snapshotDocs = snapshot.data!.docs;
+                return TextButton(
+                    onPressed: () {
+                      _reservationDetail(snapshotDocs[index]);
+                    },
+                    child: Image.asset(
+                        'assets/placeholder-restaurant-300x300.png'));
+              },
+            )
+                : const Padding(
+              padding: EdgeInsets.all(30.0),
+              child: Text("No reservations to list."),
+            );
+          }
+          return const Center(
+            child: CircularProgressIndicator(),
+          );
+        });
   }
 
-  void _reservationDetail(var photo) {
+  void _reservationDetail(QueryDocumentSnapshot<Object?> snapshotDoc) async {
+    var venueData =
+    await FirestoreService().getVenueByID(snapshotDoc["Venue ID"]);
+
+    var reviewData = await FirestoreService()
+        .getReviewByReservationID(snapshotDoc["Reservation ID"]);
+
+    var venueImage = venueData["imageURL"];
+    var venueName = venueData["Venue Name"];
+    var capacity = snapshotDoc["Capacity"].toString();
+    var totalPrice = snapshotDoc["Total Price"].toString();
+    var reservationDate = DateTime.parse(
+        (snapshotDoc["Reservation Date"] as Timestamp).toDate().toString());
+    var formattedDate = DateFormat('dd/MM/yyyy, HH:mm').format(reservationDate);
+    var hasReview = false;
+    var rating = 0.0;
+    var comment = "";
+
+    if (reviewData != null) {
+      rating = reviewData["Rating"];
+      comment = reviewData["Comment"];
+    }
+
+    if (rating != 0.0) {
+      hasReview = true;
+    }
+
     showDialog(
       context: context,
-      builder: (context) => BackdropFilter(
-        filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
-        child: AlertDialog(
-          title: const Text("Reservation Detail"),
-          scrollable: true,
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _imageContainer(context, photo),
-              const SizedBox(height: 40),
-              Flexible(
-                child: Column(
-                  children: const [
-                    _ReservationDetailContainer(
-                        iconData: Icons.person, text: "Venue Name"),
-                    SizedBox(height: 40),
-                    _ReservationDetailContainer(
-                        iconData: Icons.info, text: "Reservation Description"),
-                    SizedBox(height: 40),
-                    _ReservationDetailContainer(
-                        iconData: Icons.star_rate_sharp, text: "Your Rating"),
-                    SizedBox(height: 40),
-                    _ReservationDetailContainer(
-                        iconData: Icons.rate_review_rounded,
-                        text: "Your Comment"),
+      builder: (context) =>
+          BackdropFilter(
+            filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
+            child: AlertDialog(
+              title: const Center(child: Text("Reservation Detail")),
+              scrollable: true,
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  if(venueImage != null) ...[
+                    ReservationDetailImageContainer(
+                        context: context, imageURL: venueImage),
                   ],
-                ),
-              )
-            ],
+                  const SizedBox(height: 40),
+                  Flexible(
+                    child: Column(
+                      children: [
+                        _ReservationDetailContainer(
+                            iconData: Icons.location_on, text: venueName),
+                        const SizedBox(height: 40),
+                        _ReservationDetailContainer(
+                            iconData: Icons.person, text: capacity),
+                        const SizedBox(height: 40),
+                        _ReservationDetailContainer(
+                            iconData: Icons.price_check, text: totalPrice),
+                        const SizedBox(height: 40),
+                        _ReservationDetailContainer(
+                            iconData: Icons.date_range, text: formattedDate),
+                        if (hasReview) ...[
+                          const SizedBox(height: 40),
+                          _ReservationDetailContainer(
+                              iconData: Icons.star, text: rating.toString()),
+                          if (comment != "") ...[
+                            const SizedBox(height: 40),
+                            _ReservationDetailContainer(
+                                iconData: Icons.comment, text: comment),
+                          ]
+                        ]
+                      ],
+                    ),
+                  )
+                ],
+              ),
+              actions: [
+                if (!hasReview) ...[
+                  _addReview(context, snapshotDoc["Reservation ID"]),
+                ],
+                _backToProfilePageButton(context)
+              ],
+            ),
           ),
-          actions: [_backToProfilePageButton(context)],
-        ),
-      ),
     );
-  }
-
-  Container _imageContainer(BuildContext context, photo) {
-    return Container(
-        width: MediaQuery.of(context).size.width - 30,
-        height: 250,
-        decoration:
-            BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
-        child: Image.network(
-          photo,
-          fit: BoxFit.fill,
-        ));
   }
 
   TextButton _backToProfilePageButton(BuildContext context) {
     return TextButton(
         onPressed: () => Navigator.pop(context), child: const Text("Back"));
+  }
+
+  TextButton _addReview(BuildContext context, String reservationID) {
+    return TextButton(
+        child: const Text("Add a review!"),
+        onPressed: () {
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) =>
+                      ReviewVenue(reservation: reservationID)));
+        });
+  }
+}
+
+class ReservationDetailImageContainer extends StatelessWidget {
+  final BuildContext context;
+  final String imageURL;
+
+  const ReservationDetailImageContainer({
+    Key? key,
+    required this.imageURL,
+    required this.context,
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        width: MediaQuery
+            .of(context)
+            .size
+            .width - 30,
+        height: 250,
+        decoration:
+        BoxDecoration(border: Border.all(width: 1, color: Colors.grey)),
+        child: Image.network(
+          imageURL,
+          fit: BoxFit.fill,
+        ));
   }
 }
 
@@ -156,12 +231,15 @@ class _ReservationDetailContainer extends StatelessWidget {
     return Container(
       decoration: const BoxDecoration(
           border: Border(bottom: BorderSide(width: 1, color: Colors.grey))),
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       child: Row(
         children: [
           Icon(iconData),
           const SizedBox(width: 5),
-          Flexible(child: Text(text)),
+          Flexible(child: Text(text.toString())),
         ],
       ),
     );
@@ -174,7 +252,7 @@ class _UserProfileImageContainer extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _getProfileInfo("avatarURL"),
+      future: FirestoreService().getProfileInfo("avatarURL"),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
@@ -183,20 +261,26 @@ class _UserProfileImageContainer extends StatelessWidget {
         if (snapshot.data == "null") {
           return Center(
               child: Padding(
-            padding: const EdgeInsets.only(top: 20.0),
-            child: SizedBox(
-                width: MediaQuery.of(context).size.width,
-                height: 150,
-                child: Center(
-                  child: Image.asset('assets/placeholder.jpg'),
-                )),
-          ));
+                padding: const EdgeInsets.only(top: 20.0),
+                child: SizedBox(
+                    width: MediaQuery
+                        .of(context)
+                        .size
+                        .width,
+                    height: 150,
+                    child: Center(
+                      child: Image.asset('assets/placeholder.jpg'),
+                    )),
+              ));
         }
 
         return Padding(
           padding: const EdgeInsets.only(top: 20.0),
           child: SizedBox(
-              width: MediaQuery.of(context).size.width,
+              width: MediaQuery
+                  .of(context)
+                  .size
+                  .width,
               height: 150,
               child: Center(
                 child: Image.network(snapshot.data),
@@ -222,7 +306,10 @@ class _UserInfoContainer extends StatelessWidget {
           border: Border(
               top: BorderSide(width: 1, color: Colors.grey),
               bottom: BorderSide(width: 1, color: Colors.grey))),
-      width: MediaQuery.of(context).size.width,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width,
       height: 50,
       child: Center(
           child: _ProfileInfoFutureBuilder(text: text, boldOption: boldOption)),
@@ -243,36 +330,20 @@ class _ProfileInfoFutureBuilder extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: _getProfileInfo(text),
+      future: FirestoreService().getProfileInfo(text),
       builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
         return !snapshot.hasData
             ? const Center(child: CircularProgressIndicator())
             : Text(
-                snapshot.data,
-                style: boldOption
-                    ? const TextStyle(
-                        fontSize: 20,
-                        color: Colors.black87,
-                        fontWeight: FontWeight.bold)
-                    : const TextStyle(fontSize: 17, color: Colors.black87),
-              );
+          snapshot.data,
+          style: boldOption
+              ? const TextStyle(
+              fontSize: 20,
+              color: Colors.black87,
+              fontWeight: FontWeight.bold)
+              : const TextStyle(fontSize: 17, color: Colors.black87),
+        );
       },
     );
   }
-}
-
-Future<String> _getProfileInfo(String text) async {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  var user = FirebaseAuth.instance.currentUser;
-  var userID = user!.uid;
-  var result = await _firestore
-      .collection('Users')
-      .doc(userID)
-      .collection('profileInfo')
-      .get()
-      .then((value) => value.docs[0].data()[text]);
-  var userData = result.toString();
-
-  return userData;
 }
