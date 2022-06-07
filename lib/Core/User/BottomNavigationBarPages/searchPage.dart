@@ -1,3 +1,4 @@
+import 'package:csc_picker/csc_picker.dart';
 import 'package:flutter/material.dart';
 import '../ReservationPages/selectDatePage.dart';
 import '../SearchPages/googleMaps.dart';
@@ -16,6 +17,7 @@ class _SearchPageState extends State<SearchPage> {
   var searchResult = [];
   String searchValue = '';
   String venueType = '';
+  String countryValue = '';
   String districtValue = '';
   String cityValue = '';
   TextEditingController searchController = TextEditingController();
@@ -54,21 +56,85 @@ class _SearchPageState extends State<SearchPage> {
                 Expanded(
                   child: Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: _venueTypeDropdown(),
+                    child: CSCPicker(
+                      showStates: true,
+                      showCities: true,
+                      flagState: CountryFlag.DISABLE,
+                      dropdownDecoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          color: Colors.white,
+                          border: Border.all(
+                              color: Colors.grey.shade300, width: 1)),
+                      disabledDropdownDecoration: BoxDecoration(
+                          borderRadius:
+                              const BorderRadius.all(Radius.circular(10)),
+                          color: Colors.grey.shade300,
+                          border: Border.all(
+                              color: Colors.grey.shade300, width: 1)),
+                      stateSearchPlaceholder: "City",
+                      citySearchPlaceholder: "District",
+                      stateDropdownLabel: "*City",
+                      cityDropdownLabel: "*District",
+                      defaultCountry: DefaultCountry.Turkey,
+                      disableCountry: true,
+                      selectedItemStyle: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                      ),
+                      dropdownHeadingStyle: const TextStyle(
+                          color: Colors.black,
+                          fontSize: 17,
+                          fontWeight: FontWeight.bold),
+                      dropdownItemStyle: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 14,
+                      ),
+                      dropdownDialogRadius: 10.0,
+                      searchBarRadius: 10.0,
+                      onCountryChanged: (value) {
+                        setState(() {
+                          countryValue = value.toString();
+                        });
+                      },
+                      onStateChanged: (value) {
+                        setState(() {
+                          cityValue = value
+                              .toString()
+                              .replaceAll(" ", "")
+                              .replaceAll("Province", "")
+                              .toString();
+                        });
+                      },
+                      onCityChanged: (value) {
+                        setState(() {
+                          districtValue = value
+                              .toString()
+                              .replaceAll(" ", "")
+                              .replaceAll("İlçesi", "")
+                              .toString();
+                        });
+                      },
+                    ),
                   ),
                 ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: _cityDropdown(),
-                  ),
-                ),
-                Expanded(
-                  child: Padding(
-                    padding: const EdgeInsets.all(10.0),
-                    child: _districtDropdown(),
-                  ),
-                ),
+                Column(
+                  children: [
+                    TextButton(
+                        onPressed: () {
+                          setState(() {
+                            cityValue = "";
+                            districtValue = "";
+                          });
+                        },
+                        child: const Text("Clear")),
+                    TextButton(
+                        onPressed: () {
+                          _searchVenueByCityDistrict(cityValue, districtValue);
+                        },
+                        child: const Text("Search")),
+                  ],
+                )
               ],
             ),
           ],
@@ -130,18 +196,18 @@ class _SearchPageState extends State<SearchPage> {
                                           onPressed: () {
                                             _showLocation(venues[index]);
                                           },
-                                          child: const Text("Show location")),
+                                          child: const Text("Location")),
                                       TextButton(
                                           onPressed: () {
                                             _showMenu(venues[index]);
                                           },
-                                          child: const Text("Show menu!")),
+                                          child: const Text("Menu")),
                                       TextButton(
                                           onPressed: () {
                                             _makeReservation(venues[index]);
                                           },
-                                          child: const Text(
-                                              "Make a reservation!")),
+                                          child:
+                                              const Text("Quick reservation")),
                                     ],
                                   )
                                 ],
@@ -208,19 +274,19 @@ class _SearchPageState extends State<SearchPage> {
                                           onPressed: () {
                                             _showLocation(searchResult[index]);
                                           },
-                                          child: const Text("Show location")),
+                                          child: const Text("Location")),
                                       TextButton(
                                           onPressed: () {
                                             _showMenu(searchResult[index]);
                                           },
-                                          child: const Text("Show menu!")),
+                                          child: const Text("Menu")),
                                       TextButton(
                                           onPressed: () {
                                             _makeReservation(
                                                 searchResult[index]);
                                           },
-                                          child: const Text(
-                                              "Make a reservation!")),
+                                          child:
+                                              const Text("Quick reservation")),
                                     ],
                                   )
                                 ],
@@ -240,48 +306,6 @@ class _SearchPageState extends State<SearchPage> {
   DropdownButtonFormField<String> _venueTypeDropdown() {
     return DropdownButtonFormField<String>(
       decoration: const InputDecoration(labelText: 'Venue Type'),
-      value: null,
-      elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple),
-      onChanged: (String? newValue) {
-        setState(() {
-          venueType = newValue!;
-        });
-      },
-      items: <String>['Activity', 'Restaurant']
-          .map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-    );
-  }
-
-  DropdownButtonFormField<String> _cityDropdown() {
-    return DropdownButtonFormField<String>(
-      decoration: const InputDecoration(labelText: 'City'),
-      value: null,
-      elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple),
-      onChanged: (String? newValue) {
-        setState(() {
-          venueType = newValue!;
-        });
-      },
-      items: <String>['Activity', 'Restaurant']
-          .map<DropdownMenuItem<String>>((String value) {
-        return DropdownMenuItem<String>(
-          value: value,
-          child: Text(value),
-        );
-      }).toList(),
-    );
-  }
-
-  DropdownButtonFormField<String> _districtDropdown() {
-    return DropdownButtonFormField<String>(
-      decoration: const InputDecoration(labelText: 'District'),
       value: null,
       elevation: 16,
       style: const TextStyle(color: Colors.deepPurple),
@@ -366,9 +390,39 @@ class _SearchPageState extends State<SearchPage> {
 
       if (!isExist) {
         setState(() {
+          searchResult.clear();
           searchResult.add(element);
         });
       }
     });
+  }
+
+  Future<void> _searchVenueByCityDistrict(String city, String district) async {
+    searchResult.clear();
+    var result =
+        await FirestoreService().getVenuesByCityDistrict(city, district);
+
+    if (result != null) {
+      for (var element in result) {
+        var isExist = false;
+
+        for (var item in searchResult) {
+          if (item["Address"] == element["Address"]) {
+            isExist = true;
+            break;
+          }
+        }
+
+        if (!isExist) {
+          setState(() {
+            searchResult.add(element);
+          });
+        }
+      }
+    } else {
+      setState(() {
+        searchResult.clear();
+      });
+    }
   }
 }

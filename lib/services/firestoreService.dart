@@ -24,12 +24,36 @@ class FirestoreService {
     return null;
   }
 
+  Future<List?> getVenuesByCityDistrict(String city, String district) async {
+    var venuesList = [];
+
+    final QuerySnapshot qs = await _firestore
+        .collection("Venues")
+        .where("City", isEqualTo: city)
+        .where("District", isEqualTo: district)
+        .get();
+
+    if (qs.docs.isNotEmpty) {
+      for (var doc in qs.docs) {
+        var profileInfo = await doc.reference
+            .collection("Profile Information")
+            .get()
+            .then((value) => value.docs[0].data());
+        venuesList.add(profileInfo);
+      }
+
+      return venuesList;
+    }
+
+    return null;
+  }
+
   Future<List?> getVenuesByName(String venueName) async {
     var venuesList = [];
 
     final QuerySnapshot qs = await _firestore
         .collection("Venues")
-        .where("Venue", isGreaterThanOrEqualTo: venueName)
+        .where("Venue", isEqualTo: venueName)
         .get();
 
     if (qs.docs.isNotEmpty) {
@@ -108,8 +132,7 @@ class FirestoreService {
             .doc(subCollectionID)
             .update({"Reservation Capasity": newValue.toString()});
         capacityResult = true;
-      }
-      else {
+      } else {
         return reservationResult;
       }
     }
