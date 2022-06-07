@@ -226,7 +226,6 @@ class FirestoreService {
     var user = FirebaseAuth.instance.currentUser;
     var userID = user!.uid;
 
-    dynamic reviewData;
     var reviewsCollection = await _firestore
         .collection("Users")
         .doc(userID)
@@ -235,11 +234,11 @@ class FirestoreService {
 
     for (var doc in reviewsCollection.docs) {
       if (doc["Reservation ID"] == reservationID) {
-        reviewData = doc;
+        return doc;
       }
     }
 
-    return reviewData;
+    return null;
   }
 
   Future<bool> userExists(String userID) async {

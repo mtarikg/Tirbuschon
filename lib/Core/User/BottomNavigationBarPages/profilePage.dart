@@ -101,11 +101,16 @@ class _ProfilePageState extends State<ProfilePage> {
     var reservationDate = DateTime.parse(
         (snapshotDoc["Reservation Date"] as Timestamp).toDate().toString());
     var formattedDate = DateFormat('dd/MM/yyyy, HH:mm').format(reservationDate);
-    var rating = reviewData["Rating"];
-    var comment = reviewData["Comment"];
     var hasReview = false;
+    var rating = 0.0;
+    var comment = "";
 
-    if (rating.toString().isNotEmpty) {
+    if (reviewData != null) {
+      rating = reviewData["Rating"];
+      comment = reviewData["Comment"];
+    }
+
+    if (rating != 0.0) {
       hasReview = true;
     }
 
@@ -114,7 +119,7 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (context) => BackdropFilter(
         filter: ImageFilter.blur(sigmaX: 10.0, sigmaY: 10.0),
         child: AlertDialog(
-          title: const Text("Reservation Detail"),
+          title: const Center(child: Text("Reservation Detail")),
           scrollable: true,
           content: Column(
             mainAxisSize: MainAxisSize.min,
@@ -140,9 +145,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       const SizedBox(height: 40),
                       _ReservationDetailContainer(
                           iconData: Icons.star, text: rating.toString()),
-                      const SizedBox(height: 40),
-                      _ReservationDetailContainer(
-                          iconData: Icons.comment, text: comment),
+                      if (comment != "") ...[
+                        const SizedBox(height: 40),
+                        _ReservationDetailContainer(
+                            iconData: Icons.comment, text: comment),
+                      ]
                     ]
                   ],
                 ),
