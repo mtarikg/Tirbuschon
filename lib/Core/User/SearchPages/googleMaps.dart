@@ -1,4 +1,6 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -30,9 +32,13 @@ class _MapViewState extends State<MapView> {
   String _startAddress = '';
   String _destinationAddress = '';
 
-  Set<Marker> markers = {};
+  late PolylinePoints polylinePoints;
+  List<LatLng> polylineCoordinates = [];
+  Map<PolylineId, Polyline> polylines = {};
 
-  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  String? _placeDistance;
+
+  Set<Marker> markers = {};
 
   Widget _textField({
     required TextEditingController controller,
@@ -83,7 +89,6 @@ class _MapViewState extends State<MapView> {
     );
   }
 
-  // Method for retrieving the current location
   _getCurrentLocation() async {
     await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
         .then((Position position) async {
@@ -99,14 +104,13 @@ class _MapViewState extends State<MapView> {
         );
       });
       await _getAddress();
-    }).catchError((e) {
+    }).catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
+        content: Text(error.toString()),
       ));
     });
   }
 
-  // Method for retrieving the address
   _getAddress() async {
     try {
       List<Placemark> p = await placemarkFromCoordinates(
@@ -120,16 +124,15 @@ class _MapViewState extends State<MapView> {
         startAddressController.text = _currentAddress;
         _startAddress = _currentAddress;
       });
-    } catch (e) {
+    } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
-        content: Text(e.toString()),
+        content: Text(error.toString()),
       ));
     }
   }
 
   Future<void> _showMarkers() async {
     try {
-      // Retrieving placemarks from addresses
       List<Location>? startPlacemark = await locationFromAddress(_startAddress);
       List<Location>? destinationPlacemark =
           await locationFromAddress(_destinationAddress);
@@ -152,7 +155,6 @@ class _MapViewState extends State<MapView> {
       String destinationCoordinatesString =
           '($destinationLatitude, $destinationLongitude)';
 
-      // Start Location Marker
       Marker startMarker = Marker(
         markerId: MarkerId(startCoordinatesString),
         position: LatLng(startLatitude, startLongitude),
@@ -163,7 +165,6 @@ class _MapViewState extends State<MapView> {
         icon: BitmapDescriptor.defaultMarker,
       );
 
-      // Destination Location Marker
       Marker destinationMarker = Marker(
         markerId: MarkerId(destinationCoordinatesString),
         position: LatLng(destinationLatitude, destinationLongitude),
@@ -174,7 +175,6 @@ class _MapViewState extends State<MapView> {
         icon: BitmapDescriptor.defaultMarker,
       );
 
-      // Adding the markers to the list
       setState(() {
         markers.add(startMarker);
         markers.add(destinationMarker);
@@ -201,8 +201,6 @@ class _MapViewState extends State<MapView> {
       double northEastLatitude = maxy;
       double northEastLongitude = maxx;
 
-      // Accommodate the two locations within the
-      // camera view of the map
       mapController.animateCamera(
         CameraUpdate.newLatLngBounds(
           LatLngBounds(
@@ -212,11 +210,73 @@ class _MapViewState extends State<MapView> {
           100.0,
         ),
       );
+
+      await _drawRoute(startLatitude, startLongitude, destinationLatitude,
+          destinationLongitude);
+
+      double totalDistance = 0.0;
+
+      for (int i = 0; i < polylineCoordinates.length - 1; i++) {
+        totalDistance += _coordinateDistance(
+          polylineCoordinates[i].latitude,
+          polylineCoordinates[i].longitude,
+          polylineCoordinates[i + 1].latitude,
+          polylineCoordinates[i + 1].longitude,
+        );
+      }
+
+      setState(() {
+        _placeDistance = totalDistance.toStringAsFixed(2);
+      });
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(e.toString()),
       ));
     }
+  }
+
+  double _coordinateDistance(lat1, lon1, lat2, lon2) {
+    var p = 0.017453292519943295;
+    var c = cos;
+    var a = 0.5 -
+        c((lat2 - lat1) * p) / 2 +
+        c(lat1 * p) * c(lat2 * p) * (1 - c((lon2 - lon1) * p)) / 2;
+    return 12742 * asin(sqrt(a));
+  }
+
+  _drawRoute(
+    double startLatitude,
+    double startLongitude,
+    double destinationLatitude,
+    double destinationLongitude,
+  ) async {
+    polylineCoordinates.clear();
+    polylinePoints = PolylinePoints();
+
+    PolylineResult polylineResult =
+        await polylinePoints.getRouteBetweenCoordinates(
+      Secrets.API_KEY, // Google Maps API Key
+      PointLatLng(startLatitude, startLongitude),
+      PointLatLng(destinationLatitude, destinationLongitude),
+      travelMode: selectedTravelMode ?? TravelMode.driving,
+    );
+
+    if (polylineResult.points.isNotEmpty) {
+      for (var point in polylineResult.points) {
+        polylineCoordinates.add(LatLng(point.latitude, point.longitude));
+      }
+    }
+
+    PolylineId polylineID = const PolylineId('poly');
+    Polyline polyline = Polyline(
+      polylineId: polylineID,
+      color: Colors.red,
+      points: polylineCoordinates,
+      width: 2,
+    );
+
+    polylines[polylineID] = polyline;
+    setState(() {});
   }
 
   @override
@@ -247,12 +307,11 @@ class _MapViewState extends State<MapView> {
             },
           ),
         ),
-        key: _scaffoldKey,
         body: Stack(
           children: <Widget>[
-            // Map View
             GoogleMap(
               markers: Set<Marker>.from(markers),
+              polylines: Set<Polyline>.of(polylines.values),
               initialCameraPosition: _initialLocation,
               myLocationEnabled: true,
               myLocationButtonEnabled: false,
@@ -266,7 +325,6 @@ class _MapViewState extends State<MapView> {
                 });
               },
             ),
-            // Show zoom buttons
             SafeArea(
               child: Padding(
                 padding: const EdgeInsets.only(left: 10.0),
@@ -275,9 +333,9 @@ class _MapViewState extends State<MapView> {
                   children: <Widget>[
                     ClipOval(
                       child: Material(
-                        color: Colors.blue.shade100, // button color
+                        color: Colors.blue.shade100,
                         child: InkWell(
-                          splashColor: Colors.blue, // inkwell color
+                          splashColor: Colors.blue,
                           child: const SizedBox(
                             width: 50,
                             height: 50,
@@ -294,9 +352,9 @@ class _MapViewState extends State<MapView> {
                     const SizedBox(height: 20),
                     ClipOval(
                       child: Material(
-                        color: Colors.blue.shade100, // button color
+                        color: Colors.blue.shade100,
                         child: InkWell(
-                          splashColor: Colors.blue, // inkwell color
+                          splashColor: Colors.blue,
                           child: const SizedBox(
                             width: 50,
                             height: 50,
@@ -314,8 +372,6 @@ class _MapViewState extends State<MapView> {
                 ),
               ),
             ),
-            // Show the place input fields & button for
-            // showing the route
             SafeArea(
               child: Align(
                 alignment: Alignment.topCenter,
@@ -375,7 +431,10 @@ class _MapViewState extends State<MapView> {
                                       destinationAddressController.text;
                                 });
                               }),
+                          const SizedBox(height: 15),
+                          _selectTravelMode(),
                           const SizedBox(height: 10),
+                          DistanceValue(placeDistance: _placeDistance),
                           _showVenueButton(),
                         ],
                       ),
@@ -384,7 +443,6 @@ class _MapViewState extends State<MapView> {
                 ),
               ),
             ),
-            // Show current location button
             SafeArea(
               child: Align(
                 alignment: Alignment.bottomRight,
@@ -392,9 +450,9 @@ class _MapViewState extends State<MapView> {
                   padding: const EdgeInsets.only(right: 10.0, bottom: 10.0),
                   child: ClipOval(
                     child: Material(
-                      color: Colors.orange.shade100, // button color
+                      color: Colors.orange.shade100,
                       child: InkWell(
-                        splashColor: Colors.orange, // inkwell color
+                        splashColor: Colors.orange,
                         child: const SizedBox(
                           width: 56,
                           height: 56,
@@ -427,7 +485,9 @@ class _MapViewState extends State<MapView> {
 
   ElevatedButton _showVenueButton() {
     return ElevatedButton(
-      onPressed: (_startAddress.isNotEmpty && _destinationAddress.isNotEmpty)
+      onPressed: (_startAddress.isNotEmpty &&
+              _destinationAddress.isNotEmpty &&
+              selectedTravelMode != null)
           ? () {
               markers.clear();
               startAddressFocusNode.unfocus();
@@ -443,6 +503,73 @@ class _MapViewState extends State<MapView> {
             color: Colors.white,
             fontSize: 20.0,
           ),
+        ),
+      ),
+    );
+  }
+
+  dynamic selectedTravelMode;
+  final List<bool> _selections = List.generate(3, (_) => false);
+
+  _selectTravelMode() {
+    return Column(
+      children: [
+        const Text("Select your travel mode below:"),
+        ToggleButtons(
+          children: const [
+            Icon(Icons.directions_car),
+            Icon(Icons.directions_transit),
+            Icon(Icons.directions_walk),
+          ],
+          selectedColor: Colors.blue,
+          color: Colors.black,
+          renderBorder: false,
+          isSelected: _selections,
+          onPressed: (int index){
+            setState(() {
+              for (int buttonIndex = 0; buttonIndex < _selections.length; buttonIndex++) {
+                if (buttonIndex == index) {
+                  _selections[buttonIndex] = !_selections[buttonIndex];
+
+                  if(buttonIndex == 0){
+                    selectedTravelMode = TravelMode.driving;
+                  }
+                  else if(buttonIndex == 1){
+                    selectedTravelMode = TravelMode.transit;
+                  }
+                  else if(buttonIndex == 2){
+                    selectedTravelMode = TravelMode.walking;
+                  }
+                } else {
+                  _selections[buttonIndex] = false;
+                }
+              }
+            });
+          },
+        ),
+      ],
+    );
+  }
+}
+
+class DistanceValue extends StatelessWidget {
+  const DistanceValue({
+    Key? key,
+    required String? placeDistance,
+  })  : _placeDistance = placeDistance,
+        super(key: key);
+
+  final String? _placeDistance;
+
+  @override
+  Widget build(BuildContext context) {
+    return Visibility(
+      visible: _placeDistance == null ? false : true,
+      child: Text(
+        'Total Distance: $_placeDistance km',
+        style: const TextStyle(
+          fontSize: 16,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );
