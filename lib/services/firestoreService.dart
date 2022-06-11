@@ -198,11 +198,11 @@ class FirestoreService {
     return snapshots;
   }
 
-  Future<bool> addReview(
-      String reservationID, double rating, String? comment) async {
-    var reviewResult = false;
-    var user = FirebaseAuth.instance.currentUser;
-    var userID = user!.uid;
+  Future<bool> addReview(String userID, String venueID, String reservationID,
+      double rating, String? comment) async {
+    var userSideResult = false;
+    var venueSideResult = false;
+
     var reviewID = const Uuid().v4();
     var createdDate = DateTime.now();
 
@@ -217,9 +217,23 @@ class FirestoreService {
       "Rating": rating,
       "Comment": comment,
       "Created Date": createdDate
-    }).then((value) => {reviewResult = true});
+    }).then((value) => {userSideResult = true});
 
-    return reviewResult;
+    await _firestore
+        .collection("Venues")
+        .doc(venueID)
+        .collection("Reviews")
+        .doc(reviewID)
+        .set({
+      "Reservation ID": reservationID,
+      "Review ID": reviewID,
+      "Rating": rating,
+      "Comment": comment,
+      "Created Date": createdDate
+    }).then((value) => {venueSideResult = true});
+
+    var result = userSideResult && venueSideResult;
+    return result;
   }
 
   Future<dynamic> getReviewByReservationID(String reservationID) async {

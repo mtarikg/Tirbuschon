@@ -1,9 +1,7 @@
 import 'package:csc_picker/csc_picker.dart';
 import 'package:flutter/material.dart';
-import '../ReservationPages/selectDatePage.dart';
-import '../SearchPages/googleMaps.dart';
+import '../../../services/userService.dart';
 import '../../../services/firestoreService.dart';
-import '../SearchPages/menuPage.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -13,7 +11,6 @@ class SearchPage extends StatefulWidget {
 }
 
 class _SearchPageState extends State<SearchPage> {
-  var venues = [];
   var searchResult = [];
   String? searchValue = '';
   String venueType = '';
@@ -25,17 +22,12 @@ class _SearchPageState extends State<SearchPage> {
   getVenues() async {
     var venuesData = await FirestoreService().getAllVenues();
 
-    setState(() {
-      venuesData?.forEach((element) {
-        venues.add(element);
-      });
-    });
+    return venuesData;
   }
 
   @override
   void initState() {
     super.initState();
-    getVenues();
   }
 
   @override
@@ -143,83 +135,116 @@ class _SearchPageState extends State<SearchPage> {
         const SizedBox(height: 25),
         Expanded(
           child: searchResult.isEmpty
-              ? ListView.builder(
-                  itemCount: venues.length,
-                  itemBuilder: (context, int index) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Flexible(
-                            child: Container(
-                              width: MediaQuery.of(context).size.width - 30,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 1, color: Colors.grey),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Column(
-                                children: [
-                                  venues[index]["imageURL"] == null
-                                      ? const SizedBox()
-                                      : Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 10, bottom: 10),
-                                          child: Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width -
-                                                60,
-                                            height: 230,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  width: 1, color: Colors.grey),
-                                            ),
-                                            child: Image.network(
-                                              venues[index]["imageURL"],
-                                              fit: BoxFit.cover,
-                                            ),
+              ? FutureBuilder(
+                  future: getVenues(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+
+                    if (snapshot.hasData) {
+                      return ListView.builder(
+                          itemCount: snapshot.data!.length,
+                          itemBuilder: (context, int index) {
+                            return Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.all(8.0),
+                                  child: Flexible(
+                                    child: Container(
+                                      width: MediaQuery.of(context).size.width -
+                                          30,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 1, color: Colors.grey),
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          snapshot.data![index]["imageURL"] ==
+                                                  null
+                                              ? const SizedBox()
+                                              : Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          top: 10, bottom: 10),
+                                                  child: Container(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width -
+                                                            60,
+                                                    height: 230,
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          width: 1,
+                                                          color: Colors.grey),
+                                                    ),
+                                                    child: Image.network(
+                                                      snapshot.data![index]
+                                                          ["imageURL"],
+                                                      fit: BoxFit.cover,
+                                                    ),
+                                                  ),
+                                                ),
+                                          Padding(
+                                            padding:
+                                                const EdgeInsets.only(left: 9),
+                                            child: Text(
+                                                snapshot.data![index]
+                                                    ["Venue Name"],
+                                                style: const TextStyle(
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                           ),
-                                        ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 9),
-                                    child: Text(venues[index]["Venue Name"],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              TextButton(
+                                                  onPressed: () {
+                                                    UserService().showLocation(
+                                                        context,
+                                                        snapshot.data![index]);
+                                                  },
+                                                  child:
+                                                      const Text("Location")),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    UserService().showMenu(
+                                                        context,
+                                                        snapshot.data![index]);
+                                                  },
+                                                  child: const Text("Menu")),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    UserService()
+                                                        .makeReservation(
+                                                            context,
+                                                            snapshot
+                                                                .data![index]);
+                                                  },
+                                                  child: const Text(
+                                                      "Quick reservation")),
+                                            ],
+                                          )
+                                        ],
+                                      ),
+                                    ),
                                   ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      TextButton(
-                                          onPressed: () {
-                                            _showLocation(venues[index]);
-                                          },
-                                          child: const Text("Location")),
-                                      TextButton(
-                                          onPressed: () {
-                                            _showMenu(venues[index]);
-                                          },
-                                          child: const Text("Menu")),
-                                      TextButton(
-                                          onPressed: () {
-                                            _makeReservation(venues[index]);
-                                          },
-                                          child:
-                                              const Text("Quick reservation")),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    );
-                  })
+                                ),
+                                const SizedBox(height: 10),
+                              ],
+                            );
+                          });
+                    }
+
+                    return const Text("No venue available for the moment.");
+                  },
+                )
               : ListView.builder(
                   itemCount: searchResult.length,
                   itemBuilder: (context, int index) {
@@ -273,18 +298,20 @@ class _SearchPageState extends State<SearchPage> {
                                     children: [
                                       TextButton(
                                           onPressed: () {
-                                            _showLocation(searchResult[index]);
+                                            UserService().showLocation(
+                                                context, searchResult[index]);
                                           },
                                           child: const Text("Location")),
                                       TextButton(
                                           onPressed: () {
-                                            _showMenu(searchResult[index]);
+                                            UserService().showMenu(
+                                                context, searchResult[index]);
                                           },
                                           child: const Text("Menu")),
                                       TextButton(
                                           onPressed: () {
-                                            _makeReservation(
-                                                searchResult[index]);
+                                            UserService().makeReservation(
+                                                context, searchResult[index]);
                                           },
                                           child:
                                               const Text("Quick reservation")),
@@ -348,38 +375,6 @@ class _SearchPageState extends State<SearchPage> {
         });
       },
     );
-  }
-
-  void _showLocation(var venue) {
-    var address = venue["Address"];
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => MapView(venueAddress: address)));
-  }
-
-  void _showMenu(var venue) async {
-    var venueID =
-        await FirestoreService().getVenueIDByName(venue["Venue Name"]);
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => MenuPage(
-                  venueName: venue["Venue Name"],
-                  venueID: venueID.toString(),
-                )));
-  }
-
-  void _makeReservation(var venue) async {
-    var venueID =
-        await FirestoreService().getVenueIDByName(venue["Venue Name"]);
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => SelectDate(venueID: venueID.toString())));
   }
 
   Future<void> _searchVenueByName(String value) async {

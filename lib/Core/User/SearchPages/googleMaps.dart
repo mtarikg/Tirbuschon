@@ -4,6 +4,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import '../../../services/userService.dart';
 import '../BottomNavigationBarPages/mainPage.dart';
 
 class MapView extends StatefulWidget {
@@ -90,7 +91,8 @@ class _MapViewState extends State<MapView> {
   }
 
   _getCurrentLocation() async {
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+    await UserService()
+        .getUserCurrentPosition()
         .then((Position position) async {
       setState(() {
         _currentPosition = position;
@@ -525,19 +527,19 @@ class _MapViewState extends State<MapView> {
           color: Colors.black,
           renderBorder: false,
           isSelected: _selections,
-          onPressed: (int index){
+          onPressed: (int index) {
             setState(() {
-              for (int buttonIndex = 0; buttonIndex < _selections.length; buttonIndex++) {
+              for (int buttonIndex = 0;
+                  buttonIndex < _selections.length;
+                  buttonIndex++) {
                 if (buttonIndex == index) {
                   _selections[buttonIndex] = !_selections[buttonIndex];
 
-                  if(buttonIndex == 0){
+                  if (buttonIndex == 0) {
                     selectedTravelMode = TravelMode.driving;
-                  }
-                  else if(buttonIndex == 1){
+                  } else if (buttonIndex == 1) {
                     selectedTravelMode = TravelMode.transit;
-                  }
-                  else if(buttonIndex == 2){
+                  } else if (buttonIndex == 2) {
                     selectedTravelMode = TravelMode.walking;
                   }
                 } else {
