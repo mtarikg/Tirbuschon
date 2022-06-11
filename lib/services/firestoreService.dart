@@ -297,6 +297,26 @@ class FirestoreService {
     return userData;
   }
 
+  Future<void> uploadImage(String userID, String imageURL) async {
+    var document = await _firestore
+        .collection('Users')
+        .doc(userID)
+        .collection('profileInfo')
+        .get();
+    await document.docs[0].reference.update({'avatarURL': imageURL});
+  }
+
+  Future<void> updateUserField(
+      String userID, String userField, String updateValue) async {
+    var document = await _firestore
+        .collection('Users')
+        .doc(userID)
+        .collection('profileInfo')
+        .get();
+
+    await document.docs[0].reference.update({userField: updateValue});
+  }
+
   Future<void> deleteUser(String userID) async {
     var documentReference = _firestore.collection("Users").doc(userID);
     _firestore.runTransaction(

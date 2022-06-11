@@ -1,8 +1,7 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:tirbuschon_feng497/services/firestoreService.dart';
+import '../services/firestoreService.dart';
 import '../Core/User/ProfilePages/uploadProfileImagePage.dart';
 import '../welcomePage.dart';
 import '../Core/User/BottomNavigationBarPages/mainPage.dart';
@@ -30,16 +29,19 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
         child: ElevatedButton(
             onPressed: () {
               var lowerCaseText = widget.text.toLowerCase();
+              var user = FirebaseAuth.instance.currentUser;
+              var userID = user!.uid;
+
               if (lowerCaseText.contains("username")) {
-                _changeUsername(context);
+                _changeUsername(context, userID);
               } else if (lowerCaseText.contains("full name")) {
-                _changeFullName(context);
+                _changeFullName(context, userID);
               } else if (lowerCaseText.contains("phone number")) {
-                _changePhoneNumber(context);
+                _changePhoneNumber(context, userID);
               } else if (lowerCaseText.contains("profile image")) {
-                _changeProfileImage(context);
+                _changeProfileImage(context, userID);
               } else if (lowerCaseText.contains("delete account")) {
-                _deleteAccount(context);
+                _deleteAccount(context, userID);
               }
 
               widget.pageToNavigate == null
@@ -55,9 +57,7 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
     );
   }
 
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-
-  void _changePhoneNumber(BuildContext context) {
+  void _changePhoneNumber(BuildContext context, String userID) {
     final _formKey = GlobalKey<FormState>();
     late String phoneNumberValue = "";
 
@@ -96,18 +96,9 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
             TextButton(
                 onPressed: () async {
                   var formState = _formKey.currentState!;
-
                   if (formState.validate()) {
-                    var user = FirebaseAuth.instance.currentUser;
-                    var userID = user!.uid;
-
-                    var document = await _firestore
-                        .collection('Users')
-                        .doc(userID)
-                        .collection('profileInfo')
-                        .get();
-                    document.docs[0].reference
-                        .update({'phoneNumber': phoneNumberValue});
+                    await FirestoreService().updateUserField(
+                        userID, 'phoneNumber', phoneNumberValue);
 
                     var alert = AlertDialog(
                       title: const Text("Change Successful"),
@@ -152,7 +143,7 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
     );
   }
 
-  void _changeUsername(BuildContext context) {
+  void _changeUsername(BuildContext context, String userID) {
     final _formKey = GlobalKey<FormState>();
     late String usernameValue = "";
 
@@ -188,18 +179,9 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
             TextButton(
                 onPressed: () async {
                   var formState = _formKey.currentState!;
-
                   if (formState.validate()) {
-                    var user = FirebaseAuth.instance.currentUser;
-                    var userID = user!.uid;
-
-                    var document = await _firestore
-                        .collection('Users')
-                        .doc(userID)
-                        .collection('profileInfo')
-                        .get();
-                    document.docs[0].reference
-                        .update({'username': usernameValue});
+                    await FirestoreService()
+                        .updateUserField(userID, 'username', usernameValue);
 
                     var alert = AlertDialog(
                       title: const Text("Change Successful"),
@@ -244,7 +226,7 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
     );
   }
 
-  void _changeFullName(BuildContext context) {
+  void _changeFullName(BuildContext context, String userID) {
     final _formKey = GlobalKey<FormState>();
     late String fullNameValue = "";
 
@@ -279,18 +261,9 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
             TextButton(
                 onPressed: () async {
                   var formState = _formKey.currentState!;
-
                   if (formState.validate()) {
-                    var user = FirebaseAuth.instance.currentUser;
-                    var userID = user!.uid;
-
-                    var document = await _firestore
-                        .collection('Users')
-                        .doc(userID)
-                        .collection('profileInfo')
-                        .get();
-                    document.docs[0].reference
-                        .update({'fullName': fullNameValue});
+                    await FirestoreService()
+                        .updateUserField(userID, 'fullName', fullNameValue);
 
                     var alert = AlertDialog(
                       title: const Text("Change Successful"),
@@ -335,12 +308,14 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
     );
   }
 
-  void _changeProfileImage(BuildContext context) {
-    Navigator.push(context,
-        MaterialPageRoute(builder: (context) => const UploadProfileImage()));
+  void _changeProfileImage(BuildContext context, String userID) {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (context) => UploadProfileImage(userID: userID)));
   }
 
-  void _deleteAccount(BuildContext context) {
+  void _deleteAccount(BuildContext context, String userID) {
     final AuthService _authService = AuthService();
 
     showDialog(
@@ -353,10 +328,9 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
                   TextButton(
                       onPressed: () {
                         var user = FirebaseAuth.instance.currentUser;
-                        var userID = user!.uid;
                         _authService.signOut();
                         FirestoreService().deleteUser(userID);
-                        user.delete();
+                        user!.delete();
                         Navigator.of(context).pop();
                       },
                       child: const Text("OK"))
