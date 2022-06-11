@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_email_sender/flutter_email_sender.dart';
-import 'package:tirbuschon_feng497/palette.dart';
+import '../../palette.dart';
 
 class EmailSender extends StatefulWidget {
   const EmailSender({Key? key}) : super(key: key);
@@ -51,50 +51,50 @@ class _EmailSenderState extends State<EmailSender> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Report an Issue'),
+        title: const Text('Report an Issue'),
         backgroundColor: primaryLightOrange,
         toolbarTextStyle: TextStyle(color: primaryDark),
         actions: <Widget>[
           IconButton(
             onPressed: send,
-            icon: Icon(Icons.send),
+            icon: const Icon(Icons.send),
           )
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(8.0),
+        padding: const EdgeInsets.all(8.0),
         child: Column(
           mainAxisSize: MainAxisSize.max,
           // mainAxisAlignment: MainAxisAlignment.spaceBetween,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: <Widget>[
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: _recipientController,
                 readOnly: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Recipient',
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: _phoneController,
                 readOnly: true,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   labelText: 'Phone',
                 ),
               ),
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: TextField(
                 controller: _subjectController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   border: OutlineInputBorder(),
                   hintText: "Issue",
                   labelText: 'Subject',
@@ -103,13 +103,13 @@ class _EmailSenderState extends State<EmailSender> {
             ),
             Expanded(
               child: Padding(
-                padding: EdgeInsets.all(8.0),
+                padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   controller: _bodyController,
                   maxLines: null,
                   expands: true,
                   textAlignVertical: TextAlignVertical.top,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                       hintText: "Description", border: OutlineInputBorder()),
                 ),
               ),

@@ -1,13 +1,14 @@
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import '../../../services/firestoreService.dart';
 import '../BottomNavigationBarPages/mainPage.dart';
 import '../../../services/storageService.dart';
 
 class UploadProfileImage extends StatefulWidget {
-  const UploadProfileImage({Key? key}) : super(key: key);
+  final String userID;
+
+  const UploadProfileImage({Key? key, required this.userID}) : super(key: key);
 
   @override
   State<UploadProfileImage> createState() => _UploadProfileImageState();
@@ -170,15 +171,7 @@ class _UploadProfileImageState extends State<UploadProfileImage> {
     showDialog(context: context, builder: (BuildContext context) => alert);
 
     String imageURL = await StorageService().uploadImage(file!);
-    var user = FirebaseAuth.instance.currentUser;
-    var userID = user!.uid;
-    FirebaseFirestore _firestore = FirebaseFirestore.instance;
-    var document = await _firestore
-        .collection('Users')
-        .doc(userID)
-        .collection('profileInfo')
-        .get();
-    document.docs[0].reference.update({'avatarURL': imageURL});
+    await FirestoreService().uploadImage(widget.userID, imageURL);
   }
 
   void alertUser() {
