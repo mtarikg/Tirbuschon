@@ -90,6 +90,8 @@ class ResetPasswordButton extends StatelessWidget {
 
   void _resetPassword(String email) {
     final AuthService _authService = AuthService();
+
+    // no limitation on reset password form
     _authService.resetPassword(email).catchError((error) {
       String errorDetail;
       if (error.toString().contains('invalid-email')) {

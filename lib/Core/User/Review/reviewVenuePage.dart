@@ -1,14 +1,18 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:profanity_filter/profanity_filter.dart';
-import 'package:tirbuschon_feng497/services/firestoreService.dart';
+import '../../../services/firestoreService.dart';
 
 import '../BottomNavigationBarPages/mainPage.dart';
 
 class ReviewVenue extends StatefulWidget {
   final String reservation;
+  final String venueName;
 
-  const ReviewVenue({Key? key, required this.reservation}) : super(key: key);
+  const ReviewVenue(
+      {Key? key, required this.reservation, required this.venueName})
+      : super(key: key);
 
   @override
   _ReviewVenueState createState() => _ReviewVenueState();
@@ -79,8 +83,15 @@ class _ReviewVenueState extends State<ReviewVenue> {
                   "Submit your review",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                onPressed: () {
-                  _addReview(widget.reservation, rating, comment);
+                onPressed: () async {
+                  var user = FirebaseAuth.instance.currentUser;
+                  var userID = user!.uid;
+
+                  var venueID = await FirestoreService()
+                      .getVenueIDByName(widget.venueName);
+
+                  _addReview(
+                      userID, venueID!, widget.reservation, rating, comment);
                 },
               ),
               const SizedBox(height: 20),
@@ -89,9 +100,10 @@ class _ReviewVenueState extends State<ReviewVenue> {
         ));
   }
 
-  void _addReview(String reservationID, double rating, String? comment) async {
+  void _addReview(String userID, String venueID, String reservationID,
+      double rating, String? comment) async {
     var result = await FirestoreService()
-        .addReview(reservationID, rating, comment)
+        .addReview(userID, venueID, reservationID, rating, comment)
         .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(error.toString()),
