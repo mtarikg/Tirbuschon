@@ -253,15 +253,34 @@ class FirestoreService {
     return existingUser;
   }
 
-  Future<String> getUser() async {
+  Future<String?> getUser() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
 
     var currentUser = _auth.currentUser;
     var currentUserID = currentUser!.uid;
 
-    var document = _firestore.collection('Users').doc(currentUserID);
+    var userDocument =
+        await _firestore.collection('Users').doc(currentUserID).get();
 
-    return document.id;
+    if (userDocument.exists) {
+      return "Users";
+    }
+
+    var venueDocument =
+        await _firestore.collection('Venues').doc(currentUserID).get();
+
+    if (venueDocument.exists) {
+      return "Venues";
+    }
+
+    var adminDocument =
+        await _firestore.collection('Admin').doc(currentUserID).get();
+
+    if (adminDocument.exists) {
+      return "Admin";
+    }
+
+    return null;
   }
 
   Future<String> getProfileInfo(String text) async {
