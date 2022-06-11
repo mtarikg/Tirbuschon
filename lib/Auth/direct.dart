@@ -22,7 +22,7 @@ class Direct extends StatelessWidget {
               return const MainPage();
             } else if (snapshot.data == "Venues") {
               return const BottomNavigationBar1();
-            } else {
+            } else if (snapshot.data == "Admin") {
               return const AdminBottomNavBar();
             }
           }

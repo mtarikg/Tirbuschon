@@ -296,4 +296,10 @@ class FirestoreService {
 
     return userData;
   }
+
+  Future<void> deleteUser(String userID) async {
+    var documentReference = _firestore.collection("Users").doc(userID);
+    _firestore.runTransaction(
+        (transaction) async => await transaction.delete(documentReference));
+  }
 }

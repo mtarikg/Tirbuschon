@@ -2,6 +2,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:tirbuschon_feng497/services/firestoreService.dart';
 import '../Core/User/ProfilePages/uploadProfileImagePage.dart';
 import '../welcomePage.dart';
 import '../Core/User/BottomNavigationBarPages/mainPage.dart';
@@ -119,7 +120,7 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
                                   context,
                                   MaterialPageRoute(
                                       builder: (context) => const MainPage()),
-                                      (route) => false);
+                                  (route) => false);
                             },
                             child: const Text("OK"))
                       ],
@@ -354,7 +355,7 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
                         var user = FirebaseAuth.instance.currentUser;
                         var userID = user!.uid;
                         _authService.signOut();
-                        deleteUserCollection(_firestore, userID, "profileInfo");
+                        FirestoreService().deleteUser(userID);
                         user.delete();
                         Navigator.of(context).pop();
                       },
@@ -366,19 +367,5 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
             context,
             MaterialPageRoute(builder: (context) => const WelcomePage()),
             (route) => false));
-  }
-
-  void deleteUserCollection(
-      FirebaseFirestore _firestore, String userID, String subCollection) async {
-    await _firestore
-        .collection('Users')
-        .doc(userID)
-        .collection(subCollection)
-        .get()
-        .then((QuerySnapshot querySnapshot) {
-      for (var doc in querySnapshot.docs) {
-        doc.reference.delete();
-      }
-    });
   }
 }

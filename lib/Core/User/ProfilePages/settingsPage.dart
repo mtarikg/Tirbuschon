@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Restaurant/Screens/email_sender.dart';
+import '../../../Restaurant/Screens/email_sender.dart';
 import '../../../MyWidgets/navigatorButtonCard.dart';
 import 'profileSettingsPage.dart';
 import '../../../welcomePage.dart';
