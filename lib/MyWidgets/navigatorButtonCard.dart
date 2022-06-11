@@ -11,7 +11,7 @@ class NavigatorButtonCard extends StatefulWidget {
   final String text;
   final dynamic pageToNavigate;
 
-  NavigatorButtonCard({Key? key, required this.text, this.pageToNavigate})
+  const NavigatorButtonCard({Key? key, required this.text, this.pageToNavigate})
       : super(key: key);
 
   @override

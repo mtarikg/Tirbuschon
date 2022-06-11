@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Restaurant/Screens/email_sender.dart';
 import '../../../MyWidgets/navigatorButtonCard.dart';
 import 'profileSettingsPage.dart';
 import '../../../welcomePage.dart';
@@ -31,11 +32,12 @@ class _SettingsPageState extends State<SettingsPage> {
         children: [
           _tirbuschonText(context),
           const SizedBox(height: 200),
-          NavigatorButtonCard(
-              pageToNavigate: const ProfileSettingsPage(), text: "Profile Settings"),
-          NavigatorButtonCard(
-              pageToNavigate: const PolicyPage(), text: "Policy Page"),
-          NavigatorButtonCard(text: "Report a problem"),
+          const NavigatorButtonCard(
+              pageToNavigate: ProfileSettingsPage(), text: "Profile Settings"),
+          const NavigatorButtonCard(
+              pageToNavigate: PolicyPage(), text: "Policy Page"),
+          const NavigatorButtonCard(
+              pageToNavigate: EmailSender(), text: "Report a problem"),
           LogOutCard(context: context),
         ],
       ),
