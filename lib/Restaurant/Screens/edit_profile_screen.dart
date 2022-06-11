@@ -85,7 +85,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                     address: e['Address'],
                                     phone: e['Phone'],
                                     capasity: e['Capasity'],
-                                    reservationCapasity: e['Reservation Capasity'],
+                                    reservationCapasity:
+                                        e['Reservation Capasity'],
                                   ),
                                 ),
                               ],
@@ -105,6 +106,10 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 }
 
+final addressController = new TextEditingController();
+final capasityController = new TextEditingController();
+final reservationcapasityController = new TextEditingController();
+final phoneController = new TextEditingController();
 Widget _settingsContent({
   context,
   name,
@@ -161,6 +166,7 @@ Widget _settingsContent({
               ],
             ),
             TextField(
+              controller: addressController,
               obscureText: false,
               style: TextStyle(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
@@ -187,6 +193,7 @@ Widget _settingsContent({
               ],
             ),
             TextField(
+              controller: phoneController,
               obscureText: false,
               style: TextStyle(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
@@ -213,6 +220,7 @@ Widget _settingsContent({
               ],
             ),
             TextField(
+              controller: capasityController,
               obscureText: false,
               style: TextStyle(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
@@ -239,6 +247,7 @@ Widget _settingsContent({
               ],
             ),
             TextField(
+              controller: reservationcapasityController,
               obscureText: false,
               style: TextStyle(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
@@ -254,7 +263,43 @@ Widget _settingsContent({
                 padding: EdgeInsets.symmetric(horizontal: 40),
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
-                onPressed: () {},
+                onPressed: () async {
+                  String userId =
+                      FirebaseAuth.instance.currentUser!.uid.toString();
+                  final QuerySnapshot result = await FirebaseFirestore.instance
+                      .collection('Venues')
+                      .doc(userId)
+                      .collection('Profile Information')
+                      .get();
+                  final List<DocumentSnapshot> documents = result.docs;
+                  List<String> followingList = [];
+                  documents.forEach((snapshot) {
+                    followingList.add(snapshot.id);
+                  });
+                  var snapshots = FirebaseFirestore.instance
+                      .collection('Venues')
+                      .doc(userId)
+                      .collection('Profile Information')
+                      .doc(followingList.first)
+                      .update({
+                        'Address': addressController.text.isEmpty
+                            ? address
+                            : addressController.text,
+                        'Capasity': capasityController.text.isEmpty
+                            ? capasity
+                            : capasityController.text,
+                        'Phone': phoneController.text.isEmpty
+                            ? phone
+                            : phoneController.text,
+                        'Reservation Capasity':
+                            reservationcapasityController.text.isEmpty
+                                ? reservationCapasity
+                                : reservationcapasityController.text,
+                      })
+                      .then((value) => print("Data updated"))
+                      .catchError((error) => print("Failed to update data"));
+                  ;
+                },
                 child: Text("UPDATE INFO",
                     style: TextStyle(
                         fontSize: 16, letterSpacing: 2.2, color: Colors.black)),
