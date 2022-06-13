@@ -57,6 +57,7 @@ dependencies:
   csc_picker: ^0.2.6
   intl: ^0.17.0
   profanity_filter: ^2.0.0
+  timeago: ^3.2.2
 
 
 dev_dependencies:

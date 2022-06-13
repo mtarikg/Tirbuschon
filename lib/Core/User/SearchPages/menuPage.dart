@@ -2,9 +2,11 @@ import 'package:flutter/material.dart';
 import '../../../services/firestoreService.dart';
 
 class MenuPage extends StatefulWidget {
+  final String venueID;
   final String venueName;
 
-  const MenuPage({Key? key, required this.venueName}) : super(key: key);
+  const MenuPage({Key? key, required this.venueName, required this.venueID})
+      : super(key: key);
 
   @override
   _MenuPageState createState() => _MenuPageState();
@@ -15,8 +17,7 @@ class _MenuPageState extends State<MenuPage> {
   var categoryItems = [];
 
   getMenu() async {
-    var venueID = await FirestoreService().getVenueIDByName(widget.venueName);
-    var menuData = await FirestoreService().getMenu(venueID.toString());
+    var menuData = await FirestoreService().getMenu(widget.venueID);
     var menuValue = menuData["Menu"];
     setState(() {
       menuValue.keys.toList().forEach((key) => menuCategories.add(key));

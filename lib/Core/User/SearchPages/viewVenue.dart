@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'venueReviews.dart';
 import '../../../MyWidgets/navigatorButtonCard.dart';
 import '../../../services/firestoreService.dart';
-import '../../../services/userService.dart';
 import '../ReservationPages/selectDatePage.dart';
 import 'googleMaps.dart';
 import 'menuPage.dart';
@@ -85,13 +85,18 @@ class _ViewVenueState extends State<ViewVenue> {
                                 text: "Location"),
                             NavigatorButtonCard(
                                 pageToNavigate: MenuPage(
+                                  venueID: widget.venueID,
                                   venueName: snapshot.data["Venue Name"],
                                 ),
                                 text: "Menu"),
                             NavigatorButtonCard(
-                                pageToNavigate: SelectDate(
-                                    venueName: snapshot.data["Venue Name"]),
+                                pageToNavigate:
+                                    SelectDate(venueID: widget.venueID),
                                 text: "Quick Reservation"),
+                            NavigatorButtonCard(
+                                pageToNavigate:
+                                    VenueReviews(venueID: widget.venueID),
+                                text: "See Reviews"),
                           ],
                         )),
                   ],

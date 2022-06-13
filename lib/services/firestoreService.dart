@@ -212,6 +212,7 @@ class FirestoreService {
         .collection("Reviews List")
         .doc(reviewID)
         .set({
+      "User ID": userID,
       "Reservation ID": reservationID,
       "Review ID": reviewID,
       "Rating": rating,
@@ -225,6 +226,7 @@ class FirestoreService {
         .collection("Reviews")
         .doc(reviewID)
         .set({
+      "User ID": userID,
       "Reservation ID": reservationID,
       "Review ID": reviewID,
       "Rating": rating,
@@ -234,6 +236,16 @@ class FirestoreService {
 
     var result = userSideResult && venueSideResult;
     return result;
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getVenueReviews(String venueID) {
+    var snapshots = _firestore
+        .collection("Venues")
+        .doc(venueID)
+        .collection("Reviews")
+        .snapshots();
+
+    return snapshots;
   }
 
   Future<dynamic> getReviewByReservationID(String reservationID) async {
@@ -297,9 +309,7 @@ class FirestoreService {
     return null;
   }
 
-  Future<String> getProfileInfo(String text) async {
-    var user = FirebaseAuth.instance.currentUser;
-    var userID = user!.uid;
+  Future<String> getProfileInfo(String userID, String text) async {
     var result = await _firestore
         .collection('Users')
         .doc(userID)
