@@ -4,14 +4,14 @@ import 'package:geolocator/geolocator.dart';
 import '../Core/User/ReservationPages/selectDatePage.dart';
 import '../Core/User/SearchPages/googleMaps.dart';
 import '../Core/User/SearchPages/menuPage.dart';
+import '../Core/User/SearchPages/viewVenue.dart';
 import 'firestoreService.dart';
 
 class UserService {
   Future<Position> getUserCurrentPosition() async {
     Position currentPosition;
     var result = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        forceAndroidLocationManager: true);
+        desiredAccuracy: LocationAccuracy.high);
     currentPosition = result;
 
     return currentPosition;
@@ -30,35 +30,12 @@ class UserService {
     return currentAddressData;
   }
 
-  void showLocation(BuildContext context, var venue) {
-    var address = venue["Address"];
+  void viewDetails(BuildContext context, String venueName) async {
+    var venueID = await FirestoreService().getVenueIDByName(venueName);
 
     Navigator.push(
         context,
         MaterialPageRoute(
-            builder: (context) => MapView(venueAddress: address)));
-  }
-
-  void showMenu(BuildContext context, var venue) async {
-    var venueID =
-        await FirestoreService().getVenueIDByName(venue["Venue Name"]);
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => MenuPage(
-                  venueName: venue["Venue Name"],
-                  venueID: venueID.toString(),
-                )));
-  }
-
-  void makeReservation(BuildContext context, var venue) async {
-    var venueID =
-        await FirestoreService().getVenueIDByName(venue["Venue Name"]);
-
-    Navigator.push(
-        context,
-        MaterialPageRoute(
-            builder: (context) => SelectDate(venueID: venueID.toString())));
+            builder: (context) => ViewVenue(venueID: venueID.toString())));
   }
 }

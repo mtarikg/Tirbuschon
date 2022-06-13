@@ -211,49 +211,31 @@ class _SearchPageState extends State<SearchPage> {
                                                   padding:
                                                       const EdgeInsets.only(
                                                           left: 9),
-                                                  child: Text(
-                                                      snapshot.data![index]
-                                                          ["Venue Name"],
-                                                      style: const TextStyle(
-                                                          fontWeight:
-                                                              FontWeight.bold)),
+                                                  child: Row(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .spaceEvenly,
+                                                    children: [
+                                                      Text(
+                                                          snapshot.data![index]
+                                                              ["Venue Name"],
+                                                          style: const TextStyle(
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold)),
+                                                      TextButton(
+                                                          onPressed: () {
+                                                            UserService().viewDetails(
+                                                                context,
+                                                                snapshot.data![
+                                                                        index][
+                                                                    "Venue Name"]);
+                                                          },
+                                                          child: const Text(
+                                                              "Details")),
+                                                    ],
+                                                  ),
                                                 ),
-                                                Row(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment
-                                                          .spaceEvenly,
-                                                  children: [
-                                                    TextButton(
-                                                        onPressed: () {
-                                                          UserService()
-                                                              .showLocation(
-                                                                  context,
-                                                                  snapshot.data![
-                                                                      index]);
-                                                        },
-                                                        child: const Text(
-                                                            "Location")),
-                                                    TextButton(
-                                                        onPressed: () {
-                                                          UserService().showMenu(
-                                                              context,
-                                                              snapshot.data![
-                                                                  index]);
-                                                        },
-                                                        child:
-                                                            const Text("Menu")),
-                                                    TextButton(
-                                                        onPressed: () {
-                                                          UserService()
-                                                              .makeReservation(
-                                                                  context,
-                                                                  snapshot.data![
-                                                                      index]);
-                                                        },
-                                                        child: const Text(
-                                                            "Quick reservation")),
-                                                  ],
-                                                )
                                               ],
                                             ),
                                           ),
@@ -315,39 +297,27 @@ class _SearchPageState extends State<SearchPage> {
                                         Padding(
                                           padding:
                                               const EdgeInsets.only(left: 9),
-                                          child: Text(
-                                              searchResult[index]["Venue Name"],
-                                              style: const TextStyle(
-                                                  fontWeight: FontWeight.bold)),
+                                          child: Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceEvenly,
+                                            children: [
+                                              Text(
+                                                  searchResult[index]
+                                                      ["Venue Name"],
+                                                  style: const TextStyle(
+                                                      fontWeight:
+                                                          FontWeight.bold)),
+                                              TextButton(
+                                                  onPressed: () {
+                                                    UserService().viewDetails(
+                                                        context,
+                                                        searchResult[index]
+                                                            ["Venue Name"]);
+                                                  },
+                                                  child: const Text("Details")),
+                                            ],
+                                          ),
                                         ),
-                                        Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceEvenly,
-                                          children: [
-                                            TextButton(
-                                                onPressed: () {
-                                                  UserService().showLocation(
-                                                      context,
-                                                      searchResult[index]);
-                                                },
-                                                child: const Text("Location")),
-                                            TextButton(
-                                                onPressed: () {
-                                                  UserService().showMenu(
-                                                      context,
-                                                      searchResult[index]);
-                                                },
-                                                child: const Text("Menu")),
-                                            TextButton(
-                                                onPressed: () {
-                                                  UserService().makeReservation(
-                                                      context,
-                                                      searchResult[index]);
-                                                },
-                                                child: const Text(
-                                                    "Quick reservation")),
-                                          ],
-                                        )
                                       ],
                                     ),
                                   ),

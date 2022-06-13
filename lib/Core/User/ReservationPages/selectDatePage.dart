@@ -83,7 +83,7 @@ class _SelectDateState extends State<SelectDate> {
             const SizedBox(height: 75),
             ElevatedButton(
               child: const Text("Go to payment page."),
-              onPressed: () {
+              onPressed: () async {
                 Navigator.push(
                     context,
                     MaterialPageRoute(
