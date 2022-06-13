@@ -1,21 +1,17 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import '../../../MyWidgets/navigatorButtonCard.dart';
+import '../../../services/firestoreService.dart';
+import '../../../services/userService.dart';
+import '../ReservationPages/selectDatePage.dart';
+import 'googleMaps.dart';
+import 'menuPage.dart';
 
 class ViewVenue extends StatefulWidget {
-  final String address;
-  final String phone;
-  final int capacity;
-  final int reservationCapacity;
-  final String name;
+  final String venueID;
 
   const ViewVenue({
     Key? key,
-    required this.capacity,
-    required this.address,
-    required this.phone,
-    required this.reservationCapacity,
-    required this.name,
+    required this.venueID,
   }) : super(key: key);
 
   @override
@@ -23,17 +19,14 @@ class ViewVenue extends StatefulWidget {
 }
 
 class _ViewVenueState extends State<ViewVenue> {
-  late CollectionReference collectionReference;
-  late var photoUrl;
+  getVenueInfo() async {
+    dynamic venueData = await FirestoreService().getVenueByID(widget.venueID);
+
+    return venueData;
+  }
 
   @override
   void initState() {
-    String userId = FirebaseAuth.instance.currentUser!.uid.toString();
-    photoUrl = FirebaseAuth.instance.currentUser!.photoURL ?? null;
-    collectionReference = FirebaseFirestore.instance
-        .collection('Venues')
-        .doc(userId)
-        .collection('Profile Information');
     super.initState();
   }
 
@@ -50,162 +43,136 @@ class _ViewVenueState extends State<ViewVenue> {
           },
         ),
       ),
-      body: Container(
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Column(
-          children: [
-            Expanded(
-                child: StreamBuilder(
-                  stream: collectionReference.snapshots(),
-                  builder: (BuildContext context,
-                      AsyncSnapshot<QuerySnapshot> snapshot) {
-                    if (snapshot.hasData) {
-                      return ListView(
-                        children: snapshot.data!.docs
-                            .map((e) => Column(
+      body: Column(
+        children: [
+          Expanded(
+              child: FutureBuilder(
+            future: getVenueInfo(),
+            builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+
+              if (snapshot.hasData) {
+                return Column(
+                  children: [
+                    _VenueProfileImageContainer(
+                        imageURL: snapshot.data["imageURL"]),
+                    Padding(
+                        padding: const EdgeInsets.only(top: 20),
+                        child: Column(
                           children: [
-                            ListTile(
-                              title: restaurantProfileWidget(
-                                address: e['Address'],
-                                capasity: e['Capasity'],
-                                phone: e['Phone'],
-                                reservationCapasity:
-                                e['Reservation Capasity'],
-                                name: e['Venue Name'],
-                              ),
-                            ),
+                            _VenueInfoContainer(
+                                value: snapshot.data["Venue Name"],
+                                boldOption: true),
+                            _VenueInfoContainer(
+                                value: snapshot.data["Phone"],
+                                boldOption: false),
+                            _VenueInfoContainer(
+                                value: snapshot.data["Address"],
+                                boldOption: false),
+                            _VenueInfoContainer(
+                                title: "Capacity",
+                                value: snapshot.data["Capacity"],
+                                boldOption: false),
+                            _VenueInfoContainer(
+                                title: "Current Reservation Capacity",
+                                value: snapshot.data["Reservation Capacity"],
+                                boldOption: false),
+                            NavigatorButtonCard(
+                                pageToNavigate: MapView(
+                                    venueAddress: snapshot.data["Address"]),
+                                text: "Location"),
+                            NavigatorButtonCard(
+                                pageToNavigate: MenuPage(
+                                  venueName: snapshot.data["Venue Name"],
+                                ),
+                                text: "Menu"),
+                            NavigatorButtonCard(
+                                pageToNavigate: SelectDate(
+                                    venueName: snapshot.data["Venue Name"]),
+                                text: "Quick Reservation"),
                           ],
-                        ))
-                            .toList(),
-                      );
-                    }
-                    return const Center(
-                      child: CircularProgressIndicator(),
-                    );
-                  },
-                ))
-          ],
-        ),
+                        )),
+                  ],
+                );
+              }
+
+              return const Text(
+                  "Venue data is not available for the current moment.");
+            },
+          ))
+        ],
       ),
     );
   }
+}
 
-  Widget restaurantProfileWidget(
-      {address, capasity, phone, reservationCapasity, name}) {
-    return Column(
-      children: <Widget>[
-        Padding(
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).size.width * 0.05,
-          ),
-          child: Align(
-            alignment: Alignment.topCenter,
-            child: GestureDetector(
-                child: photoUrl == null
-                    ? const CircleAvatar(
-                    backgroundColor: Colors.white,
-                    backgroundImage: AssetImage(
-                      'assets/resticon.png',
-                    ),
-                    radius: 60)
-                    : CircleAvatar(
-                    backgroundColor: Colors.white,
-                    child: ClipOval(
-                        child: FadeInImage.assetNetwork(
-                            placeholder: 'assets/resticon.png',
-                            image: photoUrl,
-                            fit: BoxFit.cover,
-                            width: 200,
-                            height: 120)),
-                    radius: 25),
-                onTap: () {}),
-          ),
-        ),
-        Column(
-          children: <Widget>[
-            SizedBox(
-              height: MediaQuery.of(context).size.width * 0.04,
-            ),
-            Text(
-              name,
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.width * 0.04,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Icon(
-                  Icons.location_on,
-                  color: Colors.grey,
-                ),
-                Text(
-                  address,
-                ),
-              ],
-            ),
-            SizedBox(
-              height: MediaQuery.of(context).size.width * 0.04,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                const Icon(
-                  Icons.phone,
-                  color: Colors.grey,
-                ),
-                Text(
-                  phone,
-                ),
-              ],
-            ),
-          ],
-        ),
-        SizedBox(
-          height: MediaQuery.of(context).size.width * 0.05,
-        ),
-        Container(
-          height: 80.0,
-          width: double.infinity,
-          color: Colors.grey.withOpacity(0.05),
-          padding: EdgeInsets.only(
-            top: MediaQuery.of(context).size.width * 0.05,
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Column(
-                children: <Widget>[
-                  const Text(
-                    'Restaurant Capacity',
-                  ),
-                  Text(
-                    capasity.toString(),
-                    style: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 14.0,
-                        color: Colors.red),
-                  ),
-                ],
-              ),
-              Column(
-                children: <Widget>[
-                  const Text(
-                    'Reservation Capacity',
-                  ),
-                  Text(
-                    reservationCapasity.toString(),
-                    style: const TextStyle(
-                        fontFamily: 'Montserrat',
-                        fontSize: 14.0,
-                        color: Colors.red),
-                  ),
-                ],
-              ),
-            ],
-          ),
-        ),
-      ],
+class _VenueProfileImageContainer extends StatelessWidget {
+  final String imageURL;
+
+  const _VenueProfileImageContainer({Key? key, required this.imageURL})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return imageURL == "null"
+        ? Center(
+            child: Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                child: Center(
+                  child: Image.asset('assets/placeholder.jpg'),
+                )),
+          ))
+        : Padding(
+            padding: const EdgeInsets.only(top: 20.0),
+            child: SizedBox(
+                width: MediaQuery.of(context).size.width,
+                height: 150,
+                child: Center(
+                  child: Image.network(imageURL),
+                )),
+          );
+  }
+}
+
+class _VenueInfoContainer extends StatelessWidget {
+  final String? title;
+  final String value;
+  final bool boldOption;
+
+  //final Icons icon;
+
+  const _VenueInfoContainer(
+      {this.title,
+      required this.value,
+      required this.boldOption,
+      //required this.icon,
+      Key? key})
+      : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      decoration: const BoxDecoration(
+          border: Border(
+              top: BorderSide(width: 1, color: Colors.grey),
+              bottom: BorderSide(width: 1, color: Colors.grey))),
+      width: MediaQuery.of(context).size.width,
+      height: 50,
+      child: Center(
+          child: Text(
+        title == null ? value : "$title : $value",
+        style: boldOption
+            ? const TextStyle(
+                fontSize: 20,
+                color: Colors.black87,
+                fontWeight: FontWeight.bold)
+            : const TextStyle(fontSize: 17, color: Colors.black87),
+      )),
     );
   }
 }

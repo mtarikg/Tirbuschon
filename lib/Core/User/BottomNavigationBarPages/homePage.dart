@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import '../../../services/firestoreService.dart';
 import '../../../services/userService.dart';
 import 'mainPage.dart';
@@ -118,35 +119,24 @@ class _HomePageState extends State<HomePage> {
                                       ),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 9),
-                                  child: Text(
-                                      snapshot.data![index]["Venue Name"],
-                                      style: const TextStyle(
-                                          fontWeight: FontWeight.bold)),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceEvenly,
+                                    children: [
+                                      Text(snapshot.data![index]["Venue Name"],
+                                          style: const TextStyle(
+                                              fontWeight: FontWeight.bold)),
+                                      TextButton(
+                                          onPressed: () {
+                                            UserService().viewDetails(
+                                                context,
+                                                snapshot.data![index]
+                                                    ["Venue Name"]);
+                                          },
+                                          child: const Text("Details")),
+                                    ],
+                                  ),
                                 ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
-                                  children: [
-                                    TextButton(
-                                        onPressed: () {
-                                          UserService().showLocation(
-                                              context, snapshot.data![index]);
-                                        },
-                                        child: const Text("Location")),
-                                    TextButton(
-                                        onPressed: () {
-                                          UserService().showMenu(
-                                              context, snapshot.data![index]);
-                                        },
-                                        child: const Text("Menu")),
-                                    TextButton(
-                                        onPressed: () {
-                                          UserService().makeReservation(
-                                              context, snapshot.data![index]);
-                                        },
-                                        child: const Text("Quick reservation")),
-                                  ],
-                                )
                               ],
                             ),
                           ),
@@ -165,9 +155,17 @@ class _HomePageState extends State<HomePage> {
   Future<List<dynamic>?> getNearbyVenues() async {
     List<String> locationData;
     List? nearbyVenues;
-    locationData = await UserService().getUserCurrentAddressData();
-    nearbyVenues = await FirestoreService()
-        .getVenuesByCityDistrict(locationData[0], locationData[1]);
+
+    var enabled = await Geolocator.isLocationServiceEnabled();
+    if (enabled) {
+      locationData = await UserService().getUserCurrentAddressData();
+      nearbyVenues = await FirestoreService()
+          .getVenuesByCityDistrict(locationData[0], locationData[1]);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Location service is not enabled!"),
+      ));
+    }
 
     return nearbyVenues;
   }

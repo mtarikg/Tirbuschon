@@ -1,18 +1,25 @@
 import 'package:flutter/material.dart';
 
+import '../../../services/firestoreService.dart';
 import 'paymentPage.dart';
 
 class SelectDate extends StatefulWidget {
-  final String venueID;
+  final String venueName;
 
-  const SelectDate({Key? key, required this.venueID}) : super(key: key);
+  const SelectDate({Key? key, required this.venueName}) : super(key: key);
 
   @override
   State<SelectDate> createState() => _SelectDateState();
 }
 
 class _SelectDateState extends State<SelectDate> {
+  late String venueID;
   DateTime selectedDate = DateTime.now();
+
+  getVenueID() async {
+    var id = await FirestoreService().getVenueIDByName(widget.venueName);
+    venueID = id.toString();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -83,12 +90,14 @@ class _SelectDateState extends State<SelectDate> {
             const SizedBox(height: 75),
             ElevatedButton(
               child: const Text("Go to payment page."),
-              onPressed: () {
+              onPressed: () async {
+                await getVenueID();
+
                 Navigator.push(
                     context,
                     MaterialPageRoute(
                         builder: (context) => Payment(
-                              venueID: widget.venueID,
+                              venueID: venueID,
                               selectedDate: selectedDate,
                             )));
               },

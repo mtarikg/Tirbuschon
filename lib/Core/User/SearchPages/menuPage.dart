@@ -3,10 +3,8 @@ import '../../../services/firestoreService.dart';
 
 class MenuPage extends StatefulWidget {
   final String venueName;
-  final String venueID;
 
-  const MenuPage({Key? key, required this.venueName, required this.venueID})
-      : super(key: key);
+  const MenuPage({Key? key, required this.venueName}) : super(key: key);
 
   @override
   _MenuPageState createState() => _MenuPageState();
@@ -17,7 +15,8 @@ class _MenuPageState extends State<MenuPage> {
   var categoryItems = [];
 
   getMenu() async {
-    var menuData = await FirestoreService().getMenu(widget.venueID);
+    var venueID = await FirestoreService().getVenueIDByName(widget.venueName);
+    var menuData = await FirestoreService().getMenu(venueID.toString());
     var menuValue = menuData["Menu"];
     setState(() {
       menuValue.keys.toList().forEach((key) => menuCategories.add(key));
@@ -101,9 +100,7 @@ class CategoryItems extends StatelessWidget {
                   children: [
                     Text(categoryItems[index]["Name"],
                         style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15
-                        )),
+                            fontWeight: FontWeight.bold, fontSize: 15)),
                     const SizedBox(width: 20),
                     Text(categoryItems[index]["Price"].toString() + "₺"),
                   ],

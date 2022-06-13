@@ -5,7 +5,6 @@ import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../services/userService.dart';
-import '../BottomNavigationBarPages/mainPage.dart';
 
 class MapView extends StatefulWidget {
   const MapView({Key? key, required this.venueAddress}) : super(key: key);
@@ -298,17 +297,6 @@ class _MapViewState extends State<MapView> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Venue Location"),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            iconSize: 20,
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => const MainPage(index: 1)),
-                  (route) => false);
-            },
-          ),
         ),
         body: Stack(
           children: <Widget>[
