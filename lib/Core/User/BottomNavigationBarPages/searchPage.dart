@@ -2,6 +2,7 @@ import 'package:csc_picker/csc_picker.dart';
 import 'package:flutter/material.dart';
 import '../../../services/userService.dart';
 import '../../../services/firestoreService.dart';
+import 'mainPage.dart';
 
 class SearchPage extends StatefulWidget {
   const SearchPage({Key? key}) : super(key: key);
@@ -34,300 +35,334 @@ class _SearchPageState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         body: Center(
-            child: Column(
-      children: [
-        Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: _searchTextField(),
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                Expanded(
-                  child: Padding(
+            child: RefreshIndicator(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - 50,
+          child: Column(
+            children: [
+              Column(
+                children: [
+                  Padding(
                     padding: const EdgeInsets.all(10.0),
-                    child: CSCPicker(
-                      showStates: true,
-                      showCities: true,
-                      flagState: CountryFlag.DISABLE,
-                      dropdownDecoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          color: Colors.white,
-                          border: Border.all(
-                              color: Colors.grey.shade300, width: 1)),
-                      disabledDropdownDecoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.circular(10)),
-                          color: Colors.grey.shade300,
-                          border: Border.all(
-                              color: Colors.grey.shade300, width: 1)),
-                      stateSearchPlaceholder: "City",
-                      citySearchPlaceholder: "District",
-                      stateDropdownLabel: "*City",
-                      cityDropdownLabel: "*District",
-                      defaultCountry: DefaultCountry.Turkey,
-                      disableCountry: true,
-                      selectedItemStyle: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
-                      dropdownHeadingStyle: const TextStyle(
-                          color: Colors.black,
-                          fontSize: 17,
-                          fontWeight: FontWeight.bold),
-                      dropdownItemStyle: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 14,
-                      ),
-                      dropdownDialogRadius: 10.0,
-                      searchBarRadius: 10.0,
-                      onCountryChanged: (value) {
-                        setState(() {
-                          countryValue = value.toString();
-                        });
-                      },
-                      onStateChanged: (value) {
-                        setState(() {
-                          cityValue = value
-                              .toString()
-                              .replaceAll(" ", "")
-                              .replaceAll("Province", "")
-                              .toString();
-                        });
-                      },
-                      onCityChanged: (value) {
-                        setState(() {
-                          districtValue = value
-                              .toString()
-                              .replaceAll(" ", "")
-                              .replaceAll("İlçesi", "")
-                              .toString();
-                        });
-                      },
-                    ),
+                    child: _searchTextField(),
                   ),
-                ),
-                TextButton(
-                    onPressed: () {
-                      if (cityValue == "null") {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text("Please select a city!"),
-                        ));
-                      } else if (districtValue == "null") {
-                        ScaffoldMessenger.of(context)
-                            .showSnackBar(const SnackBar(
-                          content: Text("Please select a district!"),
-                        ));
-                      } else {
-                        _searchVenueByCityDistrict(
-                            cityValue.toString(), districtValue.toString());
-                      }
-                    },
-                    child: const Text("Search"))
-              ],
-            ),
-          ],
-        ),
-        const SizedBox(height: 25),
-        Expanded(
-          child: searchResult.isEmpty
-              ? FutureBuilder(
-                  future: getVenues(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                    if (snapshot.connectionState == ConnectionState.waiting) {
-                      return const Center(child: CircularProgressIndicator());
-                    }
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: CSCPicker(
+                            showStates: true,
+                            showCities: true,
+                            flagState: CountryFlag.DISABLE,
+                            dropdownDecoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                color: Colors.white,
+                                border: Border.all(
+                                    color: Colors.grey.shade300, width: 1)),
+                            disabledDropdownDecoration: BoxDecoration(
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(10)),
+                                color: Colors.grey.shade300,
+                                border: Border.all(
+                                    color: Colors.grey.shade300, width: 1)),
+                            stateSearchPlaceholder: "City",
+                            citySearchPlaceholder: "District",
+                            stateDropdownLabel: "*City",
+                            cityDropdownLabel: "*District",
+                            defaultCountry: DefaultCountry.Turkey,
+                            disableCountry: true,
+                            selectedItemStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                            dropdownHeadingStyle: const TextStyle(
+                                color: Colors.black,
+                                fontSize: 17,
+                                fontWeight: FontWeight.bold),
+                            dropdownItemStyle: const TextStyle(
+                              color: Colors.black,
+                              fontSize: 14,
+                            ),
+                            dropdownDialogRadius: 10.0,
+                            searchBarRadius: 10.0,
+                            onCountryChanged: (value) {
+                              setState(() {
+                                countryValue = value.toString();
+                              });
+                            },
+                            onStateChanged: (value) {
+                              setState(() {
+                                cityValue = value
+                                    .toString()
+                                    .replaceAll(" ", "")
+                                    .replaceAll("Province", "")
+                                    .toString();
+                              });
+                            },
+                            onCityChanged: (value) {
+                              setState(() {
+                                districtValue = value
+                                    .toString()
+                                    .replaceAll(" ", "")
+                                    .replaceAll("İlçesi", "")
+                                    .toString();
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      TextButton(
+                          onPressed: () {
+                            if (cityValue == "null") {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text("Please select a city!"),
+                              ));
+                            } else if (districtValue == "null") {
+                              ScaffoldMessenger.of(context)
+                                  .showSnackBar(const SnackBar(
+                                content: Text("Please select a district!"),
+                              ));
+                            } else {
+                              _searchVenueByCityDistrict(cityValue.toString(),
+                                  districtValue.toString());
+                            }
+                          },
+                          child: const Text("Search"))
+                    ],
+                  ),
+                ],
+              ),
+              const SizedBox(height: 25),
+              Expanded(
+                child: searchResult.isEmpty
+                    ? FutureBuilder(
+                        future: getVenues(),
+                        builder: (BuildContext context,
+                            AsyncSnapshot<dynamic> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const Center(
+                                child: CircularProgressIndicator());
+                          }
 
-                    if (snapshot.hasData) {
-                      return ListView.builder(
-                          itemCount: snapshot.data!.length,
-                          itemBuilder: (context, int index) {
-                            return Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                const SizedBox(height: 10),
-                                Padding(
-                                  padding: const EdgeInsets.all(8.0),
-                                  child: Flexible(
-                                    child: Container(
-                                      width: MediaQuery.of(context).size.width -
-                                          30,
-                                      decoration: BoxDecoration(
-                                        border: Border.all(
-                                            width: 1, color: Colors.grey),
-                                        borderRadius: BorderRadius.circular(20),
-                                      ),
-                                      child: Column(
-                                        children: [
-                                          snapshot.data![index]["imageURL"] ==
-                                                  null
-                                              ? const SizedBox()
-                                              : Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          top: 10, bottom: 10),
-                                                  child: Container(
-                                                    width:
-                                                        MediaQuery.of(context)
-                                                                .size
-                                                                .width -
-                                                            60,
-                                                    height: 230,
-                                                    decoration: BoxDecoration(
-                                                      border: Border.all(
-                                                          width: 1,
-                                                          color: Colors.grey),
-                                                    ),
-                                                    child: Image.network(
-                                                      snapshot.data![index]
-                                                          ["imageURL"],
-                                                      fit: BoxFit.cover,
-                                                    ),
-                                                  ),
-                                                ),
-                                          Padding(
-                                            padding:
-                                                const EdgeInsets.only(left: 9),
-                                            child: Text(
-                                                snapshot.data![index]
-                                                    ["Venue Name"],
-                                                style: const TextStyle(
-                                                    fontWeight:
-                                                        FontWeight.bold)),
-                                          ),
-                                          Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              TextButton(
-                                                  onPressed: () {
-                                                    UserService().showLocation(
-                                                        context,
-                                                        snapshot.data![index]);
-                                                  },
-                                                  child:
-                                                      const Text("Location")),
-                                              TextButton(
-                                                  onPressed: () {
-                                                    UserService().showMenu(
-                                                        context,
-                                                        snapshot.data![index]);
-                                                  },
-                                                  child: const Text("Menu")),
-                                              TextButton(
-                                                  onPressed: () {
-                                                    UserService()
-                                                        .makeReservation(
-                                                            context,
-                                                            snapshot
-                                                                .data![index]);
-                                                  },
-                                                  child: const Text(
-                                                      "Quick reservation")),
-                                            ],
-                                          )
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                ),
-                                const SizedBox(height: 10),
-                              ],
-                            );
-                          });
-                    }
-
-                    return const Text("No venue available for the moment.");
-                  },
-                )
-              : ListView.builder(
-                  itemCount: searchResult.length,
-                  itemBuilder: (context, int index) {
-                    return Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        const SizedBox(height: 10),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Flexible(
-                            child: Container(
-                              width: MediaQuery.of(context).size.width - 30,
-                              decoration: BoxDecoration(
-                                border:
-                                    Border.all(width: 1, color: Colors.grey),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Column(
-                                children: [
-                                  searchResult[index]["imageURL"] == null
-                                      ? const SizedBox()
-                                      : Padding(
-                                          padding: const EdgeInsets.only(
-                                              top: 10, bottom: 10),
+                          if (snapshot.hasData) {
+                            return ListView.builder(
+                                itemCount: snapshot.data!.length,
+                                itemBuilder: (context, int index) {
+                                  return Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      Padding(
+                                        padding: const EdgeInsets.all(8.0),
+                                        child: Flexible(
                                           child: Container(
                                             width: MediaQuery.of(context)
                                                     .size
                                                     .width -
-                                                60,
-                                            height: 230,
+                                                30,
                                             decoration: BoxDecoration(
                                               border: Border.all(
                                                   width: 1, color: Colors.grey),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
                                             ),
-                                            child: Image.network(
-                                              searchResult[index]["imageURL"],
-                                              fit: BoxFit.cover,
+                                            child: Column(
+                                              children: [
+                                                snapshot.data![index]
+                                                            ["imageURL"] ==
+                                                        null
+                                                    ? const SizedBox()
+                                                    : Padding(
+                                                        padding:
+                                                            const EdgeInsets
+                                                                    .only(
+                                                                top: 10,
+                                                                bottom: 10),
+                                                        child: Container(
+                                                          width: MediaQuery.of(
+                                                                      context)
+                                                                  .size
+                                                                  .width -
+                                                              60,
+                                                          height: 230,
+                                                          decoration:
+                                                              BoxDecoration(
+                                                            border: Border.all(
+                                                                width: 1,
+                                                                color: Colors
+                                                                    .grey),
+                                                          ),
+                                                          child: Image.network(
+                                                            snapshot.data![
+                                                                    index]
+                                                                ["imageURL"],
+                                                            fit: BoxFit.cover,
+                                                          ),
+                                                        ),
+                                                      ),
+                                                Padding(
+                                                  padding:
+                                                      const EdgeInsets.only(
+                                                          left: 9),
+                                                  child: Text(
+                                                      snapshot.data![index]
+                                                          ["Venue Name"],
+                                                      style: const TextStyle(
+                                                          fontWeight:
+                                                              FontWeight.bold)),
+                                                ),
+                                                Row(
+                                                  mainAxisAlignment:
+                                                      MainAxisAlignment
+                                                          .spaceEvenly,
+                                                  children: [
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          UserService()
+                                                              .showLocation(
+                                                                  context,
+                                                                  snapshot.data![
+                                                                      index]);
+                                                        },
+                                                        child: const Text(
+                                                            "Location")),
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          UserService().showMenu(
+                                                              context,
+                                                              snapshot.data![
+                                                                  index]);
+                                                        },
+                                                        child:
+                                                            const Text("Menu")),
+                                                    TextButton(
+                                                        onPressed: () {
+                                                          UserService()
+                                                              .makeReservation(
+                                                                  context,
+                                                                  snapshot.data![
+                                                                      index]);
+                                                        },
+                                                        child: const Text(
+                                                            "Quick reservation")),
+                                                  ],
+                                                )
+                                              ],
                                             ),
                                           ),
                                         ),
-                                  Padding(
-                                    padding: const EdgeInsets.only(left: 9),
-                                    child: Text(
-                                        searchResult[index]["Venue Name"],
-                                        style: const TextStyle(
-                                            fontWeight: FontWeight.bold)),
-                                  ),
-                                  Row(
-                                    mainAxisAlignment:
-                                        MainAxisAlignment.spaceEvenly,
-                                    children: [
-                                      TextButton(
-                                          onPressed: () {
-                                            UserService().showLocation(
-                                                context, searchResult[index]);
-                                          },
-                                          child: const Text("Location")),
-                                      TextButton(
-                                          onPressed: () {
-                                            UserService().showMenu(
-                                                context, searchResult[index]);
-                                          },
-                                          child: const Text("Menu")),
-                                      TextButton(
-                                          onPressed: () {
-                                            UserService().makeReservation(
-                                                context, searchResult[index]);
-                                          },
-                                          child:
-                                              const Text("Quick reservation")),
+                                      ),
+                                      const SizedBox(height: 10),
                                     ],
-                                  )
-                                ],
+                                  );
+                                });
+                          }
+
+                          return const Text(
+                              "No venue available for the moment.");
+                        },
+                      )
+                    : ListView.builder(
+                        itemCount: searchResult.length,
+                        itemBuilder: (context, int index) {
+                          return Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              const SizedBox(height: 10),
+                              Padding(
+                                padding: const EdgeInsets.all(8.0),
+                                child: Flexible(
+                                  child: Container(
+                                    width:
+                                        MediaQuery.of(context).size.width - 30,
+                                    decoration: BoxDecoration(
+                                      border: Border.all(
+                                          width: 1, color: Colors.grey),
+                                      borderRadius: BorderRadius.circular(20),
+                                    ),
+                                    child: Column(
+                                      children: [
+                                        searchResult[index]["imageURL"] == null
+                                            ? const SizedBox()
+                                            : Padding(
+                                                padding: const EdgeInsets.only(
+                                                    top: 10, bottom: 10),
+                                                child: Container(
+                                                  width: MediaQuery.of(context)
+                                                          .size
+                                                          .width -
+                                                      60,
+                                                  height: 230,
+                                                  decoration: BoxDecoration(
+                                                    border: Border.all(
+                                                        width: 1,
+                                                        color: Colors.grey),
+                                                  ),
+                                                  child: Image.network(
+                                                    searchResult[index]
+                                                        ["imageURL"],
+                                                    fit: BoxFit.cover,
+                                                  ),
+                                                ),
+                                              ),
+                                        Padding(
+                                          padding:
+                                              const EdgeInsets.only(left: 9),
+                                          child: Text(
+                                              searchResult[index]["Venue Name"],
+                                              style: const TextStyle(
+                                                  fontWeight: FontWeight.bold)),
+                                        ),
+                                        Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceEvenly,
+                                          children: [
+                                            TextButton(
+                                                onPressed: () {
+                                                  UserService().showLocation(
+                                                      context,
+                                                      searchResult[index]);
+                                                },
+                                                child: const Text("Location")),
+                                            TextButton(
+                                                onPressed: () {
+                                                  UserService().showMenu(
+                                                      context,
+                                                      searchResult[index]);
+                                                },
+                                                child: const Text("Menu")),
+                                            TextButton(
+                                                onPressed: () {
+                                                  UserService().makeReservation(
+                                                      context,
+                                                      searchResult[index]);
+                                                },
+                                                child: const Text(
+                                                    "Quick reservation")),
+                                          ],
+                                        )
+                                      ],
+                                    ),
+                                  ),
+                                ),
                               ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(height: 10),
-                      ],
-                    );
-                  }),
+                              const SizedBox(height: 10),
+                            ],
+                          );
+                        }),
+              ),
+            ],
+          ),
         ),
-      ],
+      ),
+      onRefresh: _refreshSearch,
     )));
   }
 
@@ -431,5 +466,13 @@ class _SearchPageState extends State<SearchPage> {
         searchResult.clear();
       });
     }
+  }
+
+  Future<void> _refreshSearch() async {
+    Navigator.pop(context);
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainPage(index: 1)),
+        (route) => false);
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../../services/firestoreService.dart';
 import '../../../services/userService.dart';
+import 'mainPage.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
@@ -18,14 +19,23 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        body: Padding(
-      padding: const EdgeInsets.only(left: 10, top: 50),
-      child: Column(
-        children: [
-          _venues(),
-          _venuesNearby(),
-        ],
+        body: RefreshIndicator(
+      child: SingleChildScrollView(
+        physics: const AlwaysScrollableScrollPhysics(),
+        child: SizedBox(
+          height: MediaQuery.of(context).size.height - 50,
+          child: Padding(
+            padding: const EdgeInsets.only(left: 15, top: 50),
+            child: Column(
+              children: [
+                _venues(),
+                _venuesNearby(),
+              ],
+            ),
+          ),
+        ),
       ),
+      onRefresh: _refreshHome,
     ));
   }
 
@@ -160,5 +170,13 @@ class _HomePageState extends State<HomePage> {
         .getVenuesByCityDistrict(locationData[0], locationData[1]);
 
     return nearbyVenues;
+  }
+
+  Future<void> _refreshHome() async {
+    Navigator.pop(context);
+    Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainPage(index: 0)),
+        (route) => false);
   }
 }
