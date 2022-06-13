@@ -20,9 +20,26 @@ class BottomNavigationBar1 extends StatelessWidget {
           children: <Widget>[
             MenuScreen(),
             PhotographsScreen(),
-            ReservationScreen(capasity: 0, time: DateTime.now(), orders: [], userId: 0,),
-            ReviewScreen(user: '', rate: 0, comment: '',),
-            ProfileScreen(address: '', name: '', phone: '', reservationCapasity: 0, capasity: 0,),
+            ReservationScreen(
+                Capacity: 0,
+                // orders: [],
+                UserID: 0,
+                ReservationID: 0,
+                ReservationDate: DateTime.now(),
+                CreatedDate: DateTime.now(),
+                TotalPrice: 0),
+            ReviewScreen(
+              user: '',
+              rate: 0,
+              comment: '',
+            ),
+            ProfileScreen(
+              address: '',
+              name: '',
+              phone: '',
+              reservationCapasity: 0,
+              capasity: 0,
+            ),
           ],
         ),
         bottomNavigationBar: Material(
