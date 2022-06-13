@@ -183,7 +183,8 @@ class _UploadProfileImageState extends State<UploadProfileImage> {
               onPressed: () {
                 Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const MainPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const MainPage(index: 2)),
                   (Route<dynamic> route) => false,
                 );
               },

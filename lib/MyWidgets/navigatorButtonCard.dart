@@ -110,7 +110,8 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const MainPage()),
+                                      builder: (context) =>
+                                          const MainPage(index: 2)),
                                   (route) => false);
                             },
                             child: const Text("OK"))
@@ -193,7 +194,8 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const MainPage()),
+                                      builder: (context) =>
+                                          const MainPage(index: 2)),
                                   (route) => false);
                             },
                             child: const Text("OK"))
@@ -275,7 +277,8 @@ class _NavigatorButtonCardState extends State<NavigatorButtonCard> {
                               Navigator.pushAndRemoveUntil(
                                   context,
                                   MaterialPageRoute(
-                                      builder: (context) => const MainPage()),
+                                      builder: (context) =>
+                                          const MainPage(index: 2)),
                                   (route) => false);
                             },
                             child: const Text("OK"))

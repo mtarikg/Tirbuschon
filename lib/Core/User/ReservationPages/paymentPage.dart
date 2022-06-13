@@ -17,6 +17,8 @@ class Payment extends StatefulWidget {
 
 class _PaymentState extends State<Payment> {
   final _formKey = GlobalKey<FormState>();
+  final TextEditingController _cardNumberController = TextEditingController();
+  final TextEditingController _expiredDateController = TextEditingController();
   late String cardHolder = "", cardNumber = "", expiredDate = "", cvv = "";
 
   @override
@@ -101,8 +103,9 @@ class _PaymentState extends State<Payment> {
 
   TextFormField _cardNumberTextField() {
     return TextFormField(
+      controller: _cardNumberController,
       keyboardType: TextInputType.number,
-      inputFormatters: [LengthLimitingTextInputFormatter(16)],
+      inputFormatters: [LengthLimitingTextInputFormatter(19)],
       decoration: const InputDecoration(
         prefixIcon: Icon(Icons.numbers),
         labelText: "Card number",
@@ -111,14 +114,22 @@ class _PaymentState extends State<Payment> {
       validator: (value) {
         if (value!.isEmpty) {
           return "Card number field can not be empty!";
-        } else if (value.trim().length != 16) {
+        } else if (value.length != 19) {
           return "Card number should consist of 16 digits.";
-        } else if (value.contains(RegExp(r'[,. ]'))) {
+        } else if (value.contains(RegExp(r'[,.]'))) {
           return "Only numbers";
         }
         return null;
       },
       onChanged: (value) {
+        if (value.replaceAll(" ", "").length % 4 == 0 && value.length != 19) {
+          value = (value + " ").toString();
+          _cardNumberController.value = TextEditingValue(
+            text: value.toString(),
+            selection: TextSelection.collapsed(offset: value.length),
+          );
+        }
+
         setState(() {
           cardNumber = value.toString();
         });
@@ -128,6 +139,7 @@ class _PaymentState extends State<Payment> {
 
   TextFormField _cardExpiredDateTextField() {
     return TextFormField(
+      controller: _expiredDateController,
       keyboardType: TextInputType.number,
       inputFormatters: [LengthLimitingTextInputFormatter(5)],
       decoration: const InputDecoration(
@@ -146,6 +158,14 @@ class _PaymentState extends State<Payment> {
         return null;
       },
       onChanged: (value) {
+        if (value.length == 2) {
+          value = (value + "/").toString();
+          _expiredDateController.value = TextEditingValue(
+            text: value.toString(),
+            selection: TextSelection.collapsed(offset: value.length),
+          );
+        }
+
         setState(() {
           expiredDate = value.toString();
         });
@@ -156,7 +176,7 @@ class _PaymentState extends State<Payment> {
   TextFormField _cardCVVTextField() {
     return TextFormField(
       keyboardType: TextInputType.number,
-      inputFormatters: [LengthLimitingTextInputFormatter(16)],
+      inputFormatters: [LengthLimitingTextInputFormatter(3)],
       decoration: const InputDecoration(
         prefixIcon: Icon(Icons.numbers),
         labelText: "CVV",
@@ -256,8 +276,10 @@ class CompleteButton extends StatelessWidget {
         ));
 
         Future.delayed(duration, () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => const MainPage()));
+          Navigator.push(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => const MainPage(index: 2)));
         });
       } else {
         ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

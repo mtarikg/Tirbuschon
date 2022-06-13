@@ -304,7 +304,8 @@ class _MapViewState extends State<MapView> {
             onPressed: () {
               Navigator.pushAndRemoveUntil(
                   context,
-                  MaterialPageRoute(builder: (context) => const MainPage()),
+                  MaterialPageRoute(
+                      builder: (context) => const MainPage(index: 1)),
                   (route) => false);
             },
           ),
