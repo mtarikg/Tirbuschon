@@ -113,10 +113,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ListTile(
                                   title: restaurantProfileWidget(
                                     address: e['Address'],
-                                    capasity: e['Capasity'],
+                                    capasity: e['Capacity'],
                                     phone: e['Phone'],
                                     reservationCapasity:
-                                        e['Reservation Capasity'],
+                                        e['Reservation Capacity'],
                                     name: e['Venue Name'],
                                   ),
                                 ),

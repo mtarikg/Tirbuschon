@@ -4,23 +4,26 @@ import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
 class ReviewScreen extends StatefulWidget {
-  final String user;
-  final int rate;
-  final String comment;
+  final String Comment;
+  final DateTime CreatedDate;
+  final double Rating;
+  // final int ReservationID;
+  // final int ReviewID;
 
-  ReviewScreen(
-      {Key? key, required this.user, required this.rate, required this.comment})
-      : super(key: key);
+  ReviewScreen({
+    Key? key,
+    required this.Comment,
+    required this.CreatedDate,
+    required this.Rating,
+    //required this.ReservationID,
+    //required this.ReviewID,
+  }) : super(key: key);
 
   @override
   State<ReviewScreen> createState() => _ReviewScreenState();
 }
 
-//Venue name in docs should be passed authomatically
-//line 23 will be updated
 class _ReviewScreenState extends State<ReviewScreen> {
-  //retrieve data from database
-
   late CollectionReference collectionReference;
 
   @override
@@ -49,29 +52,29 @@ class _ReviewScreenState extends State<ReviewScreen> {
         child: Column(
           children: [
             Expanded(
-                child: StreamBuilder(
-              stream: collectionReference.snapshots(),
-              builder: (BuildContext context,
-                  AsyncSnapshot<QuerySnapshot> snapshot) {
+                child: StreamBuilder<QuerySnapshot>(
+              stream: collectionReference.orderBy('Created Date').snapshots(),
+              builder: (BuildContext context, AsyncSnapshot snapshot) {
                 if (snapshot.hasData) {
-                  return ListView(
-                    children: snapshot.data!.docs
-                        .map((e) => Column(
-                              children: [
-                                ListTile(
-                                  title: createReview(
-                                      comment: e['Review'].toString(),
-                                      user: e['User ID'].toString(),
-                                      rate: e['Stars']),
-                                ),
-                              ],
-                            ))
-                        .toList(),
+                  return ListView.builder(
+                    itemCount: snapshot.data!.docs.length,
+                    itemBuilder: (context, index) {
+                      var rev = snapshot.data!.docs;
+                      Timestamp t_created = rev[index]['Created Date'];
+                      DateTime d_created = t_created.toDate();
+                      return ListTile(
+                        title: createReview(
+                            comment: rev[index]['Comment'],
+                            CreatedDate: d_created,
+                            rate: rev[index]['Rating']),
+                      );
+                    },
+                  );
+                } else {
+                  return Center(
+                    child: CircularProgressIndicator(),
                   );
                 }
-                return Center(
-                  child: CircularProgressIndicator(),
-                );
               },
             ))
           ],
@@ -80,7 +83,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
     );
   }
 
-  Widget createReview({user, rate, comment}) {
+  Widget createReview({rate, comment, CreatedDate}) {
     return Container(
       height: 90,
       width: MediaQuery.of(context).size.width * 0.96,
@@ -102,7 +105,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: <Widget>[
                 Text(
-                  user,
+                  comment,
                   style: const TextStyle(
                     fontWeight: FontWeight.bold,
                     fontSize: 16.0,
@@ -130,7 +133,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     Text(
-                      comment,
+                      CreatedDate.toString(),
                       style:
                           const TextStyle(color: Colors.black87, fontSize: 12),
                     ),
@@ -146,7 +149,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
 }
 
 class StarDisplayWidget extends StatelessWidget {
-  final int value;
+  final double value;
   final Widget filledStar;
   final Widget unfilledStar;
   const StarDisplayWidget({
@@ -168,7 +171,7 @@ class StarDisplayWidget extends StatelessWidget {
 }
 
 class StarDisplay extends StarDisplayWidget {
-  const StarDisplay({Key? key, int value = 0})
+  const StarDisplay({Key? key, double value = 0})
       : super(
           key: key,
           value: value,

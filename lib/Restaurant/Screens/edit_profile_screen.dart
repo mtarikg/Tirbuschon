@@ -84,9 +84,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                     name: e['Venue Name'],
                                     address: e['Address'],
                                     phone: e['Phone'],
-                                    capasity: e['Capasity'],
+                                    capasity: e['Capacity'],
                                     reservationCapasity:
-                                        e['Reservation Capasity'],
+                                        e['Reservation Capacity'],
                                   ),
                                 ),
                               ],
