@@ -56,8 +56,12 @@ class _ViewVenueState extends State<ViewVenue> {
               if (snapshot.hasData) {
                 return Column(
                   children: [
-                    _VenueProfileImageContainer(
-                        imageURL: snapshot.data["imageURL"]),
+                    if (snapshot.data.containsKey("imageURL")) ...[
+                      _VenueProfileImageContainer(
+                          imageURL: snapshot.data["imageURL"]),
+                    ] else ...[
+                      _VenueProfileImageContainer(imageURL: null.toString()),
+                    ],
                     Padding(
                         padding: const EdgeInsets.only(top: 20),
                         child: Column(
@@ -103,8 +107,10 @@ class _ViewVenueState extends State<ViewVenue> {
                 );
               }
 
-              return const Text(
-                  "Venue data is not available for the current moment.");
+              return const Center(
+                child:
+                    Text("Venue data is not available for the current moment."),
+              );
             },
           ))
         ],
@@ -129,7 +135,8 @@ class _VenueProfileImageContainer extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 height: 150,
                 child: Center(
-                  child: Image.asset('assets/placeholder.jpg'),
+                  child:
+                      Image.asset('assets/placeholder-restaurant-300x300.png'),
                 )),
           ))
         : Padding(
