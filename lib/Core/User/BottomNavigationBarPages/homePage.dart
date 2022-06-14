@@ -1,8 +1,8 @@
-import 'package:flutter/cupertino.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import '../../../services/firestoreService.dart';
-import '../../../services/userService.dart';
+import '../../Shared/userService.dart';
 import 'mainPage.dart';
 
 class HomePage extends StatefulWidget {
@@ -29,7 +29,6 @@ class _HomePageState extends State<HomePage> {
           child: Padding(
             padding: const EdgeInsets.only(left: 15, top: 50),
             child: Column(
-              mainAxisSize: MainAxisSize.min,
               children: [
                 _venuesNearbyText(),
                 _venuesNearby(),
@@ -94,37 +93,40 @@ class _HomePageState extends State<HomePage> {
                 child: ListView.builder(
                     scrollDirection: Axis.horizontal,
                     shrinkWrap: true,
-                    itemCount: snapshot.data!.length,
+                    itemCount: snapshot.data!.length.clamp(0, 10),
                     itemBuilder: (context, int index) {
-                      return InkWell(
-                        onTap: () {
-                          UserService().viewDetails(
-                              context, snapshot.data![index]["Venue Name"]);
-                        },
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            snapshot.data![index]["imageURL"] == null
-                                ? const SizedBox(width: 100, height: 100)
-                                : Container(
-                                    width: 100,
-                                    height: 100,
-                                    decoration: BoxDecoration(
-                                      border: Border.all(
-                                          width: 0.5, color: Colors.grey),
-                                    ),
-                                    child: Image.network(
-                                      snapshot.data![index]["imageURL"],
-                                      fit: BoxFit.cover,
-                                    )),
-                            Padding(
-                              padding: const EdgeInsets.only(top: 10),
-                              child: Text(snapshot.data![index]["Venue Name"],
-                                  style: const TextStyle(
-                                      fontWeight: FontWeight.bold,
-                                      fontSize: 10)),
-                            ),
-                          ],
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 7.5),
+                        child: InkWell(
+                          onTap: () {
+                            UserService().viewDetails(
+                                context, snapshot.data![index]["Venue Name"]);
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              snapshot.data![index]["imageURL"] == null
+                                  ? const SizedBox(width: 100, height: 100)
+                                  : Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 0.5, color: Colors.grey),
+                                      ),
+                                      child: Image.network(
+                                        snapshot.data![index]["imageURL"],
+                                        fit: BoxFit.cover,
+                                      )),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Text(snapshot.data![index]["Venue Name"],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 10)),
+                              ),
+                            ],
+                          ),
                         ),
                       );
                     }),
@@ -170,7 +172,54 @@ class _HomePageState extends State<HomePage> {
   }
 
   Widget _latestReservations() {
-    return Text("asdas");
+    return StreamBuilder(
+        stream: FirestoreService().getUserReservations(),
+        builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasData) {
+            return SizedBox(
+              height: 100,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.docs.length.clamp(0, 10),
+                    itemBuilder: (context, int index) {
+                      var snapshotDocs = snapshot.data!.docs;
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 7.5),
+                        child: InkWell(
+                          onTap: () {
+                            UserService().reservationDetail(
+                                context, snapshotDocs[index]);
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Container(
+                                  width: 100,
+                                  height: 100,
+                                  decoration: BoxDecoration(
+                                    border: Border.all(
+                                        width: 0.5, color: Colors.grey),
+                                  ),
+                                  child: Image.asset(
+                                      'assets/placeholder-restaurant-300x300.png')),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+            );
+          }
+
+          return const Text("No reservations made yet!");
+        });
   }
 
   Future<List<dynamic>?> getNearbyVenues() async {

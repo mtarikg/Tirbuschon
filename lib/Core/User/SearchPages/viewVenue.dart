@@ -86,13 +86,13 @@ class _ViewVenueState extends State<ViewVenue> {
                             NavigatorButtonCard(
                                 pageToNavigate: MapView(
                                     venueAddress: snapshot.data["Address"]),
-                                text: "Location"),
+                                text: "Show Location"),
                             NavigatorButtonCard(
                                 pageToNavigate: MenuPage(
                                   venueID: widget.venueID,
                                   venueName: snapshot.data["Venue Name"],
                                 ),
-                                text: "Menu"),
+                                text: "See Menu"),
                             NavigatorButtonCard(
                                 pageToNavigate:
                                     SelectDate(venueID: widget.venueID),

@@ -1,6 +1,6 @@
 import 'package:csc_picker/csc_picker.dart';
 import 'package:flutter/material.dart';
-import '../../../services/userService.dart';
+import '../../Shared/userService.dart';
 import '../../../services/firestoreService.dart';
 import 'mainPage.dart';
 
