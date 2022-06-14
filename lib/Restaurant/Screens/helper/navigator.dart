@@ -29,9 +29,9 @@ class BottomNavigationBar1 extends StatelessWidget {
                 CreatedDate: DateTime.now(),
                 TotalPrice: 0),
             ReviewScreen(
-              user: '',
-              rate: 0,
-              comment: '',
+              CreatedDate: DateTime.now(),
+              Rating: 0,
+              Comment: '',
             ),
             ProfileScreen(
               address: '',
