@@ -4,7 +4,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../../../services/userService.dart';
+import '../../Shared/userService.dart';
 
 class MapView extends StatefulWidget {
   const MapView({Key? key, required this.venueAddress}) : super(key: key);

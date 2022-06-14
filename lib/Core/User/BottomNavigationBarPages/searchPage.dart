@@ -1,6 +1,6 @@
 import 'package:csc_picker/csc_picker.dart';
 import 'package:flutter/material.dart';
-import '../../../services/userService.dart';
+import '../../Shared/userService.dart';
 import '../../../services/firestoreService.dart';
 import 'mainPage.dart';
 
@@ -39,7 +39,7 @@ class _SearchPageState extends State<SearchPage> {
       child: SingleChildScrollView(
         physics: const AlwaysScrollableScrollPhysics(),
         child: SizedBox(
-          height: MediaQuery.of(context).size.height - 50,
+          height: MediaQuery.of(context).size.height - 150,
           child: Column(
             children: [
               Column(
@@ -160,38 +160,45 @@ class _SearchPageState extends State<SearchPage> {
                                     children: [
                                       const SizedBox(height: 10),
                                       Padding(
-                                        padding: const EdgeInsets.all(8.0),
-                                        child: Flexible(
-                                          child: Container(
-                                            width: MediaQuery.of(context)
-                                                    .size
-                                                    .width -
-                                                30,
-                                            decoration: BoxDecoration(
-                                              border: Border.all(
-                                                  width: 1, color: Colors.grey),
-                                              borderRadius:
-                                                  BorderRadius.circular(20),
-                                            ),
-                                            child: Column(
+                                        padding: const EdgeInsets.all(10.0),
+                                        child: Container(
+                                          width: MediaQuery.of(context)
+                                                  .size
+                                                  .width -
+                                              30,
+                                          decoration: BoxDecoration(
+                                            border: Border.all(
+                                                width: 0.5, color: Colors.grey),
+                                            borderRadius:
+                                                BorderRadius.circular(20),
+                                          ),
+                                          child: InkWell(
+                                            onTap: () {
+                                              UserService().viewDetails(
+                                                  context,
+                                                  snapshot.data![index]
+                                                      ["Venue Name"]);
+                                            },
+                                            child: Row(
                                               children: [
                                                 snapshot.data![index]
                                                             ["imageURL"] ==
                                                         null
-                                                    ? const SizedBox()
+                                                    ? const Padding(
+                                                        padding:
+                                                            EdgeInsets.all(10),
+                                                        child: SizedBox(
+                                                          width: 125,
+                                                          height: 125,
+                                                        ),
+                                                      )
                                                     : Padding(
                                                         padding:
                                                             const EdgeInsets
-                                                                    .only(
-                                                                top: 10,
-                                                                bottom: 10),
+                                                                .all(10),
                                                         child: Container(
-                                                          width: MediaQuery.of(
-                                                                      context)
-                                                                  .size
-                                                                  .width -
-                                                              60,
-                                                          height: 230,
+                                                          width: 125,
+                                                          height: 125,
                                                           decoration:
                                                               BoxDecoration(
                                                             border: Border.all(
@@ -203,37 +210,18 @@ class _SearchPageState extends State<SearchPage> {
                                                             snapshot.data![
                                                                     index]
                                                                 ["imageURL"],
-                                                            fit: BoxFit.cover,
+                                                            fit: BoxFit.fill,
                                                           ),
                                                         ),
                                                       ),
-                                                Padding(
-                                                  padding:
-                                                      const EdgeInsets.only(
-                                                          left: 9),
-                                                  child: Row(
-                                                    mainAxisAlignment:
-                                                        MainAxisAlignment
-                                                            .spaceEvenly,
-                                                    children: [
-                                                      Text(
-                                                          snapshot.data![index]
-                                                              ["Venue Name"],
-                                                          style: const TextStyle(
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold)),
-                                                      TextButton(
-                                                          onPressed: () {
-                                                            UserService().viewDetails(
-                                                                context,
-                                                                snapshot.data![
-                                                                        index][
-                                                                    "Venue Name"]);
-                                                          },
-                                                          child: const Text(
-                                                              "Details")),
-                                                    ],
+                                                Expanded(
+                                                  child: Text(
+                                                    snapshot.data![index]
+                                                        ["Venue Name"],
+                                                    style: const TextStyle(
+                                                        fontSize: 15,
+                                                        fontWeight:
+                                                            FontWeight.bold),
                                                   ),
                                                 ),
                                               ],
@@ -241,7 +229,7 @@ class _SearchPageState extends State<SearchPage> {
                                           ),
                                         ),
                                       ),
-                                      const SizedBox(height: 10),
+                                      const SizedBox(height: 5),
                                     ],
                                   );
                                 });
@@ -259,71 +247,66 @@ class _SearchPageState extends State<SearchPage> {
                             children: [
                               const SizedBox(height: 10),
                               Padding(
-                                padding: const EdgeInsets.all(8.0),
+                                padding: const EdgeInsets.all(10.0),
                                 child: Flexible(
                                   child: Container(
                                     width:
                                         MediaQuery.of(context).size.width - 30,
                                     decoration: BoxDecoration(
                                       border: Border.all(
-                                          width: 1, color: Colors.grey),
+                                          width: 0.5, color: Colors.grey),
                                       borderRadius: BorderRadius.circular(20),
                                     ),
-                                    child: Column(
-                                      children: [
-                                        searchResult[index]["imageURL"] == null
-                                            ? const SizedBox()
-                                            : Padding(
-                                                padding: const EdgeInsets.only(
-                                                    top: 10, bottom: 10),
-                                                child: Container(
-                                                  width: MediaQuery.of(context)
-                                                          .size
-                                                          .width -
-                                                      60,
-                                                  height: 230,
-                                                  decoration: BoxDecoration(
-                                                    border: Border.all(
-                                                        width: 1,
-                                                        color: Colors.grey),
+                                    child: InkWell(
+                                      onTap: () {
+                                        UserService().viewDetails(context,
+                                            searchResult[index]["Venue Name"]);
+                                      },
+                                      child: Row(
+                                        children: [
+                                          searchResult[index]["imageURL"] ==
+                                                  null
+                                              ? const Padding(
+                                                  padding: EdgeInsets.all(10),
+                                                  child: SizedBox(
+                                                    width: 125,
+                                                    height: 125,
                                                   ),
-                                                  child: Image.network(
-                                                    searchResult[index]
-                                                        ["imageURL"],
-                                                    fit: BoxFit.cover,
+                                                )
+                                              : Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: Container(
+                                                    width: 125,
+                                                    height: 125,
+                                                    decoration: BoxDecoration(
+                                                      border: Border.all(
+                                                          width: 1,
+                                                          color: Colors.grey),
+                                                    ),
+                                                    child: Image.network(
+                                                      searchResult[index]
+                                                          ["imageURL"],
+                                                      fit: BoxFit.cover,
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                        Padding(
-                                          padding:
-                                              const EdgeInsets.only(left: 9),
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.spaceEvenly,
-                                            children: [
-                                              Text(
-                                                  searchResult[index]
-                                                      ["Venue Name"],
-                                                  style: const TextStyle(
-                                                      fontWeight:
-                                                          FontWeight.bold)),
-                                              TextButton(
-                                                  onPressed: () {
-                                                    UserService().viewDetails(
-                                                        context,
-                                                        searchResult[index]
-                                                            ["Venue Name"]);
-                                                  },
-                                                  child: const Text("Details")),
-                                            ],
+                                          Expanded(
+                                            child: Text(
+                                                searchResult[index]
+                                                    ["Venue Name"],
+                                                style: const TextStyle(
+                                                    fontSize: 15,
+                                                    fontWeight:
+                                                        FontWeight.bold)),
                                           ),
-                                        ),
-                                      ],
+                                        ],
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                              const SizedBox(height: 10),
+                              const SizedBox(height: 5),
                             ],
                           );
                         }),
