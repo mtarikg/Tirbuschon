@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../services/firestoreService.dart';
 import '../../Shared/userService.dart';
 import 'mainPage.dart';
@@ -175,50 +176,48 @@ class _HomePageState extends State<HomePage> {
     return StreamBuilder(
         stream: FirestoreService().getUserReservations(),
         builder: (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
           if (snapshot.hasData) {
-            return SizedBox(
-              height: 100,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: ListView.builder(
-                    scrollDirection: Axis.horizontal,
-                    shrinkWrap: true,
-                    itemCount: snapshot.data!.docs.length.clamp(0, 10),
-                    itemBuilder: (context, int index) {
-                      var snapshotDocs = snapshot.data!.docs;
-                      return Padding(
-                        padding: const EdgeInsets.only(right: 7.5),
-                        child: InkWell(
-                          onTap: () {
-                            UserService().reservationDetail(
-                                context, snapshotDocs[index]);
-                          },
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Container(
-                                  width: 100,
-                                  height: 100,
-                                  decoration: BoxDecoration(
-                                    border: Border.all(
-                                        width: 0.5, color: Colors.grey),
-                                  ),
-                                  child: Image.asset(
-                                      'assets/placeholder-restaurant-300x300.png')),
-                            ],
-                          ),
-                        ),
-                      );
-                    }),
-              ),
-            );
+            return snapshot.data!.size != 0
+                ? SizedBox(
+                    height: 100,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: ListView.builder(
+                          scrollDirection: Axis.horizontal,
+                          shrinkWrap: true,
+                          itemCount: snapshot.data!.docs.length.clamp(0, 10),
+                          itemBuilder: (context, int index) {
+                            var snapshotDocs = snapshot.data!.docs;
+                            return Padding(
+                              padding: const EdgeInsets.only(right: 7.5),
+                              child: InkWell(
+                                onTap: () {
+                                  UserService().reservationDetail(
+                                      context, snapshotDocs[index]);
+                                },
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Container(
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          border: Border.all(
+                                              width: 0.5, color: Colors.grey),
+                                        ),
+                                        child: Image.asset(
+                                            'assets/placeholder-restaurant-300x300.png')),
+                                  ],
+                                ),
+                              ),
+                            );
+                          }),
+                    ),
+                  )
+                : const Text("No reservations made yet!");
           }
 
-          return const Text("No reservations made yet!");
+          return const Center(child: CircularProgressIndicator());
         });
   }
 
@@ -226,15 +225,25 @@ class _HomePageState extends State<HomePage> {
     List<String> locationData;
     List? nearbyVenues;
 
-    var enabled = await Geolocator.isLocationServiceEnabled();
-    if (enabled) {
+    var locationEnabled = await Geolocator.isLocationServiceEnabled();
+    var requestResult = await Permission.location.request();
+
+    if (locationEnabled && requestResult.isGranted) {
       locationData = await UserService().getUserCurrentAddressData();
       nearbyVenues = await FirestoreService()
           .getVenuesByCityDistrict(locationData[0], locationData[1]);
-    } else {
+    } else if (!locationEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Enable the location and reload the page!"),
       ));
+    } else if (!requestResult.isGranted) {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("Give permission to use location services!"),
+      ));
+
+      Future.delayed(const Duration(seconds: 3), () {
+        openAppSettings();
+      });
     }
 
     return nearbyVenues;

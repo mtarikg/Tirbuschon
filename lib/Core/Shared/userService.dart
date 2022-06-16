@@ -11,6 +11,7 @@ import '../../services/firestoreService.dart';
 class UserService {
   Future<Position> getUserCurrentPosition() async {
     Position currentPosition;
+
     var result = await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high);
     currentPosition = result;

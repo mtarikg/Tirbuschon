@@ -49,7 +49,7 @@ class _ReviewVenueState extends State<ReviewVenue> {
                 initialRating: 0,
                 minRating: 0,
                 direction: Axis.horizontal,
-                allowHalfRating: true,
+                allowHalfRating: false,
                 itemCount: 5,
                 itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
                 itemBuilder: (context, _) => const Icon(
@@ -84,14 +84,21 @@ class _ReviewVenueState extends State<ReviewVenue> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 onPressed: () async {
-                  var user = FirebaseAuth.instance.currentUser;
-                  var userID = user!.uid;
+                  if(rating == 0){
+                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+                      content: Text("A rating must be given!"),
+                    ));
+                  }
+                  else {
+                    var user = FirebaseAuth.instance.currentUser;
+                    var userID = user!.uid;
 
-                  var venueID = await FirestoreService()
-                      .getVenueIDByName(widget.venueName);
+                    var venueID = await FirestoreService()
+                        .getVenueIDByName(widget.venueName);
 
-                  _addReview(
-                      userID, venueID!, widget.reservation, rating, comment);
+                    _addReview(
+                        userID, venueID!, widget.reservation, rating, comment);
+                  }
                 },
               ),
               const SizedBox(height: 20),
