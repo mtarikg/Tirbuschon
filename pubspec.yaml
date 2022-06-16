@@ -58,6 +58,7 @@ dependencies:
   intl: ^0.17.0
   profanity_filter: ^2.0.0
   timeago: ^3.2.2
+  permission_handler: ^9.2.0
 
 
 dev_dependencies:

@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../services/firestoreService.dart';
 import '../BottomNavigationBarPages/mainPage.dart';
 import '../../../services/storageService.dart';
@@ -141,8 +142,21 @@ class _UploadProfileImageState extends State<UploadProfileImage> {
 
   InkWell imagePicker() {
     return InkWell(
-      onTap: () {
-        selectPhoto();
+      onTap: () async {
+        var cameraRequest = await Permission.camera.request();
+
+        var requestResult = cameraRequest.isGranted;
+        if (requestResult) {
+          selectPhoto();
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            content: Text("Give permission to use camera!"),
+          ));
+
+          Future.delayed(const Duration(seconds: 3), () {
+            openAppSettings();
+          });
+        }
       },
       child: Container(
         padding: const EdgeInsets.fromLTRB(75, 25, 75, 25),

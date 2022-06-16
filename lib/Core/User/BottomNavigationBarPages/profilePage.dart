@@ -38,7 +38,7 @@ class _ProfilePageState extends State<ProfilePage> {
           Padding(
               padding: const EdgeInsets.only(top: 40, bottom: 10),
               child: Column(
-                children: [_previousReservationsText(), _showReservations()],
+                children: [_myReservationsText(), _showReservations()],
               ))
         ],
       ),
@@ -54,7 +54,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget _previousReservationsText() {
+  Widget _myReservationsText() {
     return const Center(
         child: Text(
       "My Reservations",
@@ -80,7 +80,12 @@ class _ProfilePageState extends State<ProfilePage> {
                     ),
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
-                      var snapshotDocs = snapshot.data!.docs;
+                      dynamic snapshotDocs = snapshot.data!.docs;
+                      dynamic docsOrderByDate = snapshotDocs.sort(
+                          (QueryDocumentSnapshot<Object?> date1,
+                              QueryDocumentSnapshot<Object?> date2) {
+                        return date1.toString().compareTo(date2.toString());
+                      });
                       return TextButton(
                           onPressed: () {
                             UserService().reservationDetail(
@@ -95,6 +100,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     child: Text("No reservations to list."),
                   );
           }
+
           return const Center(
             child: CircularProgressIndicator(),
           );

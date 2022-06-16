@@ -35,48 +35,55 @@ class _PaymentState extends State<Payment> {
         ),
       ),
       body: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: _cardHolderTextField(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: _cardNumberTextField(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: _cardExpiredDateTextField(),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: _cardCVVTextField(),
-            ),
-            const SizedBox(height: 30),
-            Row(
-              children: [
-                const SizedBox(width: 10),
-                const Text("Total Price: 250₺"),
-                const SizedBox(width: 10),
-                CompleteButton(
-                    context: context,
-                    formKey: _formKey,
-                    id: widget.venueID,
-                    capacity: 1,
-                    selectedDate: widget.selectedDate,
-                    price: 250,
-                    cardHolder: cardHolder,
-                    cardNumber: cardNumber,
-                    expiredDate: expiredDate,
-                    cvv: cvv),
+          key: _formKey,
+          child: SizedBox(
+            height: MediaQuery.of(context).size.height - 30,
+            width: MediaQuery.of(context).size.width,
+            child: CustomScrollView(
+              slivers: [
+                SliverFillRemaining(
+                  hasScrollBody: false,
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: _cardHolderTextField(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: _cardNumberTextField(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: _cardExpiredDateTextField(),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(10.0),
+                        child: _cardCVVTextField(),
+                      ),
+                      const SizedBox(height: 30),
+                      const Text("Total Price: 250₺",
+                          style: TextStyle(
+                              fontSize: 17, fontWeight: FontWeight.bold)),
+                      const SizedBox(height: 30),
+                      CompleteButton(
+                          context: context,
+                          formKey: _formKey,
+                          id: widget.venueID,
+                          capacity: 1,
+                          selectedDate: widget.selectedDate,
+                          price: 250,
+                          cardHolder: cardHolder,
+                          cardNumber: cardNumber,
+                          expiredDate: expiredDate,
+                          cvv: cvv),
+                    ],
+                  ),
+                ),
               ],
             ),
-          ],
-        ),
-      ),
+          )),
     );
   }
 
@@ -89,6 +96,10 @@ class _PaymentState extends State<Payment> {
       validator: (value) {
         if (value!.isEmpty) {
           return "Card holder can not be empty!";
+        }
+
+        if (!value.contains(RegExp(r'^(?=.*?[0-9]).{4,}$'))) {
+          return "Card holder name should consist of four alphabetic characters!";
         }
 
         return null;
@@ -116,13 +127,15 @@ class _PaymentState extends State<Payment> {
           return "Card number field can not be empty!";
         } else if (value.length != 19) {
           return "Card number should consist of 16 digits.";
-        } else if (value.contains(RegExp(r'[,.]'))) {
+        } else if (!value.contains(RegExp(r'^[0-9 ]+$'))) {
           return "Only numbers";
         }
         return null;
       },
       onChanged: (value) {
-        if (value.replaceAll(" ", "").length % 4 == 0 && value.length != 19) {
+        if (value.contains(RegExp(r'[0-9]')) &&
+            value.replaceAll(" ", "").length % 4 == 0 &&
+            value.length != 19) {
           value = (value + " ").toString();
           _cardNumberController.value = TextEditingValue(
             text: value.toString(),
@@ -154,11 +167,15 @@ class _PaymentState extends State<Payment> {
           return "Expired date should consist of a month and a year value.";
         } else if (value.contains(RegExp(r'[,. ]'))) {
           return "Only numbers";
+        } else if (int.parse(value.substring(0, 2)) > 12 ||
+            int.parse(value.substring(3, 5).toString()) <
+                int.parse(DateTime.now().year.toString().substring(2, 4))) {
+          return "Enter a valid expiry date!";
         }
         return null;
       },
       onChanged: (value) {
-        if (value.length == 2) {
+        if (value.length == 2 && !value.contains("/")) {
           value = (value + "/").toString();
           _expiredDateController.value = TextEditingValue(
             text: value.toString(),
@@ -187,7 +204,7 @@ class _PaymentState extends State<Payment> {
           return "CVV can not be empty!";
         } else if (value.trim().length != 3) {
           return "Card number should consist of 3 digits.";
-        } else if (value.contains(RegExp(r'[,. ]'))) {
+        } else if (!value.contains(RegExp(r'^[0-9]+$'))) {
           return "Only numbers";
         }
         return null;
@@ -233,27 +250,26 @@ class CompleteButton extends StatelessWidget {
         isCardHolderNull || isCardNumberNull || isExpiredDateNull || isCVVNull;
     var isDisabled = result;
 
-    return Expanded(
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(30),
-          border: Border.all(width: 1),
-          color: isDisabled ? Colors.grey : Colors.blue,
-        ),
-        child: TextButton(
-            onPressed: isDisabled
-                ? null
-                : () {
-                    _completeReservation(id, selectedDate, price);
-                  },
-            child: const Text(
-              "Complete",
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: 20,
-              ),
-            )),
+    return Container(
+      width: MediaQuery.of(context).size.width - 30,
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(30),
+        border: Border.all(width: 1),
+        color: isDisabled ? Colors.grey : Colors.blue,
       ),
+      child: TextButton(
+          onPressed: isDisabled
+              ? null
+              : () {
+                  _completeReservation(id, selectedDate, price);
+                },
+          child: const Text(
+            "Complete",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+            ),
+          )),
     );
   }
 

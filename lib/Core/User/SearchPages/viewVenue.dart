@@ -54,56 +54,58 @@ class _ViewVenueState extends State<ViewVenue> {
               }
 
               if (snapshot.hasData) {
-                return Column(
-                  children: [
-                    if (snapshot.data.containsKey("imageURL")) ...[
-                      _VenueProfileImageContainer(
-                          imageURL: snapshot.data["imageURL"]),
-                    ] else ...[
-                      _VenueProfileImageContainer(imageURL: null.toString()),
+                return SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      if (snapshot.data.containsKey("imageURL")) ...[
+                        _VenueProfileImageContainer(
+                            imageURL: snapshot.data["imageURL"]),
+                      ] else ...[
+                        _VenueProfileImageContainer(imageURL: null.toString()),
+                      ],
+                      Padding(
+                          padding: const EdgeInsets.only(top: 20),
+                          child: Column(
+                            children: [
+                              _VenueInfoContainer(
+                                  value: snapshot.data["Venue Name"],
+                                  boldOption: true),
+                              _VenueInfoContainer(
+                                  value: snapshot.data["Phone"],
+                                  boldOption: false),
+                              _VenueInfoContainer(
+                                  value: snapshot.data["Address"],
+                                  boldOption: false),
+                              _VenueInfoContainer(
+                                  title: "Capacity",
+                                  value: snapshot.data["Capacity"],
+                                  boldOption: false),
+                              _VenueInfoContainer(
+                                  title: "Current Reservation Capacity",
+                                  value: snapshot.data["Reservation Capacity"],
+                                  boldOption: false),
+                              NavigatorButtonCard(
+                                  pageToNavigate: MapView(
+                                      venueAddress: snapshot.data["Address"]),
+                                  text: "Show Location"),
+                              NavigatorButtonCard(
+                                  pageToNavigate: MenuPage(
+                                    venueID: widget.venueID,
+                                    venueName: snapshot.data["Venue Name"],
+                                  ),
+                                  text: "See Menu"),
+                              NavigatorButtonCard(
+                                  pageToNavigate:
+                                      SelectDate(venueID: widget.venueID),
+                                  text: "Quick Reservation"),
+                              NavigatorButtonCard(
+                                  pageToNavigate:
+                                      VenueReviews(venueID: widget.venueID),
+                                  text: "See Reviews"),
+                            ],
+                          )),
                     ],
-                    Padding(
-                        padding: const EdgeInsets.only(top: 20),
-                        child: Column(
-                          children: [
-                            _VenueInfoContainer(
-                                value: snapshot.data["Venue Name"],
-                                boldOption: true),
-                            _VenueInfoContainer(
-                                value: snapshot.data["Phone"],
-                                boldOption: false),
-                            _VenueInfoContainer(
-                                value: snapshot.data["Address"],
-                                boldOption: false),
-                            _VenueInfoContainer(
-                                title: "Capacity",
-                                value: snapshot.data["Capacity"],
-                                boldOption: false),
-                            _VenueInfoContainer(
-                                title: "Current Reservation Capacity",
-                                value: snapshot.data["Reservation Capacity"],
-                                boldOption: false),
-                            NavigatorButtonCard(
-                                pageToNavigate: MapView(
-                                    venueAddress: snapshot.data["Address"]),
-                                text: "Show Location"),
-                            NavigatorButtonCard(
-                                pageToNavigate: MenuPage(
-                                  venueID: widget.venueID,
-                                  venueName: snapshot.data["Venue Name"],
-                                ),
-                                text: "See Menu"),
-                            NavigatorButtonCard(
-                                pageToNavigate:
-                                    SelectDate(venueID: widget.venueID),
-                                text: "Quick Reservation"),
-                            NavigatorButtonCard(
-                                pageToNavigate:
-                                    VenueReviews(venueID: widget.venueID),
-                                text: "See Reviews"),
-                          ],
-                        )),
-                  ],
+                  ),
                 );
               }
 
