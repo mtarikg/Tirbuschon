@@ -85,8 +85,32 @@ class GoogleSignUp extends StatelessWidget {
     return Expanded(
         child: SignInButton(Buttons.Google, text: "Sign up with Google",
             onPressed: () {
-      _signInWithGoogle();
+      alertUser();
     }));
+  }
+
+  void alertUser() {
+    Widget yesButton = TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+          _signInWithGoogle();
+        },
+        child: const Text("Yes"));
+
+    Widget noButton = TextButton(
+        onPressed: () {
+          Navigator.of(context).pop();
+        },
+        child: const Text("No"));
+
+    var alertDialog = AlertDialog(
+      title: const Text("Confirmation"),
+      content: const Text("Do you confirm that you're not a venue owner?"),
+      actions: [noButton, yesButton],
+    );
+
+    showDialog(
+        context: context, builder: (BuildContext context) => alertDialog);
   }
 
   void _signInWithGoogle() async {
