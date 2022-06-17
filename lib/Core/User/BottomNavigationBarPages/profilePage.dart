@@ -81,12 +81,6 @@ class _ProfilePageState extends State<ProfilePage> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       dynamic snapshotDocs = snapshot.data!.docs;
-                      //TODO: order reservations by date
-                      dynamic docsOrderByDate = snapshotDocs.sort(
-                          (QueryDocumentSnapshot<Object?> date1,
-                              QueryDocumentSnapshot<Object?> date2) {
-                        return date1.toString().compareTo(date2.toString());
-                      });
                       return TextButton(
                           onPressed: () {
                             UserService().reservationDetail(

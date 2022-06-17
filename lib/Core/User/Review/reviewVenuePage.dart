@@ -20,7 +20,7 @@ class ReviewVenue extends StatefulWidget {
 
 class _ReviewVenueState extends State<ReviewVenue> {
   final filter = ProfanityFilter();
-  double rating = 0.0;
+  int rating = 0;
   String comment = "";
 
   @override
@@ -57,7 +57,7 @@ class _ReviewVenueState extends State<ReviewVenue> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (value) {
-                  rating = value;
+                  rating = value.toInt();
                 },
               ),
               const SizedBox(height: 50),
@@ -84,12 +84,11 @@ class _ReviewVenueState extends State<ReviewVenue> {
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
                 onPressed: () async {
-                  if(rating == 0){
+                  if (rating == 0) {
                     ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                       content: Text("A rating must be given!"),
                     ));
-                  }
-                  else {
+                  } else {
                     var user = FirebaseAuth.instance.currentUser;
                     var userID = user!.uid;
 
@@ -108,7 +107,7 @@ class _ReviewVenueState extends State<ReviewVenue> {
   }
 
   void _addReview(String userID, String venueID, String reservationID,
-      double rating, String? comment) async {
+      int rating, String? comment) async {
     var result = await FirestoreService()
         .addReview(userID, venueID, reservationID, rating, comment)
         .catchError((error) {
