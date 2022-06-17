@@ -57,7 +57,7 @@ class UserService {
         (snapshotDoc["Reservation Date"] as Timestamp).toDate().toString());
     var formattedDate = DateFormat('dd/MM/yyyy, HH:mm').format(reservationDate);
     var hasReview = false;
-    var rating = 0.0;
+    var rating = 0;
     var comment = "";
 
     if (reviewData != null) {
@@ -65,7 +65,7 @@ class UserService {
       comment = reviewData["Comment"];
     }
 
-    if (rating != 0.0) {
+    if (rating != 0) {
       hasReview = true;
     }
 

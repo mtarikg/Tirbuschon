@@ -188,6 +188,7 @@ class _HomePageState extends State<HomePage> {
                           itemCount: snapshot.data!.docs.length.clamp(0, 10),
                           itemBuilder: (context, int index) {
                             var snapshotDocs = snapshot.data!.docs;
+
                             return Padding(
                               padding: const EdgeInsets.only(right: 7.5),
                               child: InkWell(
@@ -206,7 +207,7 @@ class _HomePageState extends State<HomePage> {
                                               width: 0.5, color: Colors.grey),
                                         ),
                                         child: Image.asset(
-                                            'assets/placeholder-restaurant-300x300.png')),
+                                            'assets/reservationIconPlaceholder.jpg')),
                                   ],
                                 ),
                               ),

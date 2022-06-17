@@ -193,13 +193,14 @@ class FirestoreService {
         .collection("Users")
         .doc(userID)
         .collection("Reservations List")
+        .orderBy("Reservation Date", descending: true)
         .snapshots();
 
     return snapshots;
   }
 
   Future<bool> addReview(String userID, String venueID, String reservationID,
-      double rating, String? comment) async {
+      int rating, String? comment) async {
     var userSideResult = false;
     var venueSideResult = false;
 

@@ -138,7 +138,7 @@ class _VenueProfileImageContainer extends StatelessWidget {
                 height: 150,
                 child: Center(
                   child:
-                      Image.asset('assets/placeholder-restaurant-300x300.png'),
+                      Image.asset('assets/reservationIconPlaceholder.jpg'),
                 )),
           ))
         : Padding(
