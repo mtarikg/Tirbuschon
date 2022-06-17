@@ -81,13 +81,14 @@ class _ProfilePageState extends State<ProfilePage> {
                     itemCount: snapshot.data!.docs.length,
                     itemBuilder: (context, index) {
                       dynamic snapshotDocs = snapshot.data!.docs;
+
                       return TextButton(
                           onPressed: () {
                             UserService().reservationDetail(
                                 context, snapshotDocs[index]);
                           },
                           child: Image.asset(
-                              'assets/placeholder-restaurant-300x300.png'));
+                              'assets/reservationIconPlaceholder.jpg'));
                     },
                   )
                 : const Padding(
