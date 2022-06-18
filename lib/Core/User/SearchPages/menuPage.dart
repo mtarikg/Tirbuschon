@@ -2,8 +2,8 @@ import 'package:flutter/material.dart';
 import '../../../services/firestoreService.dart';
 
 class MenuPage extends StatefulWidget {
-  final String venueName;
   final String venueID;
+  final String venueName;
 
   const MenuPage({Key? key, required this.venueName, required this.venueID})
       : super(key: key);
@@ -101,9 +101,7 @@ class CategoryItems extends StatelessWidget {
                   children: [
                     Text(categoryItems[index]["Name"],
                         style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 15
-                        )),
+                            fontWeight: FontWeight.bold, fontSize: 15)),
                     const SizedBox(width: 20),
                     Text(categoryItems[index]["Price"].toString() + "₺"),
                   ],

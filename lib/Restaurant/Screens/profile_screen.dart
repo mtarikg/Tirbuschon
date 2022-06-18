@@ -1,11 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:tirbuschon_feng497/Auth/loginPage.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/edit_profile_screen.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/email_sender.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import '../../services/authService.dart';
+import '../../welcomePage.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String address;
@@ -48,7 +49,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .update({'Reservation Capacity': 50});
     super.initState();
   }
-
+  
   late TextEditingController _controller;
 
   @override
@@ -292,8 +293,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             onPressed: () {
-              Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => LoginPage()));
+              final AuthService _authService = AuthService();
+
+              _authService.signOut().then((value) {
+                return Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => const WelcomePage()),
+                    (route) => false);
+              });
             },
             child: Text(
               "SIGN OUT",

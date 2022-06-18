@@ -26,9 +26,9 @@ class _ProfileSettingsPageState extends State<ProfileSettingsPage> {
         body: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
+            children: const [
               NavigatorButtonCard(
-                  text: "Update Profile", pageToNavigate: const UpdateProfilePage()),
+                  text: "Update Profile", pageToNavigate: UpdateProfilePage()),
               NavigatorButtonCard(text: "Delete Account"),
             ],
           ),

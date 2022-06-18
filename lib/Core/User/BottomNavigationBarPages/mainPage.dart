@@ -5,32 +5,26 @@ import 'profilePage.dart';
 import 'searchPage.dart';
 
 class MainPage extends StatefulWidget {
-  const MainPage({Key? key}) : super(key: key);
+  final int? index;
+
+  const MainPage({Key? key, this.index}) : super(key: key);
 
   @override
   _MainPageState createState() => _MainPageState();
 }
 
 class _MainPageState extends State<MainPage> {
-  int _barIndex = 0;
-  late PageController _pageController;
+  late int _barIndex;
 
   @override
   void initState() {
     super.initState();
-    _pageController = PageController();
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
+    _barIndex = widget.index ?? 0;
   }
 
   void _onTapped(int index) {
     setState(() {
       _barIndex = index;
-      _pageController.jumpToPage(_barIndex);
     });
   }
 
@@ -64,15 +58,9 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  PageView _body() {
-    return PageView(
-      physics: const NeverScrollableScrollPhysics(),
-      onPageChanged: (index) {
-        setState(() {
-          _barIndex = index;
-        });
-      },
-      controller: _pageController,
+  Widget _body() {
+    return IndexedStack(
+      index: _barIndex,
       children: const [
         HomePage(),
         SearchPage(),

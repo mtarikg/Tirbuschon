@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import '../Admin/adm_bottom_navigation/admin_navigator.dart';
-import '../Restaurant/Screens/helper/navigator.dart';
 import 'direct.dart';
 import '../services/authService.dart';
 import 'forgotPassword.dart';
@@ -25,44 +23,49 @@ class _LoginPageState extends State<LoginPage> {
           title: const Text("Login"),
         ),
         backgroundColor: Colors.grey[100],
-        body: SingleChildScrollView(
-          child: Form(
-            key: _formKey,
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                const SizedBox(height: 5),
-                Text(
-                  "Tirbuschon",
-                  style: TextStyle(
-                    fontSize: 42,
-                    color: Colors.blue[400],
-                    fontStyle: FontStyle.italic,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Column(
+        body: Form(
+          key: _formKey,
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: _emailTextField(),
+                    const SizedBox(height: 5),
+                    Text(
+                      "Tirbuschon",
+                      style: TextStyle(
+                        fontSize: 42,
+                        color: Colors.blue[400],
+                        fontStyle: FontStyle.italic,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.all(10.0),
-                      child: _passwordTextField(),
+                    Column(
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: _emailTextField(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: _passwordTextField(),
+                        ),
+                        ForgotPasswordButton(context: context),
+                        const SizedBox(height: 10),
+                        LoginButton(
+                            email: email,
+                            password: password,
+                            context: context,
+                            formKey: _formKey),
+                      ],
                     ),
-                    ForgotPasswordButton(context: context),
-                    const SizedBox(height: 10),
-                    LoginButton(
-                        email: email,
-                        password: password,
-                        context: context,
-                        formKey: _formKey),
+                    NewUserReminderButton(context: context),
                   ],
                 ),
-                NewUserReminderButton(context: context),
-              ],
-            ),
+              )
+            ],
           ),
         ),
       ),
@@ -155,30 +158,10 @@ class LoginButton extends StatelessWidget {
       _formState.save();
 
       await _authService.signInWithEmail(email, password).then((value) {
-        //venue email validation
-        var venueValidation =
-            RegExp("\b*@tirbuschon\.com\$", caseSensitive: false);
-        //admin email validation
-        var adminValidation =
-            RegExp("\b*@tirbuschon\.admin.com\$", caseSensitive: false);
-        if (venueValidation.hasMatch(email)) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const BottomNavigationBar1()),
-              (route) => false);
-        } else if (adminValidation.hasMatch(email)) {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => const AdminBottomNavBar()),
-              (route) => false);
-        } else {
-          Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const Direct()),
-              (route) => false);
-        }
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const Direct()),
+            (route) => false);
       }).catchError((error) {
         String errorDetail;
         if (error.toString().contains('invalid-email')) {

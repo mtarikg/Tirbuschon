@@ -1,14 +1,17 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:profanity_filter/profanity_filter.dart';
-import 'package:tirbuschon_feng497/services/firestoreService.dart';
-
+import '../../../services/firestoreService.dart';
 import '../BottomNavigationBarPages/mainPage.dart';
 
 class ReviewVenue extends StatefulWidget {
   final String reservation;
+  final String venueName;
 
-  const ReviewVenue({Key? key, required this.reservation}) : super(key: key);
+  const ReviewVenue(
+      {Key? key, required this.reservation, required this.venueName})
+      : super(key: key);
 
   @override
   _ReviewVenueState createState() => _ReviewVenueState();
@@ -16,14 +19,14 @@ class ReviewVenue extends StatefulWidget {
 
 class _ReviewVenueState extends State<ReviewVenue> {
   final filter = ProfanityFilter();
-  double rating = 0.0;
+  int rating = 0;
   String comment = "";
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Review the Venue"),
+          title: const Text("Review the reservation"),
         ),
         backgroundColor: Colors.grey[100],
         body: Center(
@@ -45,7 +48,7 @@ class _ReviewVenueState extends State<ReviewVenue> {
                 initialRating: 0,
                 minRating: 0,
                 direction: Axis.horizontal,
-                allowHalfRating: true,
+                allowHalfRating: false,
                 itemCount: 5,
                 itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
                 itemBuilder: (context, _) => const Icon(
@@ -53,7 +56,9 @@ class _ReviewVenueState extends State<ReviewVenue> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (value) {
-                  rating = value;
+                  setState(() {
+                    rating = value.toInt();
+                  });
                 },
               ),
               const SizedBox(height: 50),
@@ -79,9 +84,25 @@ class _ReviewVenueState extends State<ReviewVenue> {
                   "Submit your review",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                onPressed: () {
-                  _addReview(widget.reservation, rating, comment);
-                },
+                onPressed: rating != 0
+                    ? () async {
+                        if (rating == 0) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("A rating must be given!"),
+                          ));
+                        } else {
+                          var user = FirebaseAuth.instance.currentUser;
+                          var userID = user!.uid;
+
+                          var venueID = await FirestoreService()
+                              .getVenueIDByName(widget.venueName);
+
+                          _addReview(userID, venueID!, widget.reservation,
+                              rating, comment);
+                        }
+                      }
+                    : null,
               ),
               const SizedBox(height: 20),
             ],
@@ -89,9 +110,10 @@ class _ReviewVenueState extends State<ReviewVenue> {
         ));
   }
 
-  void _addReview(String reservationID, double rating, String? comment) async {
+  void _addReview(String userID, String venueID, String reservationID,
+      int rating, String? comment) async {
     var result = await FirestoreService()
-        .addReview(reservationID, rating, comment)
+        .addReview(userID, venueID, reservationID, rating, comment)
         .catchError((error) {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text(error.toString()),
@@ -106,8 +128,8 @@ class _ReviewVenueState extends State<ReviewVenue> {
       ));
 
       Future.delayed(duration, () {
-        Navigator.push(
-            context, MaterialPageRoute(builder: (context) => const MainPage()));
+        Navigator.push(context,
+            MaterialPageRoute(builder: (context) => const MainPage(index: 2)));
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(

@@ -109,7 +109,7 @@ class FirestoreService {
     return null;
   }
 
-  Future<bool> makeReservation(String userID, String venueID, int capacity,
+  Future<bool> makeReservation(String userID, String venueID, int partySize,
       DateTime selectedDate, double price) async {
     var reservationResult = false;
     var capacityResult = false;
@@ -158,7 +158,7 @@ class FirestoreService {
           .collection("Reservations")
           .doc(reservationID)
           .set({
-        "Capacity": capacity,
+        "Party Size": partySize,
         "Reservation ID": reservationID,
         "User ID": userID,
         "Created Date": createdDate,
@@ -172,7 +172,7 @@ class FirestoreService {
           .collection("Reservations List")
           .doc(reservationID)
           .set({
-        "Capacity": capacity,
+        "Party Size": partySize,
         "Reservation ID": reservationID,
         "Venue ID": venueID,
         "Created Date": createdDate,
@@ -193,16 +193,17 @@ class FirestoreService {
         .collection("Users")
         .doc(userID)
         .collection("Reservations List")
+        .orderBy("Reservation Date", descending: true)
         .snapshots();
 
     return snapshots;
   }
 
-  Future<bool> addReview(
-      String reservationID, double rating, String? comment) async {
-    var reviewResult = false;
-    var user = FirebaseAuth.instance.currentUser;
-    var userID = user!.uid;
+  Future<bool> addReview(String userID, String venueID, String reservationID,
+      int rating, String? comment) async {
+    var userSideResult = false;
+    var venueSideResult = false;
+
     var reviewID = const Uuid().v4();
     var createdDate = DateTime.now();
 
@@ -212,14 +213,40 @@ class FirestoreService {
         .collection("Reviews List")
         .doc(reviewID)
         .set({
+      "User ID": userID,
       "Reservation ID": reservationID,
       "Review ID": reviewID,
       "Rating": rating,
       "Comment": comment,
       "Created Date": createdDate
-    }).then((value) => {reviewResult = true});
+    }).then((value) => {userSideResult = true});
 
-    return reviewResult;
+    await _firestore
+        .collection("Venues")
+        .doc(venueID)
+        .collection("Reviews")
+        .doc(reviewID)
+        .set({
+      "User ID": userID,
+      "Reservation ID": reservationID,
+      "Review ID": reviewID,
+      "Rating": rating,
+      "Comment": comment,
+      "Created Date": createdDate
+    }).then((value) => {venueSideResult = true});
+
+    var result = userSideResult && venueSideResult;
+    return result;
+  }
+
+  Stream<QuerySnapshot<Map<String, dynamic>>> getVenueReviews(String venueID) {
+    var snapshots = _firestore
+        .collection("Venues")
+        .doc(venueID)
+        .collection("Reviews")
+        .snapshots();
+
+    return snapshots;
   }
 
   Future<dynamic> getReviewByReservationID(String reservationID) async {
@@ -253,20 +280,37 @@ class FirestoreService {
     return existingUser;
   }
 
-  Future<String> getUser() async {
+  Future<String?> getUser() async {
     final FirebaseAuth _auth = FirebaseAuth.instance;
 
     var currentUser = _auth.currentUser;
     var currentUserID = currentUser!.uid;
 
-    var document = _firestore.collection('Users').doc(currentUserID);
+    var userDocument =
+        await _firestore.collection('Users').doc(currentUserID).get();
 
-    return document.id;
+    if (userDocument.exists) {
+      return "Users";
+    }
+
+    var venueDocument =
+        await _firestore.collection('Venues').doc(currentUserID).get();
+
+    if (venueDocument.exists) {
+      return "Venues";
+    }
+
+    var adminDocument =
+        await _firestore.collection('Admin').doc(currentUserID).get();
+
+    if (adminDocument.exists) {
+      return "Admin";
+    }
+
+    return null;
   }
 
-  Future<String> getProfileInfo(String text) async {
-    var user = FirebaseAuth.instance.currentUser;
-    var userID = user!.uid;
+  Future<String> getProfileInfo(String userID, String text) async {
     var result = await _firestore
         .collection('Users')
         .doc(userID)
@@ -276,5 +320,31 @@ class FirestoreService {
     var userData = result.toString();
 
     return userData;
+  }
+
+  Future<void> uploadImage(String userID, String imageURL) async {
+    var document = await _firestore
+        .collection('Users')
+        .doc(userID)
+        .collection('profileInfo')
+        .get();
+    await document.docs[0].reference.update({'avatarURL': imageURL});
+  }
+
+  Future<void> updateUserField(
+      String userID, String userField, String updateValue) async {
+    var document = await _firestore
+        .collection('Users')
+        .doc(userID)
+        .collection('profileInfo')
+        .get();
+
+    await document.docs[0].reference.update({userField: updateValue});
+  }
+
+  Future<void> deleteUser(String userID) async {
+    var documentReference = _firestore.collection("Users").doc(userID);
+    _firestore.runTransaction(
+        (transaction) async => await transaction.delete(documentReference));
   }
 }

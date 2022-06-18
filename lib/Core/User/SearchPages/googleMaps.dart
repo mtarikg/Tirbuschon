@@ -4,7 +4,7 @@ import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geocoding/geocoding.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import '../BottomNavigationBarPages/mainPage.dart';
+import '../../Shared/userService.dart';
 
 class MapView extends StatefulWidget {
   const MapView({Key? key, required this.venueAddress}) : super(key: key);
@@ -90,7 +90,8 @@ class _MapViewState extends State<MapView> {
   }
 
   _getCurrentLocation() async {
-    await Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+    await UserService()
+        .getUserCurrentPosition()
         .then((Position position) async {
       setState(() {
         _currentPosition = position;
@@ -279,11 +280,14 @@ class _MapViewState extends State<MapView> {
     setState(() {});
   }
 
+  late bool searchPopUp;
+
   @override
   void initState() {
     super.initState();
     destinationAddressController.text = widget.venueAddress;
     _destinationAddress = destinationAddressController.text;
+    searchPopUp = true;
   }
 
   @override
@@ -296,16 +300,6 @@ class _MapViewState extends State<MapView> {
       child: Scaffold(
         appBar: AppBar(
           title: const Text("Venue Location"),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back),
-            iconSize: 20,
-            onPressed: () {
-              Navigator.pushAndRemoveUntil(
-                  context,
-                  MaterialPageRoute(builder: (context) => const MainPage()),
-                  (route) => false);
-            },
-          ),
         ),
         body: Stack(
           children: <Widget>[
@@ -372,77 +366,118 @@ class _MapViewState extends State<MapView> {
                 ),
               ),
             ),
-            SafeArea(
-              child: Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 10.0),
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.white70,
-                      borderRadius: BorderRadius.all(
-                        Radius.circular(20.0),
+            if (searchPopUp) ...[
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white70,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20.0),
+                        ),
                       ),
-                    ),
-                    width: width * 0.9,
-                    child: Padding(
-                      padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                      child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          const Text(
-                            'Places',
-                            style: TextStyle(fontSize: 20.0),
-                          ),
-                          const SizedBox(height: 10),
-                          _textField(
-                              label: 'Start',
-                              hint: 'Choose starting point',
-                              prefixIcon: const Icon(Icons.looks_one),
-                              suffixIcon: IconButton(
-                                icon: const Icon(Icons.my_location),
-                                onPressed: () {
+                      width: width * 0.9,
+                      child: Padding(
+                        padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
+                        child: Column(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: [
+                                IconButton(
+                                  icon: const Icon(Icons.remove_circle_outline),
+                                  onPressed: () {
+                                    setState(() {
+                                      searchPopUp = false;
+                                    });
+                                  },
+                                ),
+                                const Text(
+                                  'Places',
+                                  style: TextStyle(fontSize: 20.0),
+                                ),
+                              ],
+                            ),
+                            const SizedBox(height: 10),
+                            _textField(
+                                label: 'Start',
+                                hint: 'Choose starting point',
+                                prefixIcon: const Icon(Icons.looks_one),
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.my_location),
+                                  onPressed: () {
+                                    setState(() {
+                                      startAddressController.text =
+                                          _currentAddress;
+                                      _startAddress = _currentAddress;
+                                    });
+                                  },
+                                ),
+                                controller: startAddressController,
+                                focusNode: startAddressFocusNode,
+                                width: width,
+                                locationCallback: (String value) {
                                   setState(() {
-                                    startAddressController.text =
-                                        _currentAddress;
-                                    _startAddress = _currentAddress;
+                                    _startAddress = value;
                                   });
-                                },
-                              ),
-                              controller: startAddressController,
-                              focusNode: startAddressFocusNode,
-                              width: width,
-                              locationCallback: (String value) {
-                                setState(() {
-                                  _startAddress = value;
-                                });
-                              }),
-                          const SizedBox(height: 10),
-                          _textField(
-                              label: 'Destination',
-                              hint: 'Choose destination',
-                              prefixIcon: const Icon(Icons.looks_two),
-                              controller: destinationAddressController,
-                              focusNode: destinationAddressFocusNode,
-                              width: width,
-                              locationCallback: (value) {
-                                setState(() {
-                                  _destinationAddress =
-                                      destinationAddressController.text;
-                                });
-                              }),
-                          const SizedBox(height: 15),
-                          _selectTravelMode(),
-                          const SizedBox(height: 10),
-                          DistanceValue(placeDistance: _placeDistance),
-                          _showVenueButton(),
-                        ],
+                                }),
+                            const SizedBox(height: 10),
+                            _textField(
+                                label: 'Destination',
+                                hint: 'Choose destination',
+                                prefixIcon: const Icon(Icons.looks_two),
+                                controller: destinationAddressController,
+                                focusNode: destinationAddressFocusNode,
+                                width: width,
+                                locationCallback: (value) {
+                                  setState(() {
+                                    _destinationAddress =
+                                        destinationAddressController.text;
+                                  });
+                                }),
+                            const SizedBox(height: 15),
+                            _selectTravelMode(),
+                            const SizedBox(height: 10),
+                            DistanceValue(placeDistance: _placeDistance),
+                            _showVenueButton(),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
               ),
-            ),
+            ] else ...[
+              SafeArea(
+                child: Align(
+                  alignment: Alignment.topCenter,
+                  child: Padding(
+                    padding: const EdgeInsets.only(top: 10.0),
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.white70,
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20.0),
+                        ),
+                      ),
+                      width: width * 0.9,
+                      child: IconButton(
+                        icon: const Icon(Icons.add_circle_outline),
+                        onPressed: () {
+                          setState(() {
+                            searchPopUp = true;
+                          });
+                        },
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
             SafeArea(
               child: Align(
                 alignment: Alignment.bottomRight,
@@ -484,15 +519,19 @@ class _MapViewState extends State<MapView> {
   }
 
   ElevatedButton _showVenueButton() {
+    var buttonActivated = _startAddress.isNotEmpty &&
+        _destinationAddress.isNotEmpty &&
+        selectedTravelMode != null;
     return ElevatedButton(
-      onPressed: (_startAddress.isNotEmpty &&
-              _destinationAddress.isNotEmpty &&
-              selectedTravelMode != null)
+      onPressed: buttonActivated
           ? () {
               markers.clear();
               startAddressFocusNode.unfocus();
               destinationAddressFocusNode.unfocus();
               _showMarkers();
+              setState(() {
+                searchPopUp = false;
+              });
             }
           : null,
       child: const Padding(
@@ -525,19 +564,19 @@ class _MapViewState extends State<MapView> {
           color: Colors.black,
           renderBorder: false,
           isSelected: _selections,
-          onPressed: (int index){
+          onPressed: (int index) {
             setState(() {
-              for (int buttonIndex = 0; buttonIndex < _selections.length; buttonIndex++) {
+              for (int buttonIndex = 0;
+                  buttonIndex < _selections.length;
+                  buttonIndex++) {
                 if (buttonIndex == index) {
                   _selections[buttonIndex] = !_selections[buttonIndex];
 
-                  if(buttonIndex == 0){
+                  if (buttonIndex == 0) {
                     selectedTravelMode = TravelMode.driving;
-                  }
-                  else if(buttonIndex == 1){
+                  } else if (buttonIndex == 1) {
                     selectedTravelMode = TravelMode.transit;
-                  }
-                  else if(buttonIndex == 2){
+                  } else if (buttonIndex == 2) {
                     selectedTravelMode = TravelMode.walking;
                   }
                 } else {
