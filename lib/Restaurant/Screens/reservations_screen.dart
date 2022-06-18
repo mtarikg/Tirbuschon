@@ -61,7 +61,9 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                         stream: collectionReference
-                            .orderBy('Created Date')
+                            .orderBy('Reservation Date')
+                            .where('Reservation Date',
+                                isGreaterThanOrEqualTo: Timestamp.now())
                             .snapshots(),
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
@@ -72,10 +74,11 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                   var res = snapshot.data!.docs;
                                   Timestamp t_res =
                                       res[index]['Reservation Date'];
-                                  DateTime d_res = t_res.toDate();
+                                  DateTime d_res = t_res.toDate().toLocal();
                                   Timestamp t_created =
                                       res[index]['Created Date'];
-                                  DateTime d_created = t_created.toDate();
+                                  DateTime d_created =
+                                      t_created.toDate().toLocal();
                                   var d_res_f = new DateFormat.yMMMd()
                                       .add_jm()
                                       .format(d_res);
