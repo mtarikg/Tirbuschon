@@ -51,7 +51,7 @@ class UserService {
 
     var venueImage = venueData["imageURL"];
     var venueName = venueData["Venue Name"];
-    var capacity = snapshotDoc["Capacity"].toString();
+    var capacity = snapshotDoc["Party Size"].toString();
     var totalPrice = snapshotDoc["Total Price"].toString();
     var reservationDate = DateTime.parse(
         (snapshotDoc["Reservation Date"] as Timestamp).toDate().toString());

@@ -109,7 +109,7 @@ class FirestoreService {
     return null;
   }
 
-  Future<bool> makeReservation(String userID, String venueID, int capacity,
+  Future<bool> makeReservation(String userID, String venueID, int partySize,
       DateTime selectedDate, double price) async {
     var reservationResult = false;
     var capacityResult = false;
@@ -158,7 +158,7 @@ class FirestoreService {
           .collection("Reservations")
           .doc(reservationID)
           .set({
-        "Capacity": capacity,
+        "Party Size": partySize,
         "Reservation ID": reservationID,
         "User ID": userID,
         "Created Date": createdDate,
@@ -172,7 +172,7 @@ class FirestoreService {
           .collection("Reservations List")
           .doc(reservationID)
           .set({
-        "Capacity": capacity,
+        "Party Size": partySize,
         "Reservation ID": reservationID,
         "Venue ID": venueID,
         "Created Date": createdDate,

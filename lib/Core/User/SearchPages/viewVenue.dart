@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import '../ReservationPages/reservationDetails.dart';
 import 'venueReviews.dart';
 import '../../../MyWidgets/navigatorButtonCard.dart';
 import '../../../services/firestoreService.dart';
-import '../ReservationPages/selectDatePage.dart';
 import 'googleMaps.dart';
 import 'menuPage.dart';
 
@@ -96,7 +96,7 @@ class _ViewVenueState extends State<ViewVenue> {
                                   text: "See Menu"),
                               NavigatorButtonCard(
                                   pageToNavigate:
-                                      SelectDate(venueID: widget.venueID),
+                                      ReservationDetails(venueID: widget.venueID),
                                   text: "Quick Reservation"),
                               NavigatorButtonCard(
                                   pageToNavigate:

@@ -6,9 +6,14 @@ import '../../../services/firestoreService.dart';
 
 class Payment extends StatefulWidget {
   final String venueID;
+  final int partySize;
   final DateTime selectedDate;
 
-  const Payment({Key? key, required this.venueID, required this.selectedDate})
+  const Payment(
+      {Key? key,
+      required this.venueID,
+      required this.selectedDate,
+      required this.partySize})
       : super(key: key);
 
   @override
@@ -20,6 +25,13 @@ class _PaymentState extends State<Payment> {
   final TextEditingController _cardNumberController = TextEditingController();
   final TextEditingController _expiredDateController = TextEditingController();
   late String cardHolder = "", cardNumber = "", expiredDate = "", cvv = "";
+  late double totalPrice = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    totalPrice = 150.0 * (widget.partySize);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -63,17 +75,17 @@ class _PaymentState extends State<Payment> {
                         child: _cardCVVTextField(),
                       ),
                       const SizedBox(height: 30),
-                      const Text("Total Price: 250₺",
-                          style: TextStyle(
+                      Text("Total Price: $totalPrice₺",
+                          style: const TextStyle(
                               fontSize: 17, fontWeight: FontWeight.bold)),
                       const SizedBox(height: 30),
                       CompleteButton(
                           context: context,
                           formKey: _formKey,
                           id: widget.venueID,
-                          capacity: 1,
+                          partySize: widget.partySize,
                           selectedDate: widget.selectedDate,
-                          price: 250,
+                          price: totalPrice,
                           cardHolder: cardHolder,
                           cardNumber: cardNumber,
                           expiredDate: expiredDate,
@@ -98,7 +110,7 @@ class _PaymentState extends State<Payment> {
           return "Card holder can not be empty!";
         }
 
-        if (!value.contains(RegExp(r'^(?=.*?[0-9]).{4,}$'))) {
+        if (!value.contains(RegExp(r'^[a-zA-Z ]*$'))) {
           return "Card holder name should consist of four alphabetic characters!";
         }
 
@@ -224,7 +236,7 @@ class CompleteButton extends StatelessWidget {
       required this.context,
       required this.formKey,
       required this.id,
-      required this.capacity,
+      required this.partySize,
       required this.selectedDate,
       required this.price,
       required this.cardHolder,
@@ -236,7 +248,7 @@ class CompleteButton extends StatelessWidget {
   final BuildContext context;
   final GlobalKey<FormState> formKey;
   final String id, cardHolder, cardNumber, expiredDate, cvv;
-  final int capacity;
+  final int partySize;
   final DateTime selectedDate;
   final double price;
 
@@ -282,7 +294,7 @@ class CompleteButton extends StatelessWidget {
 
       var userID = FirebaseAuth.instance.currentUser!.uid.toString();
       var result = await FirestoreService()
-          .makeReservation(userID, venueID, capacity, selectedDate, price);
+          .makeReservation(userID, venueID, partySize, selectedDate, price);
 
       if (result) {
         var duration = const Duration(seconds: 2);
@@ -302,10 +314,6 @@ class CompleteButton extends StatelessWidget {
           content: Text("Something went wrong while making a reservation."),
         ));
       }
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content: Text("The venue has not been found."),
-      ));
     }
   }
 }
