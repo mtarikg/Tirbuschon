@@ -8,7 +8,7 @@ class ViewAllRestaurants extends StatefulWidget {
   late String venueAddress;
   final String venuePhone;
   final String venueCapacity;
-  final String venueReservationCapasity;
+  final String venueReservationCapacity;
 
   ViewAllRestaurants(
       {Key? key,
@@ -16,7 +16,7 @@ class ViewAllRestaurants extends StatefulWidget {
       required this.venueAddress,
       required this.venuePhone,
       required this.venueCapacity,
-      required this.venueReservationCapasity})
+      required this.venueReservationCapacity})
       : super(key: key);
 
   @override
@@ -66,9 +66,9 @@ class _ViewAllRestaurantsState extends State<ViewAllRestaurants> {
                                     venueName: e['Venue Name'],
                                     venueAddress: e['Address'],
                                     venuePhone: e['Phone'],
-                                    venueCapacity: e['Capasity'],
-                                    venueReservationCapasity:
-                                        e['Reservation Capasity'],
+                                    venueCapacity: e['Capacity'],
+                                    venueReservationCapacity:
+                                        e['Reservation Capacity'],
                                   ),
                                 ),
                               ],
@@ -87,7 +87,7 @@ class _ViewAllRestaurantsState extends State<ViewAllRestaurants> {
     );
   }
 
-  Widget ListRestaurants({venueName, venueAddress, venuePhone, venueCapacity, venueReservationCapasity}) {
+  Widget ListRestaurants({venueName, venueAddress, venuePhone, venueCapacity, venueReservationCapacity}) {
     return Container(
       height: 300,
       width: MediaQuery.of(context).size.width * 0.99,
@@ -125,12 +125,12 @@ class _ViewAllRestaurantsState extends State<ViewAllRestaurants> {
                           const TextStyle(color: Colors.black87, fontSize: 12),
                     ),
                     Text(
-                      "Capasity : $venueCapacity",
+                      "Capacity : $venueCapacity",
                       style:
                           const TextStyle(color: Colors.black87, fontSize: 12),
                     ),
                     Text(
-                      "Reservation Capasity : $venueReservationCapasity",
+                      "Reservation Capacity : $venueReservationCapacity",
                       style:
                           const TextStyle(color: Colors.black87, fontSize: 12),
                     ),
@@ -214,13 +214,11 @@ class ViewAllRestaurants extends StatefulWidget {
 }
 
 class _ViewAllRestaurantsState extends State<ViewAllRestaurants> {
-
-  
-
   @override
   Widget build(BuildContext context) {
-     print( FirebaseFirestore.instance.collectionGroup('Profile Information').get());
+    print(FirebaseFirestore.instance
+        .collectionGroup('Profile Information')
+        .get());
     return Container();
-    
   }
 }

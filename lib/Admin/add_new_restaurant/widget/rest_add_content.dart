@@ -158,12 +158,12 @@ class SignUpContent extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             AdminTextField(
-              title: 'Venue Capasity',
-              placeholder: 'Capasity',
+              title: 'Venue Capacity',
+              placeholder: 'Capacity',
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.number,
               controller: bloc.venueCapacityController,
-              errorText: 'Please check the capasity again',
+              errorText: 'Please check the capacity again',
               //isError: state is ShowErrorState ? !ValidationService.email(bloc.userHeightController.text) : false,
               onTextChanged: () {
                 bloc.add(OnTextChangedEvent());
@@ -171,12 +171,12 @@ class SignUpContent extends StatelessWidget {
             ),
             const SizedBox(height: 20),
             AdminTextField(
-              title: 'Venue Reservation Capasity',
-              placeholder: 'Reservation Capasity',
+              title: 'Venue Reservation Capacity',
+              placeholder: 'Reservation Capacity',
               textInputAction: TextInputAction.next,
               keyboardType: TextInputType.number,
               controller: bloc.venueReservCapacityController,
-              errorText: 'Please check the reservation capasity again',
+              errorText: 'Please check the reservation capacity again',
               onTextChanged: () {
                 bloc.add(OnTextChangedEvent());
               },

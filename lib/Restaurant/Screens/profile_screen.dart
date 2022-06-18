@@ -11,25 +11,22 @@ import '../../welcomePage.dart';
 class ProfileScreen extends StatefulWidget {
   final String address;
   final String phone;
-  final int capasity;
-  final int reservationCapasity;
+  final int capacity;
+  final int reservationCapacity;
   final String name;
 
   ProfileScreen({
     Key? key,
-    required this.capasity,
+    required this.capacity,
     required this.address,
     required this.phone,
-    required this.reservationCapasity,
+    required this.reservationCapacity,
     required this.name,
   }) : super(key: key);
 
   @override
   State<ProfileScreen> createState() => _ProfileScreenState();
 }
-
-//Venue name in docs should be passed authomatically
-//line 33 will be updated
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late CollectionReference collectionReference;
@@ -44,22 +41,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         .collection('Venues')
         .doc(userId)
         .collection('Profile Information');
+    FirebaseFirestore.instance
+        .collection('Venues')
+        .doc(userId)
+        .collection('Profile Information')
+        .doc()
+        .update({'Reservation Capacity': 50});
     super.initState();
   }
-
-/*
-  Future<void> getVenueData() async {
-    String userId = await FirebaseAuth.instance.currentUser!.uid;
-    //final User? user = FirebaseAuth.instance.currentUser;
-
-    /* setState(() {
-      uid1 = user!.uid;
-    }); */
-    
-  } */
-
-  //retrieve data from database
-
+  
   late TextEditingController _controller;
 
   @override
@@ -81,11 +71,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     context,
                     MaterialPageRoute(
                         builder: (context) => SettingsPage(
-                              address: '',
-                              capasity: 0,
                               name: '',
+                              address: '',
                               phone: '',
-                              reservationCapasity: 0,
+                              capacity: 0,
+                              reservationCapacity: 0,
                             )));
               },
               child: Icon(
@@ -115,9 +105,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                 ListTile(
                                   title: restaurantProfileWidget(
                                     address: e['Address'],
-                                    capasity: e['Capacity'],
+                                    capacity: e['Capacity'],
                                     phone: e['Phone'],
-                                    reservationCapasity:
+                                    reservationCapacity:
                                         e['Reservation Capacity'],
                                     name: e['Venue Name'],
                                   ),
@@ -139,7 +129,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget restaurantProfileWidget(
-      {address, capasity, phone, reservationCapasity, name}) {
+      {address, capacity, phone, reservationCapacity, name}) {
     return Column(
       children: <Widget>[
         Padding(
@@ -235,14 +225,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Column(
                 children: <Widget>[
                   Text(
-                    'Restaurant Capasity',
+                    'Restaurant Capacity',
                     style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 14.0,
                         color: primaryDark),
                   ),
                   Text(
-                    capasity.toString(),
+                    capacity,
                     style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 14.0,
@@ -253,14 +243,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
               Column(
                 children: <Widget>[
                   Text(
-                    'Reservation Capasity',
+                    'Reservation Capacity',
                     style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 14.0,
                         color: primaryDark),
                   ),
                   Text(
-                    reservationCapasity.toString(),
+                    reservationCapacity,
                     style: TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 14.0,
