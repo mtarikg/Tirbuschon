@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_rating_bar/flutter_rating_bar.dart';
 import 'package:profanity_filter/profanity_filter.dart';
 import '../../../services/firestoreService.dart';
-
 import '../BottomNavigationBarPages/mainPage.dart';
 
 class ReviewVenue extends StatefulWidget {
@@ -27,7 +26,7 @@ class _ReviewVenueState extends State<ReviewVenue> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: const Text("Review the Venue"),
+          title: const Text("Review the reservation"),
         ),
         backgroundColor: Colors.grey[100],
         body: Center(
@@ -57,7 +56,9 @@ class _ReviewVenueState extends State<ReviewVenue> {
                   color: Colors.amber,
                 ),
                 onRatingUpdate: (value) {
-                  rating = value.toInt();
+                  setState(() {
+                    rating = value.toInt();
+                  });
                 },
               ),
               const SizedBox(height: 50),
@@ -83,22 +84,25 @@ class _ReviewVenueState extends State<ReviewVenue> {
                   "Submit your review",
                   style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
                 ),
-                onPressed: () async {
-                  if (rating == 0) {
-                    ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-                      content: Text("A rating must be given!"),
-                    ));
-                  } else {
-                    var user = FirebaseAuth.instance.currentUser;
-                    var userID = user!.uid;
+                onPressed: rating != 0
+                    ? () async {
+                        if (rating == 0) {
+                          ScaffoldMessenger.of(context)
+                              .showSnackBar(const SnackBar(
+                            content: Text("A rating must be given!"),
+                          ));
+                        } else {
+                          var user = FirebaseAuth.instance.currentUser;
+                          var userID = user!.uid;
 
-                    var venueID = await FirestoreService()
-                        .getVenueIDByName(widget.venueName);
+                          var venueID = await FirestoreService()
+                              .getVenueIDByName(widget.venueName);
 
-                    _addReview(
-                        userID, venueID!, widget.reservation, rating, comment);
-                  }
-                },
+                          _addReview(userID, venueID!, widget.reservation,
+                              rating, comment);
+                        }
+                      }
+                    : null,
               ),
               const SizedBox(height: 20),
             ],
