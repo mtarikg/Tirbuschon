@@ -1,12 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
 class ReviewScreen extends StatefulWidget {
   final String Comment;
-  final DateTime CreatedDate;
-  final double Rating;
+  final String CreatedDate;
+  final int Rating;
   // final int ReservationID;
   // final int ReviewID;
 
@@ -62,10 +63,12 @@ class _ReviewScreenState extends State<ReviewScreen> {
                       var rev = snapshot.data!.docs;
                       Timestamp t_created = rev[index]['Created Date'];
                       DateTime d_created = t_created.toDate();
+                      var d_created_f =
+                          new DateFormat.yMMMd().add_jm().format(d_created);
                       return ListTile(
                         title: createReview(
                             comment: rev[index]['Comment'],
-                            CreatedDate: d_created,
+                            CreatedDate: d_created_f,
                             rate: rev[index]['Rating']),
                       );
                     },
@@ -135,7 +138,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
                     Text(
                       CreatedDate.toString(),
                       style:
-                          const TextStyle(color: Colors.black87, fontSize: 12),
+                          const TextStyle(color: Colors.black87, fontSize: 15),
                     ),
                   ],
                 ),
@@ -149,7 +152,7 @@ class _ReviewScreenState extends State<ReviewScreen> {
 }
 
 class StarDisplayWidget extends StatelessWidget {
-  final double value;
+  final int value;
   final Widget filledStar;
   final Widget unfilledStar;
   const StarDisplayWidget({
@@ -171,7 +174,7 @@ class StarDisplayWidget extends StatelessWidget {
 }
 
 class StarDisplay extends StarDisplayWidget {
-  const StarDisplay({Key? key, double value = 0})
+  const StarDisplay({Key? key, int value = 0})
       : super(
           key: key,
           value: value,
