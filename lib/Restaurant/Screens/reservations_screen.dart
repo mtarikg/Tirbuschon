@@ -1,22 +1,23 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
 class ReservationScreen extends StatefulWidget {
-  final int Capacity;
+  final int PartySize;
   // late List<String> orders = [];
-  final DateTime ReservationDate;
-  final DateTime CreatedDate;
+  final String ReservationDate;
+  final String CreatedDate;
   final int TotalPrice;
   final int UserID;
-  final int ReservationID;
+  //final int ReservationID;
 
   ReservationScreen(
       {Key? key,
-      required this.Capacity,
+      required this.PartySize,
       //required this.orders,
-      required this.ReservationID,
+      //required this.ReservationID,
       required this.ReservationDate,
       required this.CreatedDate,
       required this.TotalPrice,
@@ -26,9 +27,6 @@ class ReservationScreen extends StatefulWidget {
   @override
   State<ReservationScreen> createState() => _ReservationScreenState();
 }
-
-//Venue name in docs should be passed authomatically
-//line 30 will be updated
 
 class _ReservationScreenState extends State<ReservationScreen> {
   //retrieve data from database
@@ -64,7 +62,6 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     child: StreamBuilder<QuerySnapshot>(
                         stream: collectionReference
                             .orderBy('Created Date')
-                            .limitToLast(2)
                             .snapshots(),
                         builder:
                             (BuildContext context, AsyncSnapshot snapshot) {
@@ -79,13 +76,18 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                   Timestamp t_created =
                                       res[index]['Created Date'];
                                   DateTime d_created = t_created.toDate();
+                                  var d_res_f = new DateFormat.yMMMd()
+                                      .add_jm()
+                                      .format(d_res);
+                                  var d_created_f = new DateFormat.yMMMd()
+                                      .add_jm()
+                                      .format(d_created);
                                   return ListTile(
                                     title: createReservation(
-                                      Capacity: res[index]['Capacity'],
-                                      ReservationID: res[index]
-                                          ['Reservation ID'],
-                                      ReservationDate: d_res,
-                                      CreatedDate: d_created,
+                                      PartySize: res[index]['Party Size'],
+                                      //ReservationID: res[index]['Reservation ID'],
+                                      ReservationDate: d_res_f,
+                                      CreatedDate: d_created_f,
                                       TotalPrice: res[index]['Total Price'],
                                       //orders: res['Orders'].toString(),
                                       UserID: res[index]['User ID'].toString(),
@@ -103,10 +105,10 @@ class _ReservationScreenState extends State<ReservationScreen> {
   }
 
   Widget createReservation(
-      {Capacity,
+      {PartySize,
       //orders,
       UserID,
-      ReservationID,
+      //ReservationID,
       ReservationDate,
       CreatedDate,
       TotalPrice}) {
@@ -134,32 +136,32 @@ class _ReservationScreenState extends State<ReservationScreen> {
                     Text(
                       "Name : $UserID",
                       style:
-                          const TextStyle(color: Colors.black87, fontSize: 12),
+                          const TextStyle(color: Colors.black87, fontSize: 15),
                     ),
                     Text(
-                      "Capacity : $Capacity",
+                      "Party Size : $PartySize",
                       style:
-                          const TextStyle(color: Colors.black87, fontSize: 12),
+                          const TextStyle(color: Colors.black87, fontSize: 15),
                     ),
-                    Text(
+                    /*Text(
                       "ReservationID : $ReservationID",
                       style:
                           const TextStyle(color: Colors.black87, fontSize: 12),
+                    ),*/
+                    Text(
+                      "Reservation Date : $ReservationDate",
+                      style:
+                          const TextStyle(color: Colors.black87, fontSize: 15),
                     ),
                     Text(
-                      "ReservationDate : $ReservationDate",
+                      "Reservation Made : $CreatedDate",
                       style:
-                          const TextStyle(color: Colors.black87, fontSize: 12),
+                          const TextStyle(color: Colors.black87, fontSize: 15),
                     ),
                     Text(
-                      "CreatedDate : $CreatedDate",
+                      "Total Price : $TotalPrice",
                       style:
-                          const TextStyle(color: Colors.black87, fontSize: 12),
-                    ),
-                    Text(
-                      "TotalPrice : $TotalPrice",
-                      style:
-                          const TextStyle(color: Colors.black87, fontSize: 12),
+                          const TextStyle(color: Colors.black87, fontSize: 15),
                     ),
                     /*Text(
                       "Orders : $orders",
