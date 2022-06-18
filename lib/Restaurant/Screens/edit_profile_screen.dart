@@ -9,16 +9,16 @@ class SettingsPage extends StatefulWidget {
   final String name;
   final String address;
   final String phone;
-  final int capasity;
-  final int reservationCapasity;
+  final int capacity;
+  final int reservationCapacity;
 
   SettingsPage({
     Key? key,
     required this.name,
     required this.address,
     required this.phone,
-    required this.capasity,
-    required this.reservationCapasity,
+    required this.capacity,
+    required this.reservationCapacity,
   }) : super(key: key);
 
   @override
@@ -84,8 +84,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                     name: e['Venue Name'],
                                     address: e['Address'],
                                     phone: e['Phone'],
-                                    capasity: e['Capacity'],
-                                    reservationCapasity:
+                                    capacity: e['Capacity'],
+                                    reservationCapacity:
                                         e['Reservation Capacity'],
                                   ),
                                 ),
@@ -107,16 +107,16 @@ class _SettingsPageState extends State<SettingsPage> {
 }
 
 final addressController = new TextEditingController();
-final capasityController = new TextEditingController();
-final reservationcapasityController = new TextEditingController();
+final capacityController = new TextEditingController();
+final reservationcapacityController = new TextEditingController();
 final phoneController = new TextEditingController();
 Widget _settingsContent({
   context,
   name,
   address,
   phone,
-  capasity,
-  reservationCapasity,
+  capacity,
+  reservationCapacity,
 }) {
   return Stack(
     children: [
@@ -214,17 +214,17 @@ Widget _settingsContent({
                   width: 8,
                 ),
                 Text(
-                  "Venue Capasity",
+                  "Venue Capacity",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             TextField(
-              controller: capasityController,
+              controller: capacityController,
               obscureText: false,
               style: TextStyle(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
-                hintText: capasity.toString(),
+                hintText: capacity.toString(),
                 hintStyle: TextStyle(color: Colors.black, fontSize: 16),
               ),
             ),
@@ -241,17 +241,17 @@ Widget _settingsContent({
                   width: 8,
                 ),
                 Text(
-                  "Reservation Capasity",
+                  "Reservation Capacity",
                   style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
               ],
             ),
             TextField(
-              controller: reservationcapasityController,
+              controller: reservationcapacityController,
               obscureText: false,
               style: TextStyle(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
-                hintText: reservationCapasity.toString(),
+                hintText: reservationCapacity.toString(),
                 hintStyle: TextStyle(color: Colors.black, fontSize: 16),
               ),
             ),
@@ -285,16 +285,16 @@ Widget _settingsContent({
                         'Address': addressController.text.isEmpty
                             ? address
                             : addressController.text,
-                        'Capasity': capasityController.text.isEmpty
-                            ? capasity
-                            : capasityController.text,
+                        'Capacity': capacityController.text.isEmpty
+                            ? capacity
+                            : capacityController.text,
                         'Phone': phoneController.text.isEmpty
                             ? phone
                             : phoneController.text,
-                        'Reservation Capasity':
-                            reservationcapasityController.text.isEmpty
-                                ? reservationCapasity
-                                : reservationcapasityController.text,
+                        'Reservation Capacity':
+                            reservationcapacityController.text.isEmpty
+                                ? reservationCapacity
+                                : reservationcapacityController.text,
                       })
                       .then((value) => print("Data updated"))
                       .catchError((error) => print("Failed to update data"));

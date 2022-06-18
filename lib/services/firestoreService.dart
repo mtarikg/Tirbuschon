@@ -129,7 +129,7 @@ class FirestoreService {
           .collection("Profile Information")
           .doc(subCollectionID)
           .get()
-          .then((value) => value.data()!["Reservation Capasity"]);
+          .then((value) => value.data()!["Reservation Capacity"]);
 
       int newValue = int.parse(reservationCapacity);
 
@@ -141,7 +141,7 @@ class FirestoreService {
             .doc(venueID)
             .collection("Profile Information")
             .doc(subCollectionID)
-            .update({"Reservation Capasity": newValue.toString()});
+            .update({"Reservation Capacity": newValue.toString()});
         capacityResult = true;
       } else {
         return reservationResult;

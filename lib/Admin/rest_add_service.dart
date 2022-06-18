@@ -9,13 +9,11 @@ class AdminAuthService {
       String password,
       String name,
       String address,
-      String capasity,
-      String reservationCapasity,
-      String phone
-      ) async {
+      String capacity,
+      String reservationCapacity,
+      String phone) async {
     UserCredential result = await auth.createUserWithEmailAndPassword(
         email: email.trim(), password: password.trim());
-
 
     await FirebaseFirestore.instance
         .collection('Venues')
@@ -26,8 +24,8 @@ class AdminAuthService {
       'Venue Name': name,
       'Address': address,
       'Phone': phone,
-      'Reservation Capasity': reservationCapasity,
-      'Capasity': capasity,
+      'Reservation Capacity': reservationCapacity,
+      'Capacity': capacity,
     });
     final User user = result.user!;
     return user;
