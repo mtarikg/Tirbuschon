@@ -344,9 +344,9 @@ class _SearchPageState extends State<SearchPage> {
     return TextField(
       decoration: InputDecoration(
         suffixIcon: IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: Colors.blue),
             onPressed: () {
-              if (searchValue == "null") {
+              if (searchValue == "") {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text("Please enter a venue name!"),
                 ));
@@ -368,23 +368,33 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _searchVenueByName(String value) async {
     var result = await FirestoreService().getVenuesByName(value);
 
-    result?.forEach((element) {
-      var isExist = false;
+    if (result != null) {
+      for (var element in result) {
+        var isExist = false;
 
-      for (var item in searchResult) {
-        if (item["Address"] == element["Address"]) {
-          isExist = true;
-          break;
+        for (var item in searchResult) {
+          if (item["Address"] == element["Address"]) {
+            isExist = true;
+            break;
+          }
+        }
+
+        if (!isExist) {
+          setState(() {
+            searchResult.clear();
+            searchResult.add(element);
+          });
         }
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("There is no venue available for the given name."),
+      ));
 
-      if (!isExist) {
-        setState(() {
-          searchResult.clear();
-          searchResult.add(element);
-        });
-      }
-    });
+      setState(() {
+        searchResult.clear();
+      });
+    }
   }
 
   Future<void> _searchVenueByCityDistrict(String city, String district) async {

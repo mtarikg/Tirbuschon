@@ -38,38 +38,37 @@ class _VenueReviewsState extends State<VenueReviews> {
           stream: FirestoreService().getVenueReviews(widget.venueID),
           builder:
               (BuildContext context, AsyncSnapshot<QuerySnapshot> snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const Center(
-                child: CircularProgressIndicator(),
-              );
-            }
-
             if (snapshot.hasData) {
-              return ListView(
-                  children: snapshot.data!.docs
-                      .map((e) => FutureBuilder(
-                            future: getUsername(e['User ID']),
-                            builder: (BuildContext context,
-                                AsyncSnapshot<dynamic> secondSnapshot) {
-                              if (secondSnapshot.hasData) {
-                                return ListTile(
-                                  title: createReview(
-                                      user: secondSnapshot.data,
-                                      comment: e['Comment'].toString(),
-                                      rate: e['Rating'],
-                                      date: (e['Created Date'] as Timestamp)
-                                          .toDate()),
-                                );
-                              }
+              return snapshot.data!.docs.isNotEmpty
+                  ? ListView(
+                      children: snapshot.data!.docs
+                          .map((e) => FutureBuilder(
+                                future: getUsername(e['User ID']),
+                                builder: (BuildContext context,
+                                    AsyncSnapshot<dynamic> secondSnapshot) {
+                                  if (secondSnapshot.hasData) {
+                                    return ListTile(
+                                      title: createReview(
+                                          user: secondSnapshot.data,
+                                          comment: e['Comment'].toString(),
+                                          rate: e['Rating'],
+                                          date: (e['Created Date'] as Timestamp)
+                                              .toDate()),
+                                    );
+                                  }
 
-                              return const Center(
-                                  child: CircularProgressIndicator());
-                            },
-                          ))
-                      .toList());
+                                  return const Center(
+                                      child: CircularProgressIndicator());
+                                },
+                              ))
+                          .toList())
+                  : const Center(
+                      child: Text("No reviews made yet for this venue!"));
             }
 
-            return const Text("No reviews made yet for this venue!");
+            return const Center(
+              child: CircularProgressIndicator(),
+            );
           },
         ),
       ),
@@ -135,14 +134,14 @@ class ShowTimeAgo extends StatelessWidget {
 }
 
 class ShowRating extends StatelessWidget {
-  final double rating;
+  final int rating;
 
   const ShowRating({Key? key, required this.rating}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return RatingBarIndicator(
-      rating: rating,
+      rating: rating.toDouble(),
       itemCount: 5,
       itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
       itemSize: 20,
