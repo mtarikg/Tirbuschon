@@ -20,48 +20,53 @@ class _SignUpPageState extends State<SignUpPage> {
       appBar: AppBar(
         title: const Text("Sign Up"),
       ),
-      body: SingleChildScrollView(
-        child: Form(
-          key: _formKey,
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              const SizedBox(height: 5),
-              Column(
+      body: CustomScrollView(
+        slivers: [
+          SliverFillRemaining(
+            hasScrollBody: false,
+            child: Form(
+              key: _formKey,
+              child: Column(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _tirbuschonText(),
-                  const SizedBox(height: 10),
+                  const SizedBox(height: 5),
                   Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: _emailTextField(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: _passwordTextField(),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(10.0),
-                        child: _confirmPasswordTextField(),
-                      ),
+                      _tirbuschonText(),
                       const SizedBox(height: 10),
-                      SignUpButton(
-                          context: context,
-                          email: email,
-                          password: password,
-                          confirmedPassword: confirmedPassword,
-                          formKey: _formKey),
+                      Column(
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: _emailTextField(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: _passwordTextField(),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: _confirmPasswordTextField(),
+                          ),
+                          const SizedBox(height: 10),
+                          SignUpButton(
+                              context: context,
+                              email: email,
+                              password: password,
+                              confirmedPassword: confirmedPassword,
+                              formKey: _formKey),
+                        ],
+                      ),
                     ],
                   ),
+                  AlreadySignedUpReminderButton(context: context),
                 ],
               ),
-              AlreadySignedUpReminderButton(context: context),
-            ],
-          ),
-        ),
-      ),
+            ),
+          )
+        ],
+      )
     );
   }
 
