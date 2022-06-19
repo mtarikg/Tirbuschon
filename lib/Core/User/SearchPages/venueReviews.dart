@@ -135,14 +135,14 @@ class ShowTimeAgo extends StatelessWidget {
 }
 
 class ShowRating extends StatelessWidget {
-  final double rating;
+  final int rating;
 
   const ShowRating({Key? key, required this.rating}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return RatingBarIndicator(
-      rating: rating,
+      rating: rating.toDouble(),
       itemCount: 5,
       itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
       itemSize: 20,

@@ -137,7 +137,8 @@ class _PaymentState extends State<Payment> {
       validator: (value) {
         if (value!.isEmpty) {
           return "Card number field can not be empty!";
-        } else if (value.length != 19) {
+        } else if (value.length != 19 ||
+            value.replaceAll(" ", "").length != 16) {
           return "Card number should consist of 16 digits.";
         } else if (!value.contains(RegExp(r'^[0-9 ]+$'))) {
           return "Only numbers";

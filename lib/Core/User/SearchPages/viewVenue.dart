@@ -95,8 +95,8 @@ class _ViewVenueState extends State<ViewVenue> {
                                   ),
                                   text: "See Menu"),
                               NavigatorButtonCard(
-                                  pageToNavigate:
-                                      ReservationDetails(venueID: widget.venueID),
+                                  pageToNavigate: ReservationDetails(
+                                      venueID: widget.venueID),
                                   text: "Quick Reservation"),
                               NavigatorButtonCard(
                                   pageToNavigate:
@@ -137,8 +137,7 @@ class _VenueProfileImageContainer extends StatelessWidget {
                 width: MediaQuery.of(context).size.width,
                 height: 150,
                 child: Center(
-                  child:
-                      Image.asset('assets/reservationIconPlaceholder.jpg'),
+                  child: Image.asset('assets/reservationIconPlaceholder.jpg'),
                 )),
           ))
         : Padding(
@@ -158,14 +157,8 @@ class _VenueInfoContainer extends StatelessWidget {
   final String value;
   final bool boldOption;
 
-  //final Icons icon;
-
   const _VenueInfoContainer(
-      {this.title,
-      required this.value,
-      required this.boldOption,
-      //required this.icon,
-      Key? key})
+      {this.title, required this.value, required this.boldOption, Key? key})
       : super(key: key);
 
   @override
@@ -178,14 +171,17 @@ class _VenueInfoContainer extends StatelessWidget {
       width: MediaQuery.of(context).size.width,
       height: 50,
       child: Center(
-          child: Text(
-        title == null ? value : "$title : $value",
-        style: boldOption
-            ? const TextStyle(
-                fontSize: 20,
-                color: Colors.black87,
-                fontWeight: FontWeight.bold)
-            : const TextStyle(fontSize: 17, color: Colors.black87),
+          child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 10),
+        child: Text(
+          title == null ? value : "$title : $value",
+          style: boldOption
+              ? const TextStyle(
+                  fontSize: 20,
+                  color: Colors.black87,
+                  fontWeight: FontWeight.bold)
+              : const TextStyle(fontSize: 17, color: Colors.black87),
+        ),
       )),
     );
   }
