@@ -385,16 +385,19 @@ class _MapViewState extends State<MapView> {
                         child: Column(
                           mainAxisSize: MainAxisSize.min,
                           children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            Stack(
+                              alignment: Alignment.center,
                               children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove_circle_outline),
-                                  onPressed: () {
-                                    setState(() {
-                                      searchPopUp = false;
-                                    });
-                                  },
+                                Align(
+                                  alignment: Alignment.centerLeft,
+                                  child: IconButton(
+                                    icon: const Icon(Icons.remove_circle_outline),
+                                    onPressed: () {
+                                      setState(() {
+                                        searchPopUp = false;
+                                      });
+                                    },
+                                  ),
                                 ),
                                 const Text(
                                   'Places',
