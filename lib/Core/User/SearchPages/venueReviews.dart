@@ -99,7 +99,8 @@ class _VenueReviewsState extends State<VenueReviews> {
               children: [
                 const Icon(Icons.person),
                 Text(
-                  user,
+                  user.toString().replaceRange(
+                      1, null, "*" * (user.toString().length - 1)),
                   style: const TextStyle(
                       fontWeight: FontWeight.bold, fontSize: 15),
                 )
