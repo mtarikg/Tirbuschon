@@ -128,8 +128,10 @@ class _ReviewVenueState extends State<ReviewVenue> {
       ));
 
       Future.delayed(duration, () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const MainPage(index: 2)));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainPage(index: 2)),
+            (route) => false);
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
