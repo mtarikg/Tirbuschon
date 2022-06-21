@@ -31,10 +31,16 @@ class _HomePageState extends State<HomePage> {
             padding: const EdgeInsets.only(left: 15, top: 50),
             child: Column(
               children: [
-                _venuesNearbyText(),
-                _venuesNearby(),
-                const SizedBox(height: 30),
+                _restaurantsNearbyText(),
+                const SizedBox(height: 5),
+                _restaurantsNearby(),
+                const SizedBox(height: 40),
+                _otherVenuesNearbyText(),
+                const SizedBox(height: 5),
+                _otherVenuesNearby(),
+                const SizedBox(height: 40),
                 _latestReservationsText(),
+                const SizedBox(height: 5),
                 _latestReservations()
               ],
             ),
@@ -45,7 +51,7 @@ class _HomePageState extends State<HomePage> {
     ));
   }
 
-  Widget _venuesNearbyText() {
+  Widget _restaurantsNearbyText() {
     return Row(
       children: [
         const Expanded(
@@ -78,9 +84,103 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  Widget _venuesNearby() {
+  Widget _restaurantsNearby() {
     return FutureBuilder<List<dynamic>?>(
-        future: getNearbyVenues(),
+        future: getNearbyVenues("Restaurant"),
+        builder: (BuildContext context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          if (snapshot.hasData) {
+            return SizedBox(
+              height: 125,
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: ListView.builder(
+                    scrollDirection: Axis.horizontal,
+                    shrinkWrap: true,
+                    itemCount: snapshot.data!.length.clamp(0, 10),
+                    itemBuilder: (context, int index) {
+                      return Padding(
+                        padding: const EdgeInsets.only(right: 7.5),
+                        child: InkWell(
+                          onTap: () {
+                            UserService().viewDetails(
+                                context, snapshot.data![index]["Venue Name"]);
+                          },
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              snapshot.data![index]["imageURL"] == null
+                                  ? const SizedBox(width: 100, height: 100)
+                                  : Container(
+                                      width: 100,
+                                      height: 100,
+                                      decoration: BoxDecoration(
+                                        border: Border.all(
+                                            width: 0.5, color: Colors.grey),
+                                      ),
+                                      child: Image.network(
+                                        snapshot.data![index]["imageURL"],
+                                        fit: BoxFit.cover,
+                                      )),
+                              Padding(
+                                padding: const EdgeInsets.only(top: 10),
+                                child: Text(snapshot.data![index]["Venue Name"],
+                                    style: const TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 10)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      );
+                    }),
+              ),
+            );
+          }
+
+          return const Text("No restaurant nearby");
+        });
+  }
+
+  Widget _otherVenuesNearbyText() {
+    return Row(
+      children: [
+        const Expanded(
+          child: Align(
+              alignment: Alignment.topLeft,
+              child: Text("Other Venues Nearby:",
+                  style: TextStyle(fontSize: 15, fontWeight: FontWeight.bold))),
+        ),
+        Expanded(
+          child: Align(
+            alignment: Alignment.topRight,
+            child: TextButton(
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const MainPage(index: 1)),
+                      (route) => false);
+                },
+                child: const Text(
+                  "All other venues",
+                  style: TextStyle(
+                      fontSize: 12,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue),
+                )),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _otherVenuesNearby() {
+    return FutureBuilder<List<dynamic>?>(
+        future: getNearbyVenues("Other"),
         builder: (BuildContext context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -222,7 +322,7 @@ class _HomePageState extends State<HomePage> {
         });
   }
 
-  Future<List<dynamic>?> getNearbyVenues() async {
+  Future<List<dynamic>?> getNearbyVenues(String venueType) async {
     List<String> locationData;
     List? nearbyVenues;
 
@@ -231,8 +331,8 @@ class _HomePageState extends State<HomePage> {
 
     if (locationEnabled && requestResult.isGranted) {
       locationData = await UserService().getUserCurrentAddressData();
-      nearbyVenues = await FirestoreService()
-          .getVenuesByCityDistrict(locationData[0], locationData[1]);
+      nearbyVenues = await FirestoreService().getVenuesByCityDistrictType(
+          locationData[0], locationData[1], venueType);
     } else if (!locationEnabled) {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
         content: Text("Enable the location and reload the page!"),
