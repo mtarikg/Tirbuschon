@@ -24,13 +24,15 @@ class FirestoreService {
     return null;
   }
 
-  Future<List?> getVenuesByCityDistrict(String city, String district) async {
+  Future<List?> getVenuesByCityDistrictType(
+      String city, String district, String venueType) async {
     var venuesList = [];
 
     final QuerySnapshot qs = await _firestore
         .collection("Venues")
         .where("City", isEqualTo: city)
         .where("District", isEqualTo: district)
+        .where("Venue Type", isEqualTo: venueType)
         .get();
 
     if (qs.docs.isNotEmpty) {
