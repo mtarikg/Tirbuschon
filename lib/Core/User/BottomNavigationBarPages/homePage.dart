@@ -32,12 +32,15 @@ class _HomePageState extends State<HomePage> {
             child: Column(
               children: [
                 _restaurantsNearbyText(),
+                const SizedBox(height: 5),
                 _restaurantsNearby(),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 _otherVenuesNearbyText(),
+                const SizedBox(height: 5),
                 _otherVenuesNearby(),
-                const SizedBox(height: 50),
+                const SizedBox(height: 40),
                 _latestReservationsText(),
+                const SizedBox(height: 5),
                 _latestReservations()
               ],
             ),
