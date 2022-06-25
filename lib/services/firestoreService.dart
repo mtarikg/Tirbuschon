@@ -346,7 +346,33 @@ class FirestoreService {
 
   Future<void> deleteUser(String userID) async {
     var documentReference = _firestore.collection("Users").doc(userID);
-    _firestore.runTransaction(
-        (transaction) async => await transaction.delete(documentReference));
+    documentReference
+        .collection("profileInfo")
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        doc.reference.delete();
+      }
+    });
+
+    documentReference
+        .collection("Reservations List")
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        doc.reference.delete();
+      }
+    });
+
+    documentReference
+        .collection("Reviews List")
+        .get()
+        .then((QuerySnapshot querySnapshot) {
+      for (var doc in querySnapshot.docs) {
+        doc.reference.delete();
+      }
+    });
+
+    documentReference.delete();
   }
 }

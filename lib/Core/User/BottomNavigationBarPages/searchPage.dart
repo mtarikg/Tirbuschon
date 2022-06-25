@@ -338,7 +338,7 @@ class _SearchPageState extends State<SearchPage> {
           venueType = newValue!;
         });
       },
-      items: <String>['Restaurant', 'Other']
+      items: <String>['Restaurant', 'Concert Hall', 'Theater']
           .map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
