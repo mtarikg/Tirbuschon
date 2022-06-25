@@ -51,7 +51,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 children: [
                   const Text("Party Size",
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   Row(
                     children: [
                       IconButton(
@@ -60,7 +60,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(const SnackBar(
                                 content:
-                                    Text("Party size should be at least 1."),
+                                Text("Party size should be at least 1."),
                               ));
                             } else {
                               setState(() {
@@ -89,7 +89,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 children: [
                   const Text("Date",
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   ElevatedButton(
                     child: Text("$day / $month / $year"),
                     onPressed: () async {
@@ -116,7 +116,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 children: [
                   const Text("Time",
                       style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   ElevatedButton(
                     child: Text("$hour:$minute"),
                     onPressed: () async {
@@ -148,10 +148,10 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => Payment(
-                                venueID: widget.venueID,
-                                partySize: partySize,
-                                selectedDate: selectedDate,
-                              )));
+                            venueID: widget.venueID,
+                            partySize: partySize,
+                            selectedDate: selectedDate,
+                          )));
                 },
               )
             ],
@@ -165,12 +165,12 @@ class _ReservationDetailsState extends State<ReservationDetails> {
       context: context,
       initialDate: baseDate,
       firstDate:
-          DateTime(baseDate.year, baseDate.month, baseDate.day),
+      DateTime(baseDate.year, baseDate.month, baseDate.day),
       lastDate: DateTime(
           baseDate.year, baseDate.month, baseDate.day + 7));
 
   Future<TimeOfDay?> pickTime() => showTimePicker(
       context: context,
       initialTime:
-          TimeOfDay(hour: selectedDate.hour, minute: selectedDate.minute));
+      TimeOfDay(hour: selectedDate.hour, minute: selectedDate.minute));
 }

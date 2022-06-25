@@ -37,6 +37,8 @@ class _WelcomePageState extends State<WelcomePage> {
       alignment: Alignment.center,
       child: Column(
         children: [
+          Image.asset('assets/appIcon.png', height: 200, width: 200),
+          const SizedBox(height: 20),
           const Text(
             "Welcome",
             style: TextStyle(
@@ -131,7 +133,8 @@ class GoogleSignUp extends StatelessWidget {
 
           var infoDialog = AlertDialog(
             title: const Text("Info"),
-            content: const Text("Only individual users have this option."),
+            content:
+                const Text("Venue owners must login with the given email."),
             actions: [okButton],
           );
 
