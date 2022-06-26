@@ -34,7 +34,7 @@ class _ViewVenueState extends State<ViewVenue> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Restaurant Profile"),
+        title: const Text("Venue Profile"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           iconSize: 20,

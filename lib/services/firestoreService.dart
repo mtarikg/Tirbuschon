@@ -246,6 +246,7 @@ class FirestoreService {
         .collection("Venues")
         .doc(venueID)
         .collection("Reviews")
+        .orderBy("Created Date", descending: true)
         .snapshots();
 
     return snapshots;

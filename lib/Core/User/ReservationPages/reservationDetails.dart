@@ -142,7 +142,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
               ),
               const SizedBox(height: 75),
               ElevatedButton(
-                child: const Text("Go to payment page."),
+                child: const Text("Continue to payment"),
                 onPressed: () async {
                   Navigator.push(
                       context,
