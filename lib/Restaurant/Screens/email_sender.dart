@@ -12,11 +12,11 @@ class EmailSender extends StatefulWidget {
 
 class _EmailSenderState extends State<EmailSender> {
   final _recipientController = TextEditingController(
-    text: 'berna@tirbuschon.admin.com',
+    text: 'tirbuschontr@gmail.com',
   );
 
   final _phoneController = TextEditingController(
-    text: '+905357894152',
+    text: '+905595478217',
   );
 
   final _subjectController = TextEditingController();
