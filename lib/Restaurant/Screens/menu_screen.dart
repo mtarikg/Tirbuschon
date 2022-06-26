@@ -1,4 +1,4 @@
-/* import 'package:flutter/material.dart';
+import 'package:flutter/material.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/see_all_menu_screen.dart';
 
 class MenuScreen extends StatefulWidget {
@@ -98,10 +98,11 @@ Widget makeProduct({
   if (id == 0) {
     height1 = 400;
     weight1 = 200;
-  } else if(id == 1) {
-      height1 = 200;
-      weight1 = 400;
-    };
+  } else if (id == 1) {
+    height1 = 200;
+    weight1 = 400;
+  }
+  ;
   return InkWell(
     onTap: () {},
     child: Container(
@@ -221,21 +222,4 @@ Widget _createMenuList(BuildContext context) {
       ),
     ],
   );
-}
- */
-
-import 'package:flutter/material.dart';
-
-class MenuScreen extends StatefulWidget {
-  MenuScreen({Key? key}) : super(key: key);
-
-  @override
-  State<MenuScreen> createState() => _MenuScreenState();
-}
-
-class _MenuScreenState extends State<MenuScreen> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
-  }
 }

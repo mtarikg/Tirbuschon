@@ -33,6 +33,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
 
   late CollectionReference collectionReference;
   late Query query;
+  var name;
   @override
   void initState() {
     String userId = FirebaseAuth.instance.currentUser!.uid.toString();
@@ -85,20 +86,52 @@ class _ReservationScreenState extends State<ReservationScreen> {
                                   var d_created_f = new DateFormat.yMMMd()
                                       .add_jm()
                                       .format(d_created);
-                                  return ListTile(
-                                    title: createReservation(
-                                      PartySize: res[index]['Party Size'],
-                                      //ReservationID: res[index]['Reservation ID'],
-                                      ReservationDate: d_res_f,
-                                      CreatedDate: d_created_f,
-                                      TotalPrice: res[index]['Total Price'],
-                                      //orders: res['Orders'].toString(),
-                                      UserID: res[index]['User ID'].toString(),
-                                    ),
+
+                                  FutureBuilder<DocumentSnapshot>(
+                                    future: FirebaseFirestore.instance
+                                        .collection("Users")
+                                        .doc(res[index]["User ID"])
+                                        .collection("profileInfo")
+                                        .doc()
+                                        .get(),
+                                    builder: (BuildContext context,
+                                        AsyncSnapshot<DocumentSnapshot>
+                                            snapshot) {
+                                      if (snapshot.hasError) {
+                                        return Text("Something went wrong");
+                                      }
+
+                                      if (snapshot.hasData &&
+                                          !snapshot.data!.exists) {
+                                        return Text("Document does not exist");
+                                      }
+
+                                      if (snapshot.connectionState ==
+                                          ConnectionState.done) {
+                                        Map<String, dynamic> data =
+                                            snapshot.data!.data()
+                                                as Map<String, dynamic>;
+                                        print("agagagagagagag");
+                                        name = data['fullName'].toString();
+                                      }
+                                      return const Center(
+                                        child: CircularProgressIndicator(),
+                                      );
+                                    },
                                   );
+
+                                  return ListTile(
+                                      title: createReservation(
+                                          PartySize: res[index]['Party Size'],
+                                          //ReservationID: res[index]['Reservation ID'],
+                                          ReservationDate: d_res_f,
+                                          CreatedDate: d_created_f,
+                                          TotalPrice: res[index]['Total Price'],
+                                          //orders: res['Orders'].toString(),
+                                          UserID: name));
                                 });
                           } else {
-                            return Center(
+                            return const Center(
                               child: CircularProgressIndicator(),
                             );
                           }
