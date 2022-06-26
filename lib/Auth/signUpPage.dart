@@ -17,57 +17,56 @@ class _SignUpPageState extends State<SignUpPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Sign Up"),
-      ),
-      body: CustomScrollView(
-        slivers: [
-          SliverFillRemaining(
-            hasScrollBody: false,
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const SizedBox(height: 5),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      _tirbuschonText(),
-                      const SizedBox(height: 10),
-                      Column(
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: _emailTextField(),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: _passwordTextField(),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: _confirmPasswordTextField(),
-                          ),
-                          const SizedBox(height: 10),
-                          SignUpButton(
-                              context: context,
-                              email: email,
-                              password: password,
-                              confirmedPassword: confirmedPassword,
-                              formKey: _formKey),
-                        ],
-                      ),
-                    ],
-                  ),
-                  AlreadySignedUpReminderButton(context: context),
-                ],
+        appBar: AppBar(
+          title: const Text("Sign Up"),
+        ),
+        body: CustomScrollView(
+          slivers: [
+            SliverFillRemaining(
+              hasScrollBody: false,
+              child: Form(
+                key: _formKey,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(height: 5),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        _tirbuschonText(),
+                        const SizedBox(height: 10),
+                        Column(
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: _emailTextField(),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: _passwordTextField(),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(10.0),
+                              child: _confirmPasswordTextField(),
+                            ),
+                            const SizedBox(height: 10),
+                            SignUpButton(
+                                context: context,
+                                email: email,
+                                password: password,
+                                confirmedPassword: confirmedPassword,
+                                formKey: _formKey),
+                          ],
+                        ),
+                      ],
+                    ),
+                    AlreadySignedUpReminderButton(context: context),
+                  ],
+                ),
               ),
-            ),
-          )
-        ],
-      )
-    );
+            )
+          ],
+        ));
   }
 
   TextFormField _passwordTextField() {
@@ -138,8 +137,10 @@ class _SignUpPageState extends State<SignUpPage> {
           errorDetail = "Email field can not be empty!";
         } else if (!value.contains("@")) {
           errorDetail = "Value should be an email format.";
-        } else if(value.contains("@tirbuschon.com")){
+        } else if (value.contains("@tirbuschon.com")) {
           errorDetail = "You cannot signup with @tirbuschon.com domain.";
+        } else if (value.contains("@tirbuschon.admin.com")) {
+          errorDetail = "You cannot signup with @tirbuschon.admin.com domain.";
         }
 
         return errorDetail ?? null;
