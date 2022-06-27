@@ -12,7 +12,9 @@ class SignUpPage extends StatefulWidget {
 
 class _SignUpPageState extends State<SignUpPage> {
   final _formKey = GlobalKey<FormState>();
-  late String email = "", password = "", confirmedPassword = "";
+  late String email = "",
+      password = "",
+      confirmedPassword = "";
 
   @override
   Widget build(BuildContext context) {
@@ -85,7 +87,7 @@ class _SignUpPageState extends State<SignUpPage> {
           errorDetail = "Password field can not be empty!";
         } else if (!value.contains(RegExp(pattern))) {
           errorDetail =
-              "1 uppercase, 1 lowercase and 1 numeric with at least 6 in total.";
+          "1 uppercase, 1 lowercase and 1 numeric with at least 6 in total.";
         }
 
         return errorDetail ?? null;
@@ -189,13 +191,12 @@ class AlreadySignedUpReminderButton extends StatelessWidget {
 }
 
 class SignUpButton extends StatelessWidget {
-  const SignUpButton(
-      {Key? key,
-      required this.context,
-      required this.formKey,
-      required this.email,
-      required this.password,
-      required this.confirmedPassword})
+  const SignUpButton({Key? key,
+    required this.context,
+    required this.formKey,
+    required this.email,
+    required this.password,
+    required this.confirmedPassword})
       : super(key: key);
 
   final BuildContext context;
@@ -212,7 +213,10 @@ class SignUpButton extends StatelessWidget {
 
     return Container(
       height: 50,
-      width: MediaQuery.of(context).size.width - 10,
+      width: MediaQuery
+          .of(context)
+          .size
+          .width - 10,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30),
         border: Border.all(width: 1),
@@ -222,8 +226,8 @@ class SignUpButton extends StatelessWidget {
         onPressed: isDisabled
             ? null
             : () {
-                _createUser();
-              },
+          _createUser();
+        },
         child: const Text(
           "Sign Up",
           style: TextStyle(
@@ -253,8 +257,11 @@ class SignUpButton extends StatelessWidget {
       String errorDetail;
       if (e.toString().contains('user-disabled')) {
         errorDetail = "This account is disabled.";
-      } else {
-        errorDetail = "There is an error that we can not define.$e";
+      } else if (e.toString().contains('already-in-use')) {
+        errorDetail = "This email is already in use.";
+      }
+      else {
+        errorDetail = "$e";
       }
 
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
