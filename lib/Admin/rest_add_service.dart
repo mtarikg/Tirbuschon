@@ -11,7 +11,8 @@ class AdminAuthService {
       String address,
       String capacity,
       String reservationCapacity,
-      String phone) async {
+      String phone,
+      String type) async {
     UserCredential result = await auth.createUserWithEmailAndPassword(
         email: email.trim(), password: password.trim());
 
@@ -26,6 +27,7 @@ class AdminAuthService {
       'Phone': phone,
       'Reservation Capacity': reservationCapacity,
       'Capacity': capacity,
+      'Type': type
     });
     final User user = result.user!;
     return user;
