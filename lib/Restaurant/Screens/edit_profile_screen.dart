@@ -108,7 +108,6 @@ class _SettingsPageState extends State<SettingsPage> {
 
 final addressController = new TextEditingController();
 final capacityController = new TextEditingController();
-final reservationcapacityController = new TextEditingController();
 final phoneController = new TextEditingController();
 Widget _settingsContent({
   context,
@@ -247,8 +246,8 @@ Widget _settingsContent({
               ],
             ),
             TextField(
-              controller: reservationcapacityController,
               obscureText: false,
+              readOnly: true,
               style: TextStyle(fontWeight: FontWeight.w600),
               decoration: InputDecoration(
                 hintText: reservationCapacity.toString(),
@@ -291,10 +290,6 @@ Widget _settingsContent({
                         'Phone': phoneController.text.isEmpty
                             ? phone
                             : phoneController.text,
-                        'Reservation Capacity':
-                            reservationcapacityController.text.isEmpty
-                                ? reservationCapacity
-                                : reservationcapacityController.text,
                       })
                       .then((value) => print("Data updated"))
                       .catchError((error) => print("Failed to update data"));
