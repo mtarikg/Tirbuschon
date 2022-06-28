@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
+import '../../services/firestoreService.dart';
+
 class ReservationScreen extends StatefulWidget {
   final int PartySize;
   // late List<String> orders = [];
@@ -30,6 +32,7 @@ class ReservationScreen extends StatefulWidget {
 
 class _ReservationScreenState extends State<ReservationScreen> {
   //retrieve data from database
+  var username;
 
   late CollectionReference collectionReference;
   late Query query;
@@ -48,7 +51,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text(
+          title: const Text(
             'All Reservations',
             style: TextStyle(color: Colors.black87, fontFamily: 'Montserrat'),
           ),
@@ -66,76 +69,59 @@ class _ReservationScreenState extends State<ReservationScreen> {
                             .where('Reservation Date',
                                 isGreaterThanOrEqualTo: Timestamp.now())
                             .snapshots(),
-                        builder:
-                            (BuildContext context, AsyncSnapshot snapshot) {
-                          if (snapshot.hasData) {
-                            return ListView.builder(
-                                itemCount: snapshot.data!.docs.length,
-                                itemBuilder: (context, index) {
-                                  var res = snapshot.data!.docs;
-                                  Timestamp t_res =
-                                      res[index]['Reservation Date'];
-                                  DateTime d_res = t_res.toDate().toLocal();
-                                  Timestamp t_created =
-                                      res[index]['Created Date'];
-                                  DateTime d_created =
-                                      t_created.toDate().toLocal();
-                                  var d_res_f = new DateFormat.yMMMd()
-                                      .add_jm()
-                                      .format(d_res);
-                                  var d_created_f = new DateFormat.yMMMd()
-                                      .add_jm()
-                                      .format(d_created);
-
-                                  FutureBuilder<DocumentSnapshot>(
-                                    future: FirebaseFirestore.instance
-                                        .collection("Users")
-                                        .doc(res[index]["User ID"])
-                                        .collection("profileInfo")
-                                        .doc()
-                                        .get(),
-                                    builder: (BuildContext context,
-                                        AsyncSnapshot<DocumentSnapshot>
-                                            snapshot) {
-                                      if (snapshot.hasError) {
-                                        return Text("Something went wrong");
-                                      }
-
-                                      if (snapshot.hasData &&
-                                          !snapshot.data!.exists) {
-                                        return Text("Document does not exist");
-                                      }
-
-                                      if (snapshot.connectionState ==
-                                          ConnectionState.done) {
-                                        Map<String, dynamic> data =
-                                            snapshot.data!.data()
-                                                as Map<String, dynamic>;
-                                        print("agagagagagagag");
-                                        name = data['fullName'].toString();
-                                      }
-                                      return const Center(
-                                        child: CircularProgressIndicator(),
-                                      );
-                                    },
-                                  );
-
-                                  return ListTile(
-                                      title: createReservation(
-                                          PartySize: res[index]['Party Size'],
-                                          //ReservationID: res[index]['Reservation ID'],
-                                          ReservationDate: d_res_f,
-                                          CreatedDate: d_created_f,
-                                          TotalPrice: res[index]['Total Price'],
-                                          //orders: res['Orders'].toString(),
-                                          UserID: name));
-                                });
-                          } else {
+                        builder: (BuildContext context,
+                            AsyncSnapshot<QuerySnapshot> snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
                             return const Center(
                               child: CircularProgressIndicator(),
                             );
                           }
-                        })),
+
+                          if (snapshot.hasData) {
+                            return ListView(
+                                children: snapshot.data!.docs
+                                    .map((e) => FutureBuilder(
+                                        future: getUsername(e['User ID']),
+                                        builder: (BuildContext context,
+                                            AsyncSnapshot<dynamic>
+                                                secondSnapshot) {
+                                          if (secondSnapshot.hasData) {
+                                            return ListTile(
+                                                title: createReservation(
+                                                    PartySize: e['Party Size'],
+                                                    //ReservationID: res[index]['Reservation ID'],
+                                                    ReservationDate: DateFormat
+                                                            .yMMMd()
+                                                        .add_jm()
+                                                        .format(
+                                                            e['Reservation Date']
+                                                                .toDate()
+                                                                .toLocal()),
+                                                    CreatedDate: DateFormat
+                                                            .yMMMd()
+                                                        .add_jm()
+                                                        .format(
+                                                            e['Created Date']
+                                                                .toDate()
+                                                                .toLocal()),
+                                                    TotalPrice:
+                                                        e['Total Price'],
+                                                    //orders: res['Orders'].toString(),
+                                                    UserID:
+                                                        secondSnapshot.data));
+                                          } else {
+                                            return const Center(
+                                                child:
+                                                    CircularProgressIndicator());
+                                          }
+                                        }))
+                                    .toList());
+                          }
+
+                          return const Center(
+                              child: CircularProgressIndicator());
+                        }))
               ],
             )));
   }
@@ -212,5 +198,12 @@ class _ReservationScreenState extends State<ReservationScreen> {
         ),
       ),
     );
+  }
+
+  getUsername(userID) async {
+    var usernameValue =
+        await FirestoreService().getProfileInfo(userID.toString(), 'fullName');
+
+    return usernameValue;
   }
 }
