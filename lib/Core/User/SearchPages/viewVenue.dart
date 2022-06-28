@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Core/User/SearchPages/venueGallery.dart';
 import '../ReservationPages/reservationDetails.dart';
 import 'venueReviews.dart';
 import '../../../MyWidgets/navigatorButtonCard.dart';
@@ -94,6 +95,11 @@ class _ViewVenueState extends State<ViewVenue> {
                                         venueName: snapshot.data["Venue Name"],
                                       ),
                                       text: "See Menu"),
+                                  NavigatorButtonCard(
+                                      pageToNavigate: VenueGallery(
+                                        venueID: widget.venueID,
+                                      ),
+                                      text: "View Gallery"),
                                   NavigatorButtonCard(
                                       pageToNavigate: ReservationDetails(
                                           venueID: widget.venueID),
