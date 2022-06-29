@@ -120,7 +120,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                     child: Text("$hour:$minute"),
                     onPressed: () async {
                       final time = await pickTime();
-                      var updatedDateTime;
+                      DateTime updatedDateTime;
 
                       if (time == null) {
                         return;
