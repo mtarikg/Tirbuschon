@@ -22,6 +22,8 @@ class SignUpBloc extends Bloc<SignupEvent, SignUpState> {
   final venuePhoneController = TextEditingController();
   final venueCapacityController = TextEditingController();
   final venueReservCapacityController = TextEditingController();
+  final venueTypeDrop = TextEditingController();
+  //final venueTypeDrop = DragDownDetails();
 
   bool isButtonEnabled = false;
 
@@ -41,14 +43,15 @@ class SignUpBloc extends Bloc<SignupEvent, SignUpState> {
       try {
         emit(LoadingState());
         await AdminAuthService.signUp(
-          emailController.text,
-          passwordController.text,
-          venueNameController.text,
-          venueAddressController.text,
-          venueCapacityController.text,
-          venueReservCapacityController.text,
-          venuePhoneController.text,
-        );
+            emailController.text,
+            passwordController.text,
+            venueNameController.text,
+            venueAddressController.text,
+            venueCapacityController.text,
+            venueReservCapacityController.text,
+            venuePhoneController.text,
+            venueTypeDrop.text);
+
         emailController.text = '';
         passwordController.text = '';
         venueNameController.text = '';
@@ -56,6 +59,7 @@ class SignUpBloc extends Bloc<SignupEvent, SignUpState> {
         venueCapacityController.text = '';
         venueReservCapacityController.text = '';
         venuePhoneController.text = '';
+        venueTypeDrop.text = '';
 
         emit(NextTabBarPageState());
       } catch (e) {
@@ -78,7 +82,8 @@ class SignUpBloc extends Bloc<SignupEvent, SignUpState> {
         venueAddressController.text.isNotEmpty &&
         venuePhoneController.text.isNotEmpty &&
         venueReservCapacityController.text.isNotEmpty &&
-        venueCapacityController.text.isNotEmpty;
+        venueCapacityController.text.isNotEmpty &&
+        venueTypeDrop.text.isNotEmpty;
   }
 
   bool checkValidatorsOfTextField() {

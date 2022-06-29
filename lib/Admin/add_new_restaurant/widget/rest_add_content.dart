@@ -8,6 +8,7 @@ import 'package:tirbuschon_feng497/Admin/add_new_restaurant/common_widgets/admin
 import 'package:tirbuschon_feng497/Admin/add_new_restaurant/common_widgets/admin_text_field.dart';
 import 'package:tirbuschon_feng497/Admin/validation_service.dart';
 import 'package:tirbuschon_feng497/Auth/loginPage.dart';
+import 'package:tirbuschon_feng497/palette.dart';
 
 class SignUpContent extends StatelessWidget {
   @override
@@ -53,12 +54,12 @@ class SignUpContent extends StatelessWidget {
             _createTitle(),
             // const SizedBox(height: 50),
             _createForm(context),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             _createSignUpButton(context),
             // Spacer(),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
             _createSignOutButton(context),
-            const SizedBox(height: 40),
+            const SizedBox(height: 20),
           ],
         ),
       ),
@@ -82,6 +83,7 @@ class SignUpContent extends StatelessWidget {
 
   Widget _createForm(BuildContext context) {
     final bloc = BlocProvider.of<SignUpBloc>(context);
+    String dropdownValue = 'Select Venue Type';
     return BlocBuilder<SignUpBloc, SignUpState>(
       buildWhen: (_, currState) => currState is ShowErrorState,
       builder: (context, state) {
@@ -100,7 +102,7 @@ class SignUpContent extends StatelessWidget {
                 bloc.add(OnTextChangedEvent());
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
             AdminTextField(
               title: 'Venue Email',
               placeholder: 'Email',
@@ -115,7 +117,7 @@ class SignUpContent extends StatelessWidget {
                 bloc.add(OnTextChangedEvent());
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
             AdminTextField(
               title: 'Venue Temporary Password',
               placeholder: 'Password',
@@ -130,7 +132,7 @@ class SignUpContent extends StatelessWidget {
                 bloc.add(OnTextChangedEvent());
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
             AdminTextField(
               title: 'Venue Address',
               placeholder: 'Address',
@@ -143,7 +145,7 @@ class SignUpContent extends StatelessWidget {
                 bloc.add(OnTextChangedEvent());
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
             AdminTextField(
               title: 'Venue Phone',
               placeholder: 'Phone',
@@ -156,7 +158,7 @@ class SignUpContent extends StatelessWidget {
                 bloc.add(OnTextChangedEvent());
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
             AdminTextField(
               title: 'Venue Capacity',
               placeholder: 'Capacity',
@@ -169,7 +171,7 @@ class SignUpContent extends StatelessWidget {
                 bloc.add(OnTextChangedEvent());
               },
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: 8),
             AdminTextField(
               title: 'Venue Reservation Capacity',
               placeholder: 'Reservation Capacity',
@@ -177,6 +179,44 @@ class SignUpContent extends StatelessWidget {
               keyboardType: TextInputType.number,
               controller: bloc.venueReservCapacityController,
               errorText: 'Please check the reservation capacity again',
+              onTextChanged: () {
+                bloc.add(OnTextChangedEvent());
+              },
+            ),
+            SizedBox(
+              height: 8,
+            ),
+            /*  DropdownButtonFormField<String>(
+              value: dropdownValue,
+              icon: const Icon(Icons.arrow_downward),
+              elevation: 8,
+              style: const TextStyle(color: Colors.orange),
+              onChanged: (String? newValue) {
+                dropdownValue = newValue!;
+              },
+              items: [
+                'Select Venue Type',
+                'Cafe',
+                'Restaurant',
+                'Bistro',
+                'Theatre'
+              ].map<DropdownMenuItem<String>>((String value) {
+                return DropdownMenuItem<String>(
+                  value: value,
+                  child: Text(
+                    value,
+                    textAlign: TextAlign.center,
+                  ),
+                );
+              }).toList(),
+            ), */
+            AdminTextField(
+              title: 'Venue Type',
+              placeholder: 'Venue Type',
+              textInputAction: TextInputAction.next,
+              keyboardType: TextInputType.text,
+              controller: bloc.venueTypeDrop,
+              errorText: 'Please enter venue type',
               onTextChanged: () {
                 bloc.add(OnTextChangedEvent());
               },
