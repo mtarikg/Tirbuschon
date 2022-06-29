@@ -12,7 +12,7 @@ class ReservationDetails extends StatefulWidget {
 }
 
 class _ReservationDetailsState extends State<ReservationDetails> {
-  DateTime baseDate = DateTime(DateTime.now().year, DateTime.now().month, DateTime.now().day + 1);
+  DateTime baseDate = DateTime.now();
   late DateTime selectedDate;
   int partySize = 1;
 
@@ -51,7 +51,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 children: [
                   const Text("Party Size",
                       style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   Row(
                     children: [
                       IconButton(
@@ -60,7 +60,7 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                               ScaffoldMessenger.of(context)
                                   .showSnackBar(const SnackBar(
                                 content:
-                                Text("Party size should be at least 1."),
+                                    Text("Party size should be at least 1."),
                               ));
                             } else {
                               setState(() {
@@ -89,11 +89,10 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 children: [
                   const Text("Date",
                       style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   ElevatedButton(
                     child: Text("$day / $month / $year"),
                     onPressed: () async {
-
                       final date = await pickDate();
 
                       if (date == null) {
@@ -116,17 +115,34 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                 children: [
                   const Text("Time",
                       style:
-                      TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
+                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15)),
                   ElevatedButton(
                     child: Text("$hour:$minute"),
                     onPressed: () async {
                       final time = await pickTime();
+                      var updatedDateTime;
 
                       if (time == null) {
                         return;
                       }
 
-                      final updatedDateTime = DateTime(
+                      if (selectedDate == baseDate) {
+                        if (time.hour < baseDate.hour) {
+                          return Future.delayed(const Duration(seconds: 1), () {
+                            ScaffoldMessenger.of(context)
+                                .showSnackBar(const SnackBar(
+                              content:
+                                  Text("Cannot select past time for today!"),
+                            ));
+
+                            setState(() {
+                              updatedDateTime = baseDate;
+                            });
+                          });
+                        }
+                      }
+
+                      updatedDateTime = DateTime(
                           selectedDate.year,
                           selectedDate.month,
                           selectedDate.day,
@@ -148,10 +164,10 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                       context,
                       MaterialPageRoute(
                           builder: (context) => Payment(
-                            venueID: widget.venueID,
-                            partySize: partySize,
-                            selectedDate: selectedDate,
-                          )));
+                                venueID: widget.venueID,
+                                partySize: partySize,
+                                selectedDate: selectedDate,
+                              )));
                 },
               )
             ],
@@ -164,13 +180,11 @@ class _ReservationDetailsState extends State<ReservationDetails> {
   Future<DateTime?> pickDate() => showDatePicker(
       context: context,
       initialDate: baseDate,
-      firstDate:
-      DateTime(baseDate.year, baseDate.month, baseDate.day),
-      lastDate: DateTime(
-          baseDate.year, baseDate.month, baseDate.day + 7));
+      firstDate: DateTime(baseDate.year, baseDate.month, baseDate.day),
+      lastDate: DateTime(baseDate.year, baseDate.month, baseDate.day + 7));
 
   Future<TimeOfDay?> pickTime() => showTimePicker(
       context: context,
       initialTime:
-      TimeOfDay(hour: selectedDate.hour, minute: selectedDate.minute));
+          TimeOfDay(hour: selectedDate.hour, minute: selectedDate.minute));
 }
