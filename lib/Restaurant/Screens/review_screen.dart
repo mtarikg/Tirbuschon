@@ -56,8 +56,9 @@ class _ReviewScreenState extends State<ReviewScreen> {
           children: [
             Expanded(
                 child: StreamBuilder<QuerySnapshot>(
-                    stream:
-                        collectionReference.orderBy('Created Date').snapshots(),
+                    stream: collectionReference
+                        .orderBy('Created Date', descending: true)
+                        .snapshots(),
                     builder: (BuildContext context,
                         AsyncSnapshot<QuerySnapshot> snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {

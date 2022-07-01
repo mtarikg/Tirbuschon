@@ -61,22 +61,12 @@ class _MenuScreenState extends State<MenuScreen> {
                 children: <Widget>[
                   makeProduct(
                     image: 'assets/images/muzik.jpg',
-                    title: 'Actity 1',
+                    title: 'Activity 1',
                     id: 1,
                   ),
                   makeProduct(
                     image: 'assets/images/muzik.jpg',
-                    title: 'Actity 2',
-                    id: 1,
-                  ),
-                  makeProduct(
-                    image: 'assets/images/muzik.jpg',
-                    title: 'Actity 3',
-                    id: 1,
-                  ),
-                  makeProduct(
-                    image: 'assets/images/muzik.jpg',
-                    title: 'Actity 4',
+                    title: 'Activity 2',
                     id: 1,
                   ),
                 ],
@@ -189,34 +179,21 @@ Widget _createMenuList(BuildContext context) {
             const SizedBox(width: 20),
             makeProduct(
               image: 'assets/images/exapmleFood.jpg',
-              title: 'Fish',
+              title: 'Meals',
               id: 0,
             ),
             const SizedBox(width: 20),
             makeProduct(
               image: 'assets/images/exapmleFood.jpg',
-              title: 'Fish',
+              title: 'Drinks',
               id: 0,
             ),
             const SizedBox(width: 20),
             makeProduct(
               image: 'assets/images/exapmleFood.jpg',
-              title: 'Fish',
+              title: 'Deserts',
               id: 0,
             ),
-            const SizedBox(width: 20),
-            makeProduct(
-              image: 'assets/images/exapmleFood.jpg',
-              title: 'Fish',
-              id: 0,
-            ),
-            const SizedBox(width: 20),
-            makeProduct(
-              image: 'assets/images/exapmleFood.jpg',
-              title: 'Fish',
-              id: 0,
-            ),
-            const SizedBox(width: 20),
           ],
         ),
       ),
