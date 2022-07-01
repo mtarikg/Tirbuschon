@@ -65,7 +65,7 @@ class _ReservationScreenState extends State<ReservationScreen> {
                 Expanded(
                     child: StreamBuilder<QuerySnapshot>(
                         stream: collectionReference
-                            .orderBy('Reservation Date')
+                            .orderBy('Reservation Date', descending: true)
                             .where('Reservation Date',
                                 isGreaterThanOrEqualTo: Timestamp.now())
                             .snapshots(),
