@@ -14,4 +14,13 @@ class StorageService {
     String uploadedImageURL = await taskSnapshot.ref.getDownloadURL();
     return uploadedImageURL;
   }
+
+  Future<String> uploadVenueImage(File image) async {
+    imageID = const Uuid().v4();
+    final uploadTask =
+        _storageRef.child('venueProfileImages/$imageID').putFile(image);
+    final taskSnapshot = await uploadTask;
+    String uploadedImageURL = await taskSnapshot.ref.getDownloadURL();
+    return uploadedImageURL;
+  }
 }
