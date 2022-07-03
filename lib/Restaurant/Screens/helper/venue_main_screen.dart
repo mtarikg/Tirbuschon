@@ -6,19 +6,24 @@ import 'package:tirbuschon_feng497/Restaurant/Screens/reservations_screen.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/review_screen.dart';
 import 'package:tirbuschon_feng497/palette.dart';
 
-//BOTTOM_NAVIGATION BAR
+/// BOTTOM_NAVIGATION BAR
+class VenueMainScreen extends StatelessWidget {
+  const VenueMainScreen({
+    Key? key,
+    this.index = 0,
+  }) : super(key: key);
 
-class BottomNavigationBar1 extends StatelessWidget {
-  const BottomNavigationBar1({Key? key}) : super(key: key);
+  final int index;
 
   @override
   Widget build(BuildContext context) {
     return DefaultTabController(
+      initialIndex: index,
       length: 5,
       child: Scaffold(
         body: TabBarView(
           children: <Widget>[
-            MenuScreen(),
+            const MenuScreen(),
             PhotographsScreen(),
             ReservationScreen(
                 PartySize: 0,
@@ -33,7 +38,7 @@ class BottomNavigationBar1 extends StatelessWidget {
               Rating: 0,
               Comment: '',
             ),
-            ProfileScreen(
+            const ProfileScreen(
               address: '',
               name: '',
               phone: '',
@@ -50,7 +55,7 @@ class BottomNavigationBar1 extends StatelessWidget {
             indicatorColor: Colors.transparent,
             labelColor: Colors.white,
             unselectedLabelColor: Colors.black54,
-            tabs: <Widget>[
+            tabs: [
               Tab(
                 icon: Icon(Icons.menu, size: 28),
               ),

@@ -109,6 +109,20 @@ class FirestoreService {
     return null;
   }
 
+  Future<dynamic> getActivities(String venueID) async {
+    final QuerySnapshot qs = await _firestore
+        .collection("Venues")
+        .doc(venueID)
+        .collection("Activity")
+        .get();
+
+    if (qs.docs.isNotEmpty) {
+      return qs.docs[0];
+    }
+
+    return null;
+  }
+
   Future<bool> makeReservation(String userID, String venueID, int partySize,
       DateTime selectedDate, double price) async {
     var reservationResult = false;
@@ -329,6 +343,16 @@ class FirestoreService {
         .collection('profileInfo')
         .get();
     await document.docs[0].reference.update({'avatarURL': imageURL});
+  }
+
+  Future<void> updateVenueAvatar(String venueId, String imageUrl) async {
+    var document = await _firestore
+        .collection('Venues')
+        .doc(venueId)
+        .collection('Profile Information')
+        .get();
+
+    await document.docs[0].reference.update({'imageUrl': imageUrl});
   }
 
   Future<void> updateUserField(
