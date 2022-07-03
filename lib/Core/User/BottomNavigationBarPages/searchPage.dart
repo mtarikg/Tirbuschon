@@ -192,16 +192,22 @@ class _SearchPageState extends State<SearchPage> {
                                             child: Row(
                                               children: [
                                                 snapshot.data![index]
-                                                            ["imageURL"] ==
+                                                            ["imageUrl"] ==
                                                         null
-                                                    ? const Padding(
-                                                        padding:
-                                                            EdgeInsets.all(10),
-                                                        child: SizedBox(
-                                                          width: 125,
-                                                          height: 125,
-                                                        ),
-                                                      )
+                                                    ? Padding(
+                                                  padding:
+                                                  const EdgeInsets.all(10),
+                                                  child: Container(
+                                                      width: 125,
+                                                      height: 125,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            width: 1,
+                                                            color: Colors.grey),
+                                                      ),
+                                                      child: Image.asset(
+                                                          'assets/reservationIconPlaceholder.jpg')),
+                                                )
                                                     : Padding(
                                                         padding:
                                                             const EdgeInsets
@@ -219,7 +225,7 @@ class _SearchPageState extends State<SearchPage> {
                                                           child: Image.network(
                                                             snapshot.data![
                                                                     index]
-                                                                ["imageURL"],
+                                                                ["imageUrl"],
                                                             fit: BoxFit.fill,
                                                           ),
                                                         ),
@@ -274,14 +280,21 @@ class _SearchPageState extends State<SearchPage> {
                                       },
                                       child: Row(
                                         children: [
-                                          searchResult[index]["imageURL"] ==
+                                          searchResult[index]["imageUrl"] ==
                                                   null
-                                              ? const Padding(
-                                                  padding: EdgeInsets.all(10),
-                                                  child: SizedBox(
-                                                    width: 125,
-                                                    height: 125,
-                                                  ),
+                                              ? Padding(
+                                                  padding:
+                                                      const EdgeInsets.all(10),
+                                                  child: Container(
+                                                      width: 125,
+                                                      height: 125,
+                                                      decoration: BoxDecoration(
+                                                        border: Border.all(
+                                                            width: 1,
+                                                            color: Colors.grey),
+                                                      ),
+                                                      child: Image.asset(
+                                                          'assets/reservationIconPlaceholder.jpg')),
                                                 )
                                               : Padding(
                                                   padding:
@@ -296,7 +309,7 @@ class _SearchPageState extends State<SearchPage> {
                                                     ),
                                                     child: Image.network(
                                                       searchResult[index]
-                                                          ["imageURL"],
+                                                          ["imageUrl"],
                                                       fit: BoxFit.cover,
                                                     ),
                                                   ),

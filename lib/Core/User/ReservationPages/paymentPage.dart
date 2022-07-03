@@ -148,7 +148,7 @@ class _PaymentState extends State<Payment> {
         if (value.contains(RegExp(r'[0-9]')) &&
             value.replaceAll(" ", "").length % 4 == 0 &&
             value.length != 19) {
-          value = (value + " ").toString();
+          value += " ";
           _cardNumberController.value = TextEditingValue(
             text: value.toString(),
             selection: TextSelection.collapsed(offset: value.length),

@@ -49,7 +49,7 @@ class UserService {
     var reviewData = await FirestoreService()
         .getReviewByReservationID(snapshotDoc["Reservation ID"]);
 
-    var venueImage = venueData["imageURL"];
+    var venueImage = venueData["imageUrl"];
     var venueName = venueData["Venue Name"];
     var capacity = snapshotDoc["Party Size"].toString();
     var totalPrice = snapshotDoc["Total Price"].toString();
@@ -59,6 +59,7 @@ class UserService {
     var hasReview = false;
     var rating = 0;
     var comment = "";
+    var postReservation = DateTime.now().compareTo(reservationDate) == 1;
 
     if (reviewData != null) {
       rating = reviewData["Rating"];
@@ -132,7 +133,7 @@ class UserService {
             ],
           ),
           actions: [
-            if (!hasReview) ...[
+            if (!hasReview /*&& postReservation*/) ...[
               _addReview(context, snapshotDoc["Reservation ID"], venueName),
             ],
             _backToProfilePageButton(context)

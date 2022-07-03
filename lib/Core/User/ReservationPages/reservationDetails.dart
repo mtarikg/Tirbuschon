@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-
 import 'paymentPage.dart';
 
 class ReservationDetails extends StatefulWidget {
@@ -126,22 +125,6 @@ class _ReservationDetailsState extends State<ReservationDetails> {
                         return;
                       }
 
-                      if (selectedDate == baseDate) {
-                        if (time.hour < baseDate.hour) {
-                          return Future.delayed(const Duration(seconds: 1), () {
-                            ScaffoldMessenger.of(context)
-                                .showSnackBar(const SnackBar(
-                              content:
-                                  Text("Cannot select past time for today!"),
-                            ));
-
-                            setState(() {
-                              updatedDateTime = baseDate;
-                            });
-                          });
-                        }
-                      }
-
                       updatedDateTime = DateTime(
                           selectedDate.year,
                           selectedDate.month,
@@ -159,16 +142,23 @@ class _ReservationDetailsState extends State<ReservationDetails> {
               const SizedBox(height: 75),
               ElevatedButton(
                 child: const Text("Continue to payment"),
-                onPressed: () async {
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => Payment(
-                                venueID: widget.venueID,
-                                partySize: partySize,
-                                selectedDate: selectedDate,
-                              )));
-                },
+                onPressed: selectedDate.compareTo(baseDate) == -1 ||
+                        selectedDate.compareTo(baseDate) == 0
+                    ? () {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(
+                                content: Text("Select a valid time!")));
+                      }
+                    : () {
+                        Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => Payment(
+                                      venueID: widget.venueID,
+                                      partySize: partySize,
+                                      selectedDate: selectedDate,
+                                    )));
+                      },
               )
             ],
           ),
