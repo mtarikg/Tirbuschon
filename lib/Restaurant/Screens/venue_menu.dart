@@ -29,7 +29,7 @@ class _VenueMenuState extends State<VenueMenu> {
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.title),
-        backgroundColor: Colors.deepOrangeAccent,
+        backgroundColor: Colors.orange,
       ),
       body: Center(
         child: Column(
@@ -77,7 +77,7 @@ class _VenueMenuState extends State<VenueMenu> {
             ElevatedButton(
               onPressed: _showAddDialog,
               style: ElevatedButton.styleFrom(
-                primary: Colors.deepOrangeAccent,
+                primary: Colors.orange,
               ),
               child: const Text(
                 '+',
@@ -148,6 +148,9 @@ class _VenueMenuState extends State<VenueMenu> {
                     ),
                     const Spacer(),
                     ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.orange)),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           final name = _nameController.text;
@@ -248,7 +251,7 @@ class _VenueMenuState extends State<VenueMenu> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: const BorderSide(
-            color: Colors.blue,
+            color: Colors.orange,
           ),
         ),
         focusedBorder: OutlineInputBorder(

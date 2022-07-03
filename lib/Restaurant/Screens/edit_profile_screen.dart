@@ -26,8 +26,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  //retrieve data from database
-
   late String uid1;
   late CollectionReference collectionReference;
 
@@ -40,8 +38,6 @@ class _SettingsPageState extends State<SettingsPage> {
         .doc(userId)
         .collection('Profile Information');
     super.initState();
-
-    //final _nameController = TextEditingController(text: collectionReference.doc().name.toString(),);
   }
 
   @override

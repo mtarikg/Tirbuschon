@@ -103,7 +103,7 @@ class _MenuScreenState extends State<MenuScreen> {
                             width: 400,
                             onTap: () {
                               final snackBar = SnackBar(
-                                backgroundColor: Colors.orangeAccent,
+                                backgroundColor: Colors.black,
                                 content: Padding(
                                   padding: const EdgeInsets.all(8.0),
                                   child: Text(
@@ -239,16 +239,6 @@ class _MenuScreenState extends State<MenuScreen> {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              const InkWell(
-                child: Text(
-                  'See all',
-                  style: TextStyle(
-                    color: Colors.black54,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
             ],
           ),
         ),
@@ -368,6 +358,9 @@ class _MenuScreenState extends State<MenuScreen> {
                     ),
                     const Spacer(),
                     ElevatedButton(
+                      style: ButtonStyle(
+                          backgroundColor:
+                              MaterialStateProperty.all(Colors.orange)),
                       onPressed: () async {
                         if (_formKey.currentState!.validate()) {
                           final title = _titleController.text;
@@ -427,13 +420,13 @@ class _MenuScreenState extends State<MenuScreen> {
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: const BorderSide(
-            color: Colors.blue,
+            color: Colors.orange,
           ),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(10.0),
           borderSide: const BorderSide(
-            color: Colors.deepOrangeAccent,
+            color: Colors.orange,
           ),
         ),
         hintText: placeholder,
