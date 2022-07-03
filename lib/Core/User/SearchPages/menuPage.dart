@@ -95,7 +95,7 @@ class CategoryItems extends StatelessWidget {
             itemBuilder: (context, int index) {
               return Padding(
                 padding:
-                    const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+                const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [

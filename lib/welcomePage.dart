@@ -37,6 +37,8 @@ class _WelcomePageState extends State<WelcomePage> {
       alignment: Alignment.center,
       child: Column(
         children: [
+          Image.asset('assets/appIcon.png', height: 200, width: 200),
+          const SizedBox(height: 20),
           const Text(
             "Welcome",
             style: TextStyle(
@@ -60,9 +62,6 @@ class _WelcomePageState extends State<WelcomePage> {
               const SizedBox(height: 30),
               SignUpContainer(context: context),
               const SizedBox(height: 30),
-              const Text("Quick sign up"),
-              const Text("(For individual users only)",
-                  style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 10),
               Padding(
                   padding: const EdgeInsets.fromLTRB(5, 0, 5, 0),
@@ -83,7 +82,7 @@ class GoogleSignUp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-        child: SignInButton(Buttons.Google, text: "Sign up with Google",
+        child: SignInButton(Buttons.Google, text: "Continue with Google",
             onPressed: () {
       alertUser();
     }));
@@ -100,6 +99,47 @@ class GoogleSignUp extends StatelessWidget {
     Widget noButton = TextButton(
         onPressed: () {
           Navigator.of(context).pop();
+
+          Widget okButton = TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+
+                var navigateDialog = AlertDialog(
+                  title: const Text("Please wait..."),
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: const [
+                      Center(child: CircularProgressIndicator(strokeWidth: 2)),
+                      SizedBox(height: 10),
+                      Text("Navigating to login page...")
+                    ],
+                  ),
+                );
+
+                showDialog(
+                    context: context,
+                    builder: (BuildContext context) => navigateDialog);
+
+                Future.delayed(const Duration(seconds: 2), () {
+                  Navigator.of(context).pop();
+
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => const LoginPage()));
+                });
+              },
+              child: const Text("OK"));
+
+          var infoDialog = AlertDialog(
+            title: const Text("Info"),
+            content:
+                const Text("Venue owners must login with the given email."),
+            actions: [okButton],
+          );
+
+          showDialog(
+              context: context, builder: (BuildContext context) => infoDialog);
         },
         child: const Text("No"));
 

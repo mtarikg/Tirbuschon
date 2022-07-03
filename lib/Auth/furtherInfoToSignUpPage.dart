@@ -24,41 +24,47 @@ class _FurtherInfoToSignUpPageState extends State<FurtherInfoToSignUpPage> {
         title: const Text("Sign Up"),
       ),
       body: Form(
-        key: _formKey,
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            _tirbuschonText(),
-            const SizedBox(height: 10),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: _fullNameTextField(),
+          key: _formKey,
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    _tirbuschonText(),
+                    const SizedBox(height: 10),
+                    Column(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: _fullNameTextField(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: _usernameTextField(),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(10.0),
+                          child: _phoneNumberTextField(),
+                        ),
+                        const SizedBox(height: 10),
+                        CompleteButton(
+                          context: context,
+                          formKey: _formKey,
+                          id: widget.id!,
+                          username: username,
+                          fullName: fullName,
+                          phoneNumber: phoneNumber,
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: _usernameTextField(),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(10.0),
-                  child: _phoneNumberTextField(),
-                ),
-                const SizedBox(height: 10),
-                CompleteButton(
-                  context: context,
-                  formKey: _formKey,
-                  id: widget.id!,
-                  username: username,
-                  fullName: fullName,
-                  phoneNumber: phoneNumber,
-                ),
-              ],
-            ),
-          ],
-        ),
-      ),
+              ),
+            ],
+          )),
     );
   }
 

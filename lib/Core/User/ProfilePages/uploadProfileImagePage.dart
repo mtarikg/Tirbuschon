@@ -184,7 +184,7 @@ class _UploadProfileImageState extends State<UploadProfileImage> {
 
     showDialog(context: context, builder: (BuildContext context) => alert);
 
-    String imageURL = await StorageService().uploadImage(file!);
+    String imageURL = await StorageService().uploadImage(widget.userID, file!);
     await FirestoreService().uploadImage(widget.userID, imageURL);
   }
 

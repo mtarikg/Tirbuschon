@@ -30,62 +30,66 @@ class _ReviewVenueState extends State<ReviewVenue> {
         ),
         backgroundColor: Colors.grey[100],
         body: Center(
-          child: Column(
-            children: [
-              Container(
-                  height: 50,
-                  color: Colors.amberAccent,
-                  child: const Align(
-                    alignment: Alignment.center,
-                    child: Text(
-                      "How would you rate the venue?",
-                      style:
-                          TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+          child: CustomScrollView(
+            slivers: [
+              SliverFillRemaining(
+                hasScrollBody: false,
+                child: Column(
+                  children: [
+                    Container(
+                        height: 50,
+                        color: Colors.amberAccent,
+                        child: const Align(
+                          alignment: Alignment.center,
+                          child: Text(
+                            "How would you rate the venue?",
+                            style:
+                            TextStyle(fontWeight: FontWeight.bold, fontSize: 15),
+                          ),
+                        )),
+                    const SizedBox(height: 50),
+                    RatingBar.builder(
+                      initialRating: 0,
+                      minRating: 0,
+                      direction: Axis.horizontal,
+                      allowHalfRating: false,
+                      itemCount: 5,
+                      itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
+                      itemBuilder: (context, _) => const Icon(
+                        Icons.star,
+                        color: Colors.amber,
+                      ),
+                      onRatingUpdate: (value) {
+                        setState(() {
+                          rating = value.toInt();
+                        });
+                      },
                     ),
-                  )),
-              const SizedBox(height: 50),
-              RatingBar.builder(
-                initialRating: 0,
-                minRating: 0,
-                direction: Axis.horizontal,
-                allowHalfRating: false,
-                itemCount: 5,
-                itemPadding: const EdgeInsets.symmetric(horizontal: 4.0),
-                itemBuilder: (context, _) => const Icon(
-                  Icons.star,
-                  color: Colors.amber,
-                ),
-                onRatingUpdate: (value) {
-                  setState(() {
-                    rating = value.toInt();
-                  });
-                },
-              ),
-              const SizedBox(height: 50),
-              SizedBox(
-                width: 300,
-                child: TextField(
-                  decoration: const InputDecoration(
-                    border: OutlineInputBorder(),
-                    hintText: "Add more information (optional)",
-                  ),
-                  onChanged: (value) {
-                    setState(() {
-                      comment = filter.hasProfanity(value)
-                          ? filter.censor(value)
-                          : value;
-                    });
-                  },
-                ),
-              ),
-              const SizedBox(height: 50),
-              ElevatedButton(
-                child: const Text(
-                  "Submit your review",
-                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-                ),
-                onPressed: rating != 0
-                    ? () async {
+                    const SizedBox(height: 50),
+                    SizedBox(
+                      width: 300,
+                      child: TextField(
+                        decoration: const InputDecoration(
+                          border: OutlineInputBorder(),
+                          hintText: "Add more information (optional)",
+                        ),
+                        onChanged: (value) {
+                          setState(() {
+                            comment = filter.hasProfanity(value)
+                                ? filter.censor(value)
+                                : value;
+                          });
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 50),
+                    ElevatedButton(
+                      child: const Text(
+                        "Submit your review",
+                        style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      onPressed: rating != 0
+                          ? () async {
                         if (rating == 0) {
                           ScaffoldMessenger.of(context)
                               .showSnackBar(const SnackBar(
@@ -102,11 +106,14 @@ class _ReviewVenueState extends State<ReviewVenue> {
                               rating, comment);
                         }
                       }
-                    : null,
+                          : null,
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
             ],
-          ),
+          )
         ));
   }
 
@@ -128,8 +135,10 @@ class _ReviewVenueState extends State<ReviewVenue> {
       ));
 
       Future.delayed(duration, () {
-        Navigator.push(context,
-            MaterialPageRoute(builder: (context) => const MainPage(index: 2)));
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(builder: (context) => const MainPage(index: 2)),
+            (route) => false);
       });
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
