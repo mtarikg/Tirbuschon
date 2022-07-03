@@ -15,21 +15,5 @@ class StorageService {
     return uploadedImageURL;
   }
 
-  Future<List<Map<String, dynamic>>> getVenueGallery(String venueID) async {
-    List<Map<String, dynamic>> images = [];
-
-    final result = await _storageRef.storage.ref('venuePhotos/$venueID').list();
-    final files = result.items;
-
-    await Future.forEach<Reference>(files, (file) async {
-      final String fileUrl = await file.getDownloadURL();
-
-      images.add({
-        "url": fileUrl,
-        "path": file.fullPath,
-      });
-    });
-
-    return images;
   }
 }
