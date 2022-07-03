@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:tirbuschon_feng497/Restaurant/Screens/avatar_picker.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/edit_profile_screen.dart';
 import 'package:tirbuschon_feng497/Restaurant/Screens/email_sender.dart';
 import 'package:tirbuschon_feng497/palette.dart';
@@ -15,7 +16,7 @@ class ProfileScreen extends StatefulWidget {
   final int reservationCapacity;
   final String name;
 
-  ProfileScreen({
+  const ProfileScreen({
     Key? key,
     required this.capacity,
     required this.address,
@@ -30,33 +31,36 @@ class ProfileScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfileScreen> {
   late CollectionReference collectionReference;
-  late var photoUrl;
+  String? photoUrl;
   bool switchValue = true;
+  final venueId = FirebaseAuth.instance.currentUser!.uid.toString();
 
   @override
   void initState() {
-    String userId = FirebaseAuth.instance.currentUser!.uid.toString();
-    photoUrl = FirebaseAuth.instance.currentUser!.photoURL ?? null;
     collectionReference = FirebaseFirestore.instance
         .collection('Venues')
-        .doc(userId)
+        .doc(venueId)
         .collection('Profile Information');
-    FirebaseFirestore.instance
-        .collection('Venues')
-        .doc(userId)
-        .collection('Profile Information')
-        .doc()
-        .update({'Reservation Capacity': 50});
+
+    () async {
+      final snap = await collectionReference.get();
+      final doc = snap.docs.first;
+
+      WidgetsBinding.instance!.addPostFrameCallback((_) {
+        setState(() {
+          photoUrl = doc['imageUrl'];
+        });
+      });
+    }();
+
     super.initState();
   }
-  
-  late TextEditingController _controller;
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           'Restaurant Profile',
           style: TextStyle(color: Colors.black87, fontFamily: 'Montserrat'),
         ),
@@ -78,7 +82,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               reservationCapacity: 0,
                             )));
               },
-              child: Icon(
+              child: const Icon(
                 Icons.edit,
                 color: Colors.black87,
               ),
@@ -89,7 +93,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
         backgroundColor: Colors.transparent,
       ),
       body: Container(
-        padding: EdgeInsets.symmetric(vertical: 10),
+        padding: const EdgeInsets.symmetric(vertical: 10),
         child: Column(
           children: [
             Expanded(
@@ -117,7 +121,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         .toList(),
                   );
                 }
-                return Center(
+                return const Center(
                   child: CircularProgressIndicator(),
                 );
               },
@@ -128,8 +132,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget restaurantProfileWidget(
-      {address, capacity, phone, reservationCapacity, name}) {
+  Widget restaurantProfileWidget({
+    address,
+    capacity,
+    phone,
+    reservationCapacity,
+    name,
+  }) {
     return Column(
       children: <Widget>[
         Padding(
@@ -139,24 +148,32 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Align(
             alignment: Alignment.topCenter,
             child: GestureDetector(
-                child: photoUrl == null
-                    ? CircleAvatar(
-                        backgroundColor: Colors.white,
-                        backgroundImage: AssetImage(
-                          'assets/resticon.png',
+              child: photoUrl == null
+                  ? const CircleAvatar(
+                      backgroundColor: Colors.white,
+                      backgroundImage: AssetImage('assets/resticon.png'),
+                      radius: 60,
+                    )
+                  : CircleAvatar(
+                      backgroundColor: Colors.white,
+                      child: ClipOval(
+                        child: Image.network(
+                          photoUrl!,
+                          fit: BoxFit.cover,
+                          width: 200,
+                          height: 120,
                         ),
-                        radius: 60)
-                    : CircleAvatar(
-                        backgroundColor: Colors.white,
-                        child: ClipOval(
-                            child: FadeInImage.assetNetwork(
-                                placeholder: 'assets/resticon.png',
-                                image: photoUrl,
-                                fit: BoxFit.cover,
-                                width: 200,
-                                height: 120)),
-                        radius: 25),
-                onTap: () {}),
+                      ),
+                      radius: 50,
+                    ),
+              onTap: () {
+                Navigator.of(context).push(MaterialPageRoute(
+                  builder: (context) {
+                    return AvatarPicker(id: venueId);
+                  },
+                ));
+              },
+            ),
           ),
         ),
         Column(
@@ -175,7 +192,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: <Widget>[
-                Icon(
+                const Icon(
                   Icons.location_on,
                   color: Colors.grey,
                 ),
@@ -194,7 +211,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Icon(
+                const Icon(
                   Icons.phone,
                   color: Colors.grey,
                 ),
@@ -233,7 +250,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Text(
                     capacity,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 14.0,
                         color: Colors.red),
@@ -251,7 +268,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   ),
                   Text(
                     reservationCapacity,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontFamily: 'Montserrat',
                         fontSize: 14.0,
                         color: Colors.red),
@@ -283,13 +300,13 @@ class _ProfileScreenState extends State<ProfileScreen> {
             ),
           ],
         ),
-        Divider(
+        const Divider(
           height: 15,
           thickness: 2,
         ),
         Center(
           child: OutlineButton(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             onPressed: () {
@@ -312,12 +329,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
         ),
         Center(
           child: OutlineButton(
-            padding: EdgeInsets.symmetric(horizontal: 40),
+            padding: const EdgeInsets.symmetric(horizontal: 40),
             shape:
                 RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
             onPressed: () {
               Navigator.push(context,
-                  MaterialPageRoute(builder: (context) => EmailSender()));
+                  MaterialPageRoute(builder: (context) => const EmailSender()));
             },
             child: Text(
               "REPORT an ISSUE",
