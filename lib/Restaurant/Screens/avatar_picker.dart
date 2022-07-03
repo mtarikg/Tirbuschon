@@ -24,7 +24,7 @@ class _AvatarPickerState extends State<AvatarPicker> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.deepOrangeAccent,
+        backgroundColor: Colors.orange,
         title: const Text("New profile image"),
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
@@ -76,7 +76,7 @@ class _AvatarPickerState extends State<AvatarPicker> {
               width: 250,
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
-                  primary: Colors.deepOrangeAccent,
+                  primary: Colors.orange,
                 ),
                 onPressed: alertUser,
                 child: const Text(
@@ -168,7 +168,7 @@ class _AvatarPickerState extends State<AvatarPicker> {
       child: Container(
         padding: const EdgeInsets.fromLTRB(75, 25, 75, 25),
         decoration: BoxDecoration(
-          color: Colors.deepOrangeAccent,
+          color: Colors.orange,
           borderRadius: BorderRadius.circular(10),
         ),
         child: const Icon(Icons.add, size: 100, color: Colors.white),
