@@ -382,69 +382,74 @@ class _MapViewState extends State<MapView> {
                       width: width * 0.9,
                       child: Padding(
                         padding: const EdgeInsets.only(top: 10.0, bottom: 10.0),
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                IconButton(
-                                  icon: const Icon(Icons.remove_circle_outline),
-                                  onPressed: () {
+                        child: SingleChildScrollView(
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: <Widget>[
+                              Stack(
+                                alignment: Alignment.center,
+                                children: [
+                                  Align(
+                                    alignment: Alignment.centerLeft,
+                                    child: IconButton(
+                                      icon: const Icon(Icons.remove_circle_outline),
+                                      onPressed: () {
+                                        setState(() {
+                                          searchPopUp = false;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                  const Text(
+                                    'Places',
+                                    style: TextStyle(fontSize: 20.0),
+                                  ),
+                                ],
+                              ),
+                              const SizedBox(height: 10),
+                              _textField(
+                                  label: 'Start',
+                                  hint: 'Choose starting point',
+                                  prefixIcon: const Icon(Icons.looks_one),
+                                  suffixIcon: IconButton(
+                                    icon: const Icon(Icons.my_location),
+                                    onPressed: () {
+                                      setState(() {
+                                        startAddressController.text =
+                                            _currentAddress;
+                                        _startAddress = _currentAddress;
+                                      });
+                                    },
+                                  ),
+                                  controller: startAddressController,
+                                  focusNode: startAddressFocusNode,
+                                  width: width,
+                                  locationCallback: (String value) {
                                     setState(() {
-                                      searchPopUp = false;
+                                      _startAddress = value;
                                     });
-                                  },
-                                ),
-                                const Text(
-                                  'Places',
-                                  style: TextStyle(fontSize: 20.0),
-                                ),
-                              ],
-                            ),
-                            const SizedBox(height: 10),
-                            _textField(
-                                label: 'Start',
-                                hint: 'Choose starting point',
-                                prefixIcon: const Icon(Icons.looks_one),
-                                suffixIcon: IconButton(
-                                  icon: const Icon(Icons.my_location),
-                                  onPressed: () {
+                                  }),
+                              const SizedBox(height: 10),
+                              _textField(
+                                  label: 'Destination',
+                                  hint: 'Choose destination',
+                                  prefixIcon: const Icon(Icons.looks_two),
+                                  controller: destinationAddressController,
+                                  focusNode: destinationAddressFocusNode,
+                                  width: width,
+                                  locationCallback: (value) {
                                     setState(() {
-                                      startAddressController.text =
-                                          _currentAddress;
-                                      _startAddress = _currentAddress;
+                                      _destinationAddress =
+                                          destinationAddressController.text;
                                     });
-                                  },
-                                ),
-                                controller: startAddressController,
-                                focusNode: startAddressFocusNode,
-                                width: width,
-                                locationCallback: (String value) {
-                                  setState(() {
-                                    _startAddress = value;
-                                  });
-                                }),
-                            const SizedBox(height: 10),
-                            _textField(
-                                label: 'Destination',
-                                hint: 'Choose destination',
-                                prefixIcon: const Icon(Icons.looks_two),
-                                controller: destinationAddressController,
-                                focusNode: destinationAddressFocusNode,
-                                width: width,
-                                locationCallback: (value) {
-                                  setState(() {
-                                    _destinationAddress =
-                                        destinationAddressController.text;
-                                  });
-                                }),
-                            const SizedBox(height: 15),
-                            _selectTravelMode(),
-                            const SizedBox(height: 10),
-                            DistanceValue(placeDistance: _placeDistance),
-                            _showVenueButton(),
-                          ],
+                                  }),
+                              const SizedBox(height: 15),
+                              _selectTravelMode(),
+                              const SizedBox(height: 10),
+                              DistanceValue(placeDistance: _placeDistance),
+                              _showVenueButton(),
+                            ],
+                          ),
                         ),
                       ),
                     ),

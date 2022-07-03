@@ -52,6 +52,7 @@ class _SearchPageState extends State<SearchPage> {
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
                       Expanded(
+                        flex: 3,
                         child: Padding(
                           padding: const EdgeInsets.all(10.0),
                           child: CSCPicker(
@@ -116,24 +117,33 @@ class _SearchPageState extends State<SearchPage> {
                           ),
                         ),
                       ),
-                      TextButton(
-                          onPressed: () {
-                            if (cityValue == "null") {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text("Please select a city!"),
-                              ));
-                            } else if (districtValue == "null") {
-                              ScaffoldMessenger.of(context)
-                                  .showSnackBar(const SnackBar(
-                                content: Text("Please select a district!"),
-                              ));
-                            } else {
-                              _searchVenueByCityDistrict(cityValue.toString(),
-                                  districtValue.toString());
-                            }
-                          },
-                          child: const Text("Search"))
+                      Expanded(flex: 2, child: _venueTypeDropdown()),
+                      Expanded(
+                        flex: 1,
+                        child: TextButton(
+                            onPressed: () {
+                              if (cityValue == "null") {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("Please select a city!"),
+                                ));
+                              } else if (districtValue == "null") {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("Please select a district!"),
+                                ));
+                              } else if (venueType == "") {
+                                ScaffoldMessenger.of(context)
+                                    .showSnackBar(const SnackBar(
+                                  content: Text("Please select a venue type!"),
+                                ));
+                              } else {
+                                _searchVenueByCityDistrict(cityValue.toString(),
+                                    districtValue.toString(), venueType);
+                              }
+                            },
+                            child: const Text("Search")),
+                      )
                     ],
                   ),
                 ],
@@ -319,18 +329,16 @@ class _SearchPageState extends State<SearchPage> {
     )));
   }
 
-  DropdownButtonFormField<String> _venueTypeDropdown() {
+  Widget _venueTypeDropdown() {
     return DropdownButtonFormField<String>(
-      decoration: const InputDecoration(labelText: 'Venue Type'),
-      value: null,
-      elevation: 16,
-      style: const TextStyle(color: Colors.deepPurple),
+      hint: const Text('Venue Type'),
+      decoration: const InputDecoration(enabledBorder: InputBorder.none),
       onChanged: (String? newValue) {
         setState(() {
           venueType = newValue!;
         });
       },
-      items: <String>['Activity', 'Restaurant']
+      items: <String>['Restaurant', 'Concert Hall', 'Theater']
           .map<DropdownMenuItem<String>>((String value) {
         return DropdownMenuItem<String>(
           value: value,
@@ -344,9 +352,9 @@ class _SearchPageState extends State<SearchPage> {
     return TextField(
       decoration: InputDecoration(
         suffixIcon: IconButton(
-            icon: const Icon(Icons.search),
+            icon: const Icon(Icons.search, color: Colors.blue),
             onPressed: () {
-              if (searchValue == "null") {
+              if (searchValue == "") {
                 ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
                   content: Text("Please enter a venue name!"),
                 ));
@@ -368,29 +376,40 @@ class _SearchPageState extends State<SearchPage> {
   Future<void> _searchVenueByName(String value) async {
     var result = await FirestoreService().getVenuesByName(value);
 
-    result?.forEach((element) {
-      var isExist = false;
+    if (result != null) {
+      for (var element in result) {
+        var isExist = false;
 
-      for (var item in searchResult) {
-        if (item["Address"] == element["Address"]) {
-          isExist = true;
-          break;
+        for (var item in searchResult) {
+          if (item["Address"] == element["Address"]) {
+            isExist = true;
+            break;
+          }
+        }
+
+        if (!isExist) {
+          setState(() {
+            searchResult.clear();
+            searchResult.add(element);
+          });
         }
       }
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+        content: Text("There is no venue available for the given name."),
+      ));
 
-      if (!isExist) {
-        setState(() {
-          searchResult.clear();
-          searchResult.add(element);
-        });
-      }
-    });
+      setState(() {
+        searchResult.clear();
+      });
+    }
   }
 
-  Future<void> _searchVenueByCityDistrict(String city, String district) async {
+  Future<void> _searchVenueByCityDistrict(
+      String city, String district, String venueType) async {
     searchResult.clear();
-    var result =
-        await FirestoreService().getVenuesByCityDistrict(city, district);
+    var result = await FirestoreService()
+        .getVenuesByCityDistrictType(city, district, venueType);
 
     if (result != null) {
       for (var element in result) {
@@ -411,8 +430,8 @@ class _SearchPageState extends State<SearchPage> {
       }
     } else {
       ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
-        content:
-            Text("There is no venue available for the given city-district."),
+        content: Text(
+            "There is no venue available for the given city-district-venue type."),
       ));
 
       setState(() {
