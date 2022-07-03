@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../Admin/adm_bottom_navigation/admin_navigator.dart';
-import '../Restaurant/Screens/helper/navigator.dart';
+import '../Restaurant/Screens/helper/venue_main_screen.dart';
 import '../services/firestoreService.dart';
 import '../Core/User/BottomNavigationBarPages/mainPage.dart';
 import '../welcomePage.dart';
@@ -21,7 +21,7 @@ class Direct extends StatelessWidget {
             if (snapshot.data == "Users") {
               return const MainPage();
             } else if (snapshot.data == "Venues") {
-              return const BottomNavigationBar1();
+              return const VenueMainScreen();
             } else if (snapshot.data == "Admin") {
               return const AdminBottomNavBar();
             }
