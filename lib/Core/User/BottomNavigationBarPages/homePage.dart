@@ -112,7 +112,7 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              snapshot.data![index]["imageURL"] == null
+                              snapshot.data![index]["imageUrl"] == null
                                   ? const SizedBox(width: 100, height: 100)
                                   : Container(
                                       width: 100,
@@ -122,7 +122,7 @@ class _HomePageState extends State<HomePage> {
                                             width: 0.5, color: Colors.grey),
                                       ),
                                       child: Image.network(
-                                        snapshot.data![index]["imageURL"],
+                                        snapshot.data![index]["imageUrl"],
                                         fit: BoxFit.cover,
                                       )),
                               Padding(
@@ -206,7 +206,7 @@ class _HomePageState extends State<HomePage> {
                           child: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              snapshot.data![index]["imageURL"] == null
+                              snapshot.data![index]["imageUrl"] == null
                                   ? const SizedBox(width: 100, height: 100)
                                   : Container(
                                       width: 100,
@@ -216,7 +216,7 @@ class _HomePageState extends State<HomePage> {
                                             width: 0.5, color: Colors.grey),
                                       ),
                                       child: Image.network(
-                                        snapshot.data![index]["imageURL"],
+                                        snapshot.data![index]["imageUrl"],
                                         fit: BoxFit.cover,
                                       )),
                               Padding(

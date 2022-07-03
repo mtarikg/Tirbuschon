@@ -58,9 +58,9 @@ class _ViewVenueState extends State<ViewVenue> {
                 return SingleChildScrollView(
                   child: Column(
                     children: [
-                      if (snapshot.data.containsKey("imageURL")) ...[
+                      if (snapshot.data.containsKey("imageUrl")) ...[
                         _VenueProfileImageContainer(
-                            imageURL: snapshot.data["imageURL"]),
+                            imageURL: snapshot.data["imageUrl"]),
                       ] else ...[
                         _VenueProfileImageContainer(imageURL: null.toString()),
                       ],
