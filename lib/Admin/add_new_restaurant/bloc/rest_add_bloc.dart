@@ -38,19 +38,22 @@ class SignUpBloc extends Bloc<SignupEvent, SignUpState> {
 
   // ignore: non_constant_identifier_names
   Future<void> _SignUpTappedEvent(
-      SignUpTappedEvent event, Emitter<SignUpState> emit) async {
+    SignUpTappedEvent event,
+    Emitter<SignUpState> emit,
+  ) async {
     if (checkValidatorsOfTextField()) {
       try {
         emit(LoadingState());
         await AdminAuthService.signUp(
-            emailController.text,
-            passwordController.text,
-            venueNameController.text,
-            venueAddressController.text,
-            venueCapacityController.text,
-            venueReservCapacityController.text,
-            venuePhoneController.text,
-            venueTypeDrop.text);
+          emailController.text,
+          passwordController.text,
+          venueNameController.text,
+          venueAddressController.text,
+          venueCapacityController.text,
+          venueReservCapacityController.text,
+          venuePhoneController.text,
+          venueTypeDrop.text,
+        );
 
         emailController.text = '';
         passwordController.text = '';
